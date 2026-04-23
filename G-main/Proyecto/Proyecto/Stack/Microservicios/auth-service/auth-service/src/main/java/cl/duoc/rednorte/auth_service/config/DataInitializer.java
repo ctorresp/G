@@ -26,9 +26,9 @@ import java.util.Set;
  * Nunca se almacena texto plano en la base de datos.
  *
  * Usuarios creados si no existen:
- *   - admin@rednorte.cl     / Admin1234!      → ROLE_ADMIN
- *   - medico@rednorte.cl    / Medico1234!     → ROLE_MEDICO
- *   - paciente@rednorte.cl  / Paciente1234!   → ROLE_PACIENTE (con ficha)
+ * - admin@rednorte.cl / Admin1234! → ROLE_ADMIN
+ * - medico@rednorte.cl / Medico1234! → ROLE_MEDICO
+ * - paciente@rednorte.cl / Paciente1234! → ROLE_PACIENTE (con ficha)
  */
 @Component
 public class DataInitializer implements CommandLineRunner {
@@ -55,8 +55,8 @@ public class DataInitializer implements CommandLineRunner {
         log.info("═══════════════════════════════════════════");
 
         // ── 1. Crear roles si no existen ──────────────────
-        Rol rolAdmin    = crearRolSiNoExiste("ROLE_ADMIN",    "Administrador del sistema");
-        Rol rolMedico   = crearRolSiNoExiste("ROLE_MEDICO",   "Médico o profesional de salud");
+        Rol rolAdmin = crearRolSiNoExiste("ROLE_ADMIN", "Administrador del sistema");
+        Rol rolMedico = crearRolSiNoExiste("ROLE_MEDICO", "Médico o profesional de salud");
         Rol rolPaciente = crearRolSiNoExiste("ROLE_PACIENTE", "Paciente del sistema de toma de horas");
 
         // ── 2. Crear usuarios semilla con contraseña cifrada ──
@@ -182,8 +182,7 @@ public class DataInitializer implements CommandLineRunner {
         ficha.setUsuario(usuarioGuardado);
         ficha.setPrevision("FONASA");
         ficha.setDatosClinicosSensibles(
-                "{\"alergias\": [\"penicilina\"], \"grupo_sanguineo\": \"O+\", \"enfermedades_cronicas\": []}"
-        );
+                "{\"alergias\": [\"penicilina\"], \"grupo_sanguineo\": \"O+\", \"enfermedades_cronicas\": []}");
         pacienteRepository.save(ficha);
 
         log.info("  [USUARIO + FICHA CREADOS]  {} (contraseña cifrada con BCrypt)", email);
