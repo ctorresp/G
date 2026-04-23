@@ -1,0 +1,54 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "🔐 auth-service (8081)",
+      "request": "launch",
+      "mainClass": "cl.duoc.rednorte.auth_service.AuthServiceApplication",
+      "projectName": "auth-service",
+      "cwd": "${workspaceFolder}/auth-service/auth-service",
+      "envFile": "${workspaceFolder}/auth-service/auth-service/.env",
+      "vmArgs": "-Dspring.profiles.active=default"
+    },
+    {
+      "type": "java",
+      "name": "🧑‍⚕️ patient-service (8082)",
+      "request": "launch",
+      "mainClass": "cl.duoc.rednorte.patient_service.PatientServiceApplication",
+      "projectName": "patient-service",
+      "cwd": "${workspaceFolder}/patient-service/patient-service",
+      "vmArgs": "-Dspring.profiles.active=default"
+    },
+    {
+      "type": "java",
+      "name": "🩺 medical-service (8083)",
+      "request": "launch",
+      "mainClass": "cl.duoc.rednorte.medical_service.MedicalServiceApplication",
+      "projectName": "medical-service",
+      "cwd": "${workspaceFolder}/medical-service/medical-service",
+      "vmArgs": "-Dspring.profiles.active=default"
+    },
+    {
+      "type": "java",
+      "name": "📋 waitlist-service (8084)",
+      "request": "launch",
+      "mainClass": "cl.duoc.rednorte.waitlist_service.WaitlistServiceApplication",
+      "projectName": "waitlist-service",
+      "cwd": "${workspaceFolder}/waitlist-service/waitlist-service",
+      "vmArgs": "-Dspring.profiles.active=default"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "🚀 Todos los microservicios",
+      "configurations": [
+        "🔐 auth-service (8081)",
+        "🧑‍⚕️ patient-service (8082)",
+        "🩺 medical-service (8083)",
+        "📋 waitlist-service (8084)"
+      ],
+      "stopAll": true
+    }
+  ]
+}

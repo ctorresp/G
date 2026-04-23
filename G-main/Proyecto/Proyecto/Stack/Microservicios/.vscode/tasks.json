@@ -1,0 +1,59 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "mvn: compile auth-service",
+      "type": "shell",
+      "command": ".\\mvnw.cmd compile -q",
+      "options": {
+        "cwd": "${workspaceFolder}/auth-service/auth-service"
+      },
+      "group": "build",
+      "presentation": { "reveal": "silent" }
+    },
+    {
+      "label": "mvn: compile patient-service",
+      "type": "shell",
+      "command": ".\\mvnw.cmd compile -q",
+      "options": {
+        "cwd": "${workspaceFolder}/patient-service/patient-service"
+      },
+      "group": "build",
+      "presentation": { "reveal": "silent" }
+    },
+    {
+      "label": "mvn: compile medical-service",
+      "type": "shell",
+      "command": ".\\mvnw.cmd compile -q",
+      "options": {
+        "cwd": "${workspaceFolder}/medical-service/medical-service"
+      },
+      "group": "build",
+      "presentation": { "reveal": "silent" }
+    },
+    {
+      "label": "mvn: compile waitlist-service",
+      "type": "shell",
+      "command": ".\\mvnw.cmd compile -q",
+      "options": {
+        "cwd": "${workspaceFolder}/waitlist-service/waitlist-service"
+      },
+      "group": "build",
+      "presentation": { "reveal": "silent" }
+    },
+    {
+      "label": "🔨 Compilar todos los microservicios",
+      "dependsOn": [
+        "mvn: compile auth-service",
+        "mvn: compile patient-service",
+        "mvn: compile medical-service",
+        "mvn: compile waitlist-service"
+      ],
+      "dependsOrder": "parallel",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
+}

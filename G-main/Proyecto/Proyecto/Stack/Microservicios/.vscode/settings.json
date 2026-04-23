@@ -1,0 +1,14 @@
+{
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.compile.nullAnalysis.mode": "automatic",
+  "java.jdt.ls.java.home": "",
+  "spring-boot.ls.problem.application-properties.UNKNOWN_PROPERTY_KEY": "IGNORE",
+  "editor.formatOnSave": true,
+  "editor.tabSize": 4,
+  "[java]": {
+    "editor.defaultFormatter": "redhat.java"
+  },
+  "java.configuration.maven.userSettings": null,
+  "maven.executable.preferMavenWrapper": true,
+  "maven.terminal.useJavaHome": true
+}
