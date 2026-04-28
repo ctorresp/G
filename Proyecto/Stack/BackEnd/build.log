@@ -1,0 +1,151 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -------------------< cl.duoc.rednorte:auth-service >--------------------
+[INFO] Building auth-service 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.3.2:clean (default-clean) @ auth-service ---
+[INFO] Deleting C:\Users\Samue\Documents\GitHub\G\G-main\Proyecto\Proyecto\Stack\Microservicios\auth-service\auth-service\target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ auth-service ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 0 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ auth-service ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 20 source files with javac [debug parameters release 17] to target\classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ auth-service ---
+[INFO] skip non existing resourceDirectory C:\Users\Samue\Documents\GitHub\G\G-main\Proyecto\Proyecto\Stack\Microservicios\auth-service\auth-service\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ auth-service ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 1 source file with javac [debug parameters release 17] to target\test-classes
+[INFO] 
+[INFO] --- surefire:3.2.5:test (default-test) @ auth-service ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running cl.duoc.rednorte.auth_service.AuthServiceApplicationTests
+18:21:14.324 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [cl.duoc.rednorte.auth_service.AuthServiceApplicationTests]: AuthServiceApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+18:21:14.474 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration cl.duoc.rednorte.auth_service.AuthServiceApplication for test class cl.duoc.rednorte.auth_service.AuthServiceApplicationTests
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.3.5)
+
+2026-04-22T18:21:15.131-04:00  INFO 20744 --- [auth-service] [           main] c.d.r.a.AuthServiceApplicationTests      : Starting AuthServiceApplicationTests using Java 17.0.18 with PID 20744 (started by Samue in C:\Users\Samue\Documents\GitHub\G\G-main\Proyecto\Proyecto\Stack\Microservicios\auth-service\auth-service)
+2026-04-22T18:21:15.133-04:00 DEBUG 20744 --- [auth-service] [           main] c.d.r.a.AuthServiceApplicationTests      : Running with Spring Boot v3.3.5, Spring v6.1.14
+2026-04-22T18:21:15.135-04:00  INFO 20744 --- [auth-service] [           main] c.d.r.a.AuthServiceApplicationTests      : No active profile set, falling back to 1 default profile: "default"
+2026-04-22T18:21:16.121-04:00  INFO 20744 --- [auth-service] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-22T18:21:16.257-04:00  INFO 20744 --- [auth-service] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 117 ms. Found 3 JPA repository interfaces.
+2026-04-22T18:21:17.063-04:00  INFO 20744 --- [auth-service] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-04-22T18:21:17.159-04:00  INFO 20744 --- [auth-service] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.3.Final
+2026-04-22T18:21:17.217-04:00  INFO 20744 --- [auth-service] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-04-22T18:21:17.687-04:00  INFO 20744 --- [auth-service] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-04-22T18:21:17.729-04:00  INFO 20744 --- [auth-service] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-04-22T18:21:17.994-04:00  INFO 20744 --- [auth-service] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@6d3163a6
+2026-04-22T18:21:17.999-04:00  INFO 20744 --- [auth-service] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-04-22T18:21:18.087-04:00  WARN 20744 --- [auth-service] [           main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-04-22T18:21:19.390-04:00  INFO 20744 --- [auth-service] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+Hibernate: 
+    alter table pacientes 
+       modify column datos_clinicos_sensibles TEXT
+2026-04-22T18:21:19.510-04:00  INFO 20744 --- [auth-service] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-04-22T18:21:20.024-04:00  INFO 20744 --- [auth-service] [           main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-04-22T18:21:20.663-04:00  INFO 20744 --- [auth-service] [           main] eAuthenticationProviderManagerConfigurer : Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
+2026-04-22T18:21:20.664-04:00  WARN 20744 --- [auth-service] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used for username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider.
+2026-04-22T18:21:20.737-04:00  WARN 20744 --- [auth-service] [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-22T18:21:21.294-04:00 DEBUG 20744 --- [auth-service] [           main] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, LogoutFilter, JwtAuthenticationFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, SessionManagementFilter, ExceptionTranslationFilter, AuthorizationFilter
+2026-04-22T18:21:21.748-04:00  INFO 20744 --- [auth-service] [           main] c.d.r.a.AuthServiceApplicationTests      : Started AuthServiceApplicationTests in 7.043 seconds (process running for 8.45)
+2026-04-22T18:21:21.762-04:00  INFO 20744 --- [auth-service] [           main] c.d.r.a.config.DataInitializer           : ???????????????????????????????????????????
+2026-04-22T18:21:21.763-04:00  INFO 20744 --- [auth-service] [           main] c.d.r.a.config.DataInitializer           :   Iniciando DataInitializer — auth-service 
+2026-04-22T18:21:21.763-04:00  INFO 20744 --- [auth-service] [           main] c.d.r.a.config.DataInitializer           : ???????????????????????????????????????????
+Hibernate: 
+    select
+        r1_0.id_rol,
+        r1_0.descripcion,
+        r1_0.nombre_rol 
+    from
+        roles r1_0 
+    where
+        r1_0.nombre_rol=?
+Hibernate: 
+    select
+        r1_0.id_rol,
+        r1_0.descripcion,
+        r1_0.nombre_rol 
+    from
+        roles r1_0 
+    where
+        r1_0.nombre_rol=?
+Hibernate: 
+    select
+        r1_0.id_rol,
+        r1_0.descripcion,
+        r1_0.nombre_rol 
+    from
+        roles r1_0 
+    where
+        r1_0.nombre_rol=?
+Hibernate: 
+    select
+        u1_0.id_usuario 
+    from
+        usuarios u1_0 
+    where
+        u1_0.email=? 
+    limit
+        ?
+2026-04-22T18:21:21.968-04:00  INFO 20744 --- [auth-service] [           main] c.d.r.a.config.DataInitializer           :   [USUARIO YA EXISTE]  admin@rednorte.cl
+Hibernate: 
+    select
+        u1_0.id_usuario 
+    from
+        usuarios u1_0 
+    where
+        u1_0.email=? 
+    limit
+        ?
+2026-04-22T18:21:21.972-04:00  INFO 20744 --- [auth-service] [           main] c.d.r.a.config.DataInitializer           :   [USUARIO YA EXISTE]  medico@rednorte.cl
+Hibernate: 
+    select
+        u1_0.id_usuario 
+    from
+        usuarios u1_0 
+    where
+        u1_0.email=? 
+    limit
+        ?
+2026-04-22T18:21:21.974-04:00  INFO 20744 --- [auth-service] [           main] c.d.r.a.config.DataInitializer           :   [USUARIO YA EXISTE]  paciente@rednorte.cl
+2026-04-22T18:21:21.974-04:00  INFO 20744 --- [auth-service] [           main] c.d.r.a.config.DataInitializer           : ???????????????????????????????????????????
+2026-04-22T18:21:21.974-04:00  INFO 20744 --- [auth-service] [           main] c.d.r.a.config.DataInitializer           :   DataInitializer completado exitosamente  
+2026-04-22T18:21:21.974-04:00  INFO 20744 --- [auth-service] [           main] c.d.r.a.config.DataInitializer           : ???????????????????????????????????????????
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 8.416 s -- in cl.duoc.rednorte.auth_service.AuthServiceApplicationTests
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.2:jar (default-jar) @ auth-service ---
+[INFO] Building jar: C:\Users\Samue\Documents\GitHub\G\G-main\Proyecto\Proyecto\Stack\Microservicios\auth-service\auth-service\target\auth-service-0.0.1-SNAPSHOT.jar
+[INFO] 
+[INFO] --- spring-boot:3.3.5:repackage (repackage) @ auth-service ---
+[INFO] Replacing main artifact C:\Users\Samue\Documents\GitHub\G\G-main\Proyecto\Proyecto\Stack\Microservicios\auth-service\auth-service\target\auth-service-0.0.1-SNAPSHOT.jar with repackaged archive, adding nested dependencies in BOOT-INF/.
+[INFO] The original artifact has been renamed to C:\Users\Samue\Documents\GitHub\G\G-main\Proyecto\Proyecto\Stack\Microservicios\auth-service\auth-service\target\auth-service-0.0.1-SNAPSHOT.jar.original
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  17.142 s
+[INFO] Finished at: 2026-04-22T18:21:23-04:00
+[INFO] ------------------------------------------------------------------------
