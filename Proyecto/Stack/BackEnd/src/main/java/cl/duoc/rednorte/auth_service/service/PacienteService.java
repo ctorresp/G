@@ -1,6 +1,7 @@
 package cl.duoc.rednorte.auth_service.service;
 
 import cl.duoc.rednorte.auth_service.dto.PacienteResponseDTO;
+import cl.duoc.rednorte.auth_service.model.DatosClinicos;
 import cl.duoc.rednorte.auth_service.model.Paciente;
 import cl.duoc.rednorte.auth_service.model.Rol;
 import cl.duoc.rednorte.auth_service.repository.PacienteRepository;
@@ -26,10 +27,6 @@ public class PacienteService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
-
-    // ─────────────────────────────────────────────
-    // CONSULTAS
-    // ─────────────────────────────────────────────
 
     /**
      * Retorna la lista completa de pacientes registrados.
@@ -86,10 +83,6 @@ public class PacienteService {
         return buscarPorIdUsuario(idUsuario);
     }
 
-    // ─────────────────────────────────────────────
-    // MODIFICACIÓN
-    // ─────────────────────────────────────────────
-
     /**
      * Actualiza los datos clínicos sensibles de un paciente.
      * Solo accesible por ROLE_ADMIN o ROLE_MEDICO.
@@ -104,7 +97,7 @@ public class PacienteService {
     public PacienteResponseDTO actualizarDatosClinicos(
             Long idPaciente,
             String prevision,
-            String datosClinicosSensibles) {
+            DatosClinicos datosClinicosSensibles) {
 
         Paciente paciente = pacienteRepository.findById(idPaciente)
                 .orElseThrow(() -> new RuntimeException("Paciente no encontrado con ID: " + idPaciente));
@@ -112,7 +105,7 @@ public class PacienteService {
         if (prevision != null && !prevision.isBlank()) {
             paciente.setPrevision(prevision);
         }
-        if (datosClinicosSensibles != null && !datosClinicosSensibles.isBlank()) {
+        if (datosClinicosSensibles != null) {
             paciente.setDatosClinicosSensibles(datosClinicosSensibles);
         }
 
@@ -157,10 +150,6 @@ public class PacienteService {
 
         return "Cuenta del paciente ID " + idPaciente + " activada exitosamente";
     }
-
-    // ─────────────────────────────────────────────
-    // MAPPER PRIVADO
-    // ─────────────────────────────────────────────
 
     /**
      * Convierte una entidad Paciente al DTO de respuesta.

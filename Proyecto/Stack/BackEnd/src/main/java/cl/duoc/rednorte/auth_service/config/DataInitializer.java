@@ -1,5 +1,6 @@
 package cl.duoc.rednorte.auth_service.config;
 
+import cl.duoc.rednorte.auth_service.model.DatosClinicos;
 import cl.duoc.rednorte.auth_service.model.Paciente;
 import cl.duoc.rednorte.auth_service.model.Rol;
 import cl.duoc.rednorte.auth_service.model.Usuario;
@@ -14,7 +15,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -54,12 +57,10 @@ public class DataInitializer implements CommandLineRunner {
         log.info("  Iniciando DataInitializer — auth-service ");
         log.info("═══════════════════════════════════════════");
 
-        // ── 1. Crear roles si no existen ──────────────────
         Rol rolAdmin = crearRolSiNoExiste("ROLE_ADMIN", "Administrador del sistema");
         Rol rolMedico = crearRolSiNoExiste("ROLE_MEDICO", "Médico o profesional de salud");
         Rol rolPaciente = crearRolSiNoExiste("ROLE_PACIENTE", "Paciente del sistema de toma de horas");
 
-        // ── 2. Crear usuarios semilla con contraseña cifrada ──
         crearAdminSiNoExiste(rolAdmin);
         crearMedicoSiNoExiste(rolMedico);
         crearPacienteSiNoExiste(rolPaciente);
@@ -69,10 +70,6 @@ public class DataInitializer implements CommandLineRunner {
         log.info("  DataInitializer completado exitosamente  ");
         log.info("═══════════════════════════════════════════");
     }
-
-    // ─────────────────────────────────────────────────────────
-    // HELPERS PRIVADOS
-    // ─────────────────────────────────────────────────────────
 
     /**
      * Crea un rol si aún no existe en la base de datos.
@@ -109,7 +106,6 @@ public class DataInitializer implements CommandLineRunner {
         admin.setRut("12345678-9");
         admin.setNombre("Administrador Sistema");
         admin.setEmail(email);
-        // ✔ Contraseña cifrada con BCrypt — nunca se guarda texto plano
         admin.setContrasena(passwordEncoder.encode("Admin1234!"));
         admin.setEstado(true);
 
@@ -138,7 +134,6 @@ public class DataInitializer implements CommandLineRunner {
         medico.setRut("98765432-1");
         medico.setNombre("Dr. Juan Pérez");
         medico.setEmail(email);
-        // ✔ Contraseña cifrada con BCrypt — nunca se guarda texto plano
         medico.setContrasena(passwordEncoder.encode("Medico1234!"));
         medico.setEstado(true);
 
@@ -163,12 +158,10 @@ public class DataInitializer implements CommandLineRunner {
             return;
         }
 
-        // Crear usuario
         Usuario pacienteUsuario = new Usuario();
         pacienteUsuario.setRut("11111111-1");
         pacienteUsuario.setNombre("María González");
         pacienteUsuario.setEmail(email);
-        // ✔ Contraseña cifrada con BCrypt — nunca se guarda texto plano
         pacienteUsuario.setContrasena(passwordEncoder.encode("Paciente1234!"));
         pacienteUsuario.setEstado(true);
 
@@ -178,12 +171,16 @@ public class DataInitializer implements CommandLineRunner {
 
         Usuario usuarioGuardado = usuarioRepository.save(pacienteUsuario);
 
-        // Crear ficha de paciente asociada
         Paciente ficha = new Paciente();
         ficha.setUsuario(usuarioGuardado);
         ficha.setPrevision("FONASA");
-        ficha.setDatosClinicosSensibles(
-                "{\"alergias\": [\"penicilina\"], \"grupo_sanguineo\": \"O+\", \"enfermedades_cronicas\": []}");
+
+        DatosClinicos datosClinicos = new DatosClinicos();
+        datosClinicos.setGrupoSanguineo("O+");
+        datosClinicos.setAlergias(List.of("penicilina"));
+        datosClinicos.setEnfermedadesCronicas(new ArrayList<>());
+        ficha.setDatosClinicosSensibles(datosClinicos);
+
         pacienteRepository.save(ficha);
 
         log.info("  [USUARIO + FICHA CREADOS]  {} (contraseña cifrada con BCrypt)", email);
@@ -215,8 +212,13 @@ public class DataInitializer implements CommandLineRunner {
         Paciente ficha = new Paciente();
         ficha.setUsuario(usuarioGuardado);
         ficha.setPrevision("ISAPRE");
-        ficha.setDatosClinicosSensibles(
-                "{\"alergias\": [], \"grupo_sanguineo\": \"A+\", \"enfermedades_cronicas\": [\"hipertension\"]}");
+
+        DatosClinicos datosClinicos = new DatosClinicos();
+        datosClinicos.setGrupoSanguineo("A+");
+        datosClinicos.setAlergias(new ArrayList<>());
+        datosClinicos.setEnfermedadesCronicas(List.of("hipertension"));
+        ficha.setDatosClinicosSensibles(datosClinicos);
+
         pacienteRepository.save(ficha);
 
         log.info("  [USUARIO + FICHA CREADOS]  {} (contraseña cifrada con BCrypt)", email);

@@ -33,10 +33,6 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
-    // ─────────────────────────────────────────────
-    // LOGIN
-    // ─────────────────────────────────────────────
-
     /**
      * Inicia sesión con email o RUT + contraseña.
      * Retorna un token JWT válido si las credenciales son correctas.
@@ -54,14 +50,10 @@ public class AuthController {
                     .status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of(
                             "error", "Credenciales inválidas",
-                            "mensaje", e.getMessage()
+                            "mensaje", e.getMessage() != null ? e.getMessage() : "Error desconocido"
                     ));
         }
     }
-
-    // ─────────────────────────────────────────────
-    // REGISTRO PACIENTE (público)
-    // ─────────────────────────────────────────────
 
     /**
      * Registra un nuevo paciente en el sistema.
@@ -82,14 +74,10 @@ public class AuthController {
                     .status(HttpStatus.BAD_REQUEST)
                     .body(Map.of(
                             "error", "Error en el registro",
-                            "mensaje", e.getMessage()
+                            "mensaje", e.getMessage() != null ? e.getMessage() : "Error al guardar en base de datos"
                     ));
         }
     }
-
-    // ─────────────────────────────────────────────
-    // REGISTRO ADMIN (solo ROLE_ADMIN)
-    // ─────────────────────────────────────────────
 
     /**
      * Registra un usuario con rol administrativo (ROLE_ADMIN o ROLE_MEDICO).
@@ -114,14 +102,10 @@ public class AuthController {
                     .status(HttpStatus.BAD_REQUEST)
                     .body(Map.of(
                             "error", "Error en el registro de admin",
-                            "mensaje", e.getMessage()
+                            "mensaje", e.getMessage() != null ? e.getMessage() : "Error desconocido"
                     ));
         }
     }
-
-    // ─────────────────────────────────────────────
-    // VALIDAR TOKEN (uso inter-microservicios)
-    // ─────────────────────────────────────────────
 
     /**
      * Valida un token JWT y retorna la información del usuario.
@@ -148,7 +132,7 @@ public class AuthController {
                     .status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of(
                             "error", "Token inválido o expirado",
-                            "mensaje", e.getMessage()
+                            "mensaje", e.getMessage() != null ? e.getMessage() : "Error desconocido"
                     ));
         }
     }

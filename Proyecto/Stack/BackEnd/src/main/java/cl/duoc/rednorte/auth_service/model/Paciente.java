@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 /**
  * Entidad que representa los datos del paciente.
@@ -38,10 +40,11 @@ public class Paciente {
 
     /**
      * Datos clínicos sensibles del paciente
-     * almacenados como texto libre o JSON.
+     * almacenados como un objeto JSON nativo en la base de datos.
      */
-    @Column(name = "datos_clinicos_sensibles", columnDefinition = "TEXT")
-    private String datosClinicosSensibles;
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "datos_clinicos_sensibles", columnDefinition = "json")
+    private DatosClinicos datosClinicosSensibles;
 
     /**
      * Relación uno-a-uno con Usuario:

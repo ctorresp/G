@@ -1,5 +1,6 @@
 package cl.duoc.rednorte.auth_service.controller;
 
+import cl.duoc.rednorte.auth_service.dto.DatosClinicosUpdateRequestDTO;
 import cl.duoc.rednorte.auth_service.dto.PacienteResponseDTO;
 import cl.duoc.rednorte.auth_service.model.Usuario;
 import cl.duoc.rednorte.auth_service.repository.UsuarioRepository;
@@ -47,8 +48,41 @@ public class PacienteController {
      */
     @GetMapping
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MEDICO')")
-    public ResponseEntity<List<PacienteResponseDTO>> listarTodos() {
-        return ResponseEntity.ok(pacienteService.listarTodos());
+    public ResponseEntity<?> listarTodos() {
+        try {
+            List<PacienteResponseDTO> pacientes = pacienteService.listarTodos();
+            return ResponseEntity.ok(pacientes);
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of(
+                            "error", "Error interno al cargar la lista de pacientes.",
+                            "detalle", e.getMessage() != null ? e.getMessage() : "Error desconocido"
+                    ));
+        }
+    }
+
+    /**
+     * Obtiene la ficha del paciente autenticado usando su propio Token.
+     * No requiere pasar IDs, extrae el usuario directamente del JWT.
+     *
+     * GET /api/pacientes/me
+     *
+     * @param authentication objeto de autenticación
+     * @return 200 con PacienteResponseDTO
+     */
+    @GetMapping("/me")
+    @PreAuthorize("hasAuthority('ROLE_PACIENTE')")
+    public ResponseEntity<?> obtenerMiFicha(Authentication authentication) {
+        try {
+            Long idUsuarioToken = getIdUsuarioAutenticado(authentication);
+            PacienteResponseDTO paciente = pacienteService.buscarPorIdUsuario(idUsuarioToken);
+            return ResponseEntity.ok(paciente);
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", e.getMessage() != null ? e.getMessage() : "Error al obtener ficha"));
+        }
     }
 
     /**
@@ -82,7 +116,7 @@ public class PacienteController {
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", e.getMessage()));
+                    .body(Map.of("error", e.getMessage() != null ? e.getMessage() : "Error al buscar paciente"));
         }
     }
 
@@ -116,7 +150,7 @@ public class PacienteController {
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", e.getMessage()));
+                    .body(Map.of("error", e.getMessage() != null ? e.getMessage() : "Error al buscar usuario"));
         }
     }
 
@@ -138,7 +172,7 @@ public class PacienteController {
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", e.getMessage()));
+                    .body(Map.of("error", e.getMessage() != null ? e.getMessage() : "Error al buscar rut"));
         }
     }
 
@@ -165,18 +199,18 @@ public class PacienteController {
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MEDICO')")
     public ResponseEntity<?> actualizarDatosClinicos(
             @PathVariable Long id,
-            @RequestBody Map<String, String> body) {
+            @RequestBody DatosClinicosUpdateRequestDTO request) {
         try {
             PacienteResponseDTO actualizado = pacienteService.actualizarDatosClinicos(
                     id,
-                    body.get("prevision"),
-                    body.get("datosClinicosSensibles")
+                    request.getPrevision(),
+                    request.getDatosClinicosSensibles()
             );
             return ResponseEntity.ok(actualizado);
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", e.getMessage()));
+                    .body(Map.of("error", e.getMessage() != null ? e.getMessage() : "Error al actualizar"));
         }
     }
 
@@ -202,7 +236,7 @@ public class PacienteController {
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", e.getMessage()));
+                    .body(Map.of("error", e.getMessage() != null ? e.getMessage() : "Error al desactivar"));
         }
     }
 
@@ -224,7 +258,7 @@ public class PacienteController {
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", e.getMessage()));
+                    .body(Map.of("error", e.getMessage() != null ? e.getMessage() : "Error al activar"));
         }
     }
     // ─────────────────────────────────────────────
@@ -239,10 +273,10 @@ public class PacienteController {
      * @return true si es exclusivamente paciente
      */
     private boolean esSoloPaciente(Authentication authentication) {
-        boolean esAdmin  = authentication.getAuthorities()
-                .contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
-        boolean esMedico = authentication.getAuthorities()
-                .contains(new SimpleGrantedAuthority("ROLE_MEDICO"));
+        boolean esAdmin = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        boolean esMedico = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_MEDICO"));
         return !esAdmin && !esMedico;
     }
 
@@ -255,7 +289,7 @@ public class PacienteController {
      */
     private Long getIdUsuarioAutenticado(Authentication authentication) {
         String email = authentication.getName();
-        Usuario usuario = usuarioRepository.findByEmail(email)
+        Usuario usuario = usuarioRepository.findByEmailAndEstadoTrue(email)
                 .orElseThrow(() -> new RuntimeException("Usuario autenticado no encontrado"));
         return usuario.getIdUsuario();
     }

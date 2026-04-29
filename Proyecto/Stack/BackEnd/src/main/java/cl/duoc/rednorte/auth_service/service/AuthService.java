@@ -50,10 +50,6 @@ public class AuthService {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
-    // ─────────────────────────────────────────────
-    // LOGIN
-    // ─────────────────────────────────────────────
-
     /**
      * Autentica un usuario usando email o RUT + contraseña.
      * Genera y retorna un token JWT con los roles del usuario.
@@ -63,26 +59,19 @@ public class AuthService {
      * @throws RuntimeException si el usuario no existe, está inactivo o la contraseña es incorrecta
      */
     public LoginResponseDTO login(LoginRequestDTO request) {
-        // Resolver el email: puede llegar email o RUT
         String emailResuelto = resolverEmail(request);
 
-        // Spring Security autentica (lanza excepción si falla)
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(emailResuelto, request.getContrasena())
         );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // Generar token JWT
         String token = jwtTokenProvider.generarToken(authentication);
 
-        // Obtener roles desde el Authentication (ya cargados por Spring Security)
-        // Evita problemas de sesión Hibernate al no releer desde BD
         Set<String> roles = authentication.getAuthorities().stream()
                 .map(a -> a.getAuthority())
                 .collect(Collectors.toSet());
-
-        // Cargar datos básicos del usuario (id, nombre) para la respuesta
         Usuario usuario = usuarioRepository.findByEmailAndEstadoTrue(emailResuelto)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
@@ -96,10 +85,6 @@ public class AuthService {
                 jwtTokenProvider.getExpiracionMs()
         );
     }
-
-    // ─────────────────────────────────────────────
-    // REGISTRO DE USUARIO PACIENTE
-    // ─────────────────────────────────────────────
 
     /**
      * Registra un nuevo usuario con rol ROLE_PACIENTE y crea su ficha de paciente.
@@ -117,7 +102,6 @@ public class AuthService {
             throw new RuntimeException("El RUT ya está registrado: " + request.getRut());
         }
 
-        // Crear usuario
         Usuario usuario = new Usuario();
         usuario.setRut(request.getRut());
         usuario.setNombre(request.getNombre());
@@ -125,7 +109,6 @@ public class AuthService {
         usuario.setContrasena(passwordEncoder.encode(request.getContrasena()));
         usuario.setEstado(true);
 
-        // Asignar rol ROLE_PACIENTE por defecto
         Rol rolPaciente = rolRepository.findByNombreRol("ROLE_PACIENTE")
                 .orElseGet(() -> {
                     Rol nuevoRol = new Rol();
@@ -140,7 +123,6 @@ public class AuthService {
 
         Usuario usuarioGuardado = usuarioRepository.save(usuario);
 
-        // Crear ficha de paciente asociada
         Paciente paciente = new Paciente();
         paciente.setUsuario(usuarioGuardado);
         paciente.setPrevision(request.getPrevision());
@@ -149,10 +131,6 @@ public class AuthService {
 
         return "Paciente registrado exitosamente con ID: " + usuarioGuardado.getIdUsuario();
     }
-
-    // ─────────────────────────────────────────────
-    // REGISTRO DE USUARIO ADMINISTRATIVO
-    // ─────────────────────────────────────────────
 
     /**
      * Registra un nuevo usuario administrativo (ROLE_ADMIN o ROLE_MEDICO).
@@ -193,10 +171,6 @@ public class AuthService {
         return "Usuario " + nombreRol + " registrado con ID: " + guardado.getIdUsuario();
     }
 
-    // ─────────────────────────────────────────────
-    // VALIDACIÓN DE TOKEN
-    // ─────────────────────────────────────────────
-
     /**
      * Valida un token JWT recibido y retorna los datos del usuario si es válido.
      * Útil para que otros microservicios validen tokens externamente.
@@ -229,10 +203,6 @@ public class AuthService {
                 jwtTokenProvider.getExpiracionMs()
         );
     }
-
-    // ─────────────────────────────────────────────
-    // UTILIDADES PRIVADAS
-    // ─────────────────────────────────────────────
 
     /**
      * Resuelve el email del usuario a partir de la solicitud de login.
