@@ -1,4 +1,4 @@
-package cl.duoc.rednorte.auth_service.model;
+package cl.duoc.rednorte.datos_clinicos.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

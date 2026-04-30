@@ -1,12 +1,13 @@
 package cl.duoc.rednorte.auth_service.config;
 
-import cl.duoc.rednorte.auth_service.model.DatosClinicos;
-import cl.duoc.rednorte.auth_service.model.Paciente;
 import cl.duoc.rednorte.auth_service.model.Rol;
 import cl.duoc.rednorte.auth_service.model.Usuario;
-import cl.duoc.rednorte.auth_service.repository.PacienteRepository;
 import cl.duoc.rednorte.auth_service.repository.RolRepository;
 import cl.duoc.rednorte.auth_service.repository.UsuarioRepository;
+import cl.duoc.rednorte.datos_clinicos.model.DatosClinicos;
+import cl.duoc.rednorte.paciente.model.Paciente;
+import cl.duoc.rednorte.paciente.repository.PacienteRepository;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -179,6 +180,8 @@ public class DataInitializer implements CommandLineRunner {
         datosClinicos.setGrupoSanguineo("O+");
         datosClinicos.setAlergias(List.of("penicilina"));
         datosClinicos.setEnfermedadesCronicas(new ArrayList<>());
+        datosClinicos.setPesoKg(65.5);
+        datosClinicos.setAlturaCm(168.0);
         ficha.setDatosClinicosSensibles(datosClinicos);
 
         pacienteRepository.save(ficha);
@@ -217,6 +220,8 @@ public class DataInitializer implements CommandLineRunner {
         datosClinicos.setGrupoSanguineo("A+");
         datosClinicos.setAlergias(new ArrayList<>());
         datosClinicos.setEnfermedadesCronicas(List.of("hipertension"));
+        datosClinicos.setPesoKg(82.0);
+        datosClinicos.setAlturaCm(175.5);
         ficha.setDatosClinicosSensibles(datosClinicos);
 
         pacienteRepository.save(ficha);

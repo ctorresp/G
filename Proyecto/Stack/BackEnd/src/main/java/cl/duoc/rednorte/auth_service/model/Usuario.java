@@ -11,6 +11,8 @@ import lombok.ToString;
 import java.util.HashSet;
 import java.util.Set;
 
+import cl.duoc.rednorte.paciente.model.Paciente;
+
 /**
  * Entidad que representa a los usuarios del sistema.
  * Tabla: usuarios — DB_Pacientes

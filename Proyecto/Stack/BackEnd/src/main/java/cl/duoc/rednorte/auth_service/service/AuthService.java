@@ -3,13 +3,14 @@ package cl.duoc.rednorte.auth_service.service;
 import cl.duoc.rednorte.auth_service.dto.LoginRequestDTO;
 import cl.duoc.rednorte.auth_service.dto.LoginResponseDTO;
 import cl.duoc.rednorte.auth_service.dto.RegistroRequestDTO;
-import cl.duoc.rednorte.auth_service.model.Paciente;
 import cl.duoc.rednorte.auth_service.model.Rol;
 import cl.duoc.rednorte.auth_service.model.Usuario;
-import cl.duoc.rednorte.auth_service.repository.PacienteRepository;
 import cl.duoc.rednorte.auth_service.repository.RolRepository;
 import cl.duoc.rednorte.auth_service.repository.UsuarioRepository;
 import cl.duoc.rednorte.auth_service.security.JwtTokenProvider;
+import cl.duoc.rednorte.paciente.model.Paciente;
+import cl.duoc.rednorte.paciente.repository.PacienteRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

@@ -1,6 +1,6 @@
 package cl.duoc.rednorte.auth_service.dto;
 
-import cl.duoc.rednorte.auth_service.model.DatosClinicos;
+import cl.duoc.rednorte.datos_clinicos.model.DatosClinicos;
 import lombok.Data;
 
 @Data
