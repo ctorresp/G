@@ -8,6 +8,7 @@ import cl.duoc.rednorte.auth_service.model.Usuario;
 import cl.duoc.rednorte.auth_service.repository.RolRepository;
 import cl.duoc.rednorte.auth_service.repository.UsuarioRepository;
 import cl.duoc.rednorte.auth_service.security.JwtTokenProvider;
+import cl.duoc.rednorte.datos_clinicos.model.DatosClinicos;
 import cl.duoc.rednorte.paciente.model.Paciente;
 import cl.duoc.rednorte.paciente.repository.PacienteRepository;
 
@@ -127,7 +128,11 @@ public class AuthService {
         Paciente paciente = new Paciente();
         paciente.setUsuario(usuarioGuardado);
         paciente.setPrevision(request.getPrevision());
-        paciente.setDatosClinicosSensibles(request.getDatosClinicosSensibles());
+        
+        if (request.getDatosClinicosSensibles() != null) {
+            paciente.setDatosClinicosSensibles(request.getDatosClinicosSensibles());
+        }
+        
         pacienteRepository.save(paciente);
 
         return "Paciente registrado exitosamente con ID: " + usuarioGuardado.getIdUsuario();

@@ -1,4 +1,6 @@
 package cl.duoc.rednorte.paciente.model;
+import cl.duoc.rednorte.auth_service.model.Usuario;
+import cl.duoc.rednorte.datos_clinicos.model.DatosClinicos;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
