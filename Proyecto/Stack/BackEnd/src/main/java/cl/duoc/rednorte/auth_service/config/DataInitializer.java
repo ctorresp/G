@@ -27,12 +27,6 @@ import java.util.Set;
  *
  * Garantiza que TODAS las contraseñas de los usuarios semilla
  * sean cifradas con BCrypt mediante el PasswordEncoder de Spring Security.
- * Nunca se almacena texto plano en la base de datos.
- *
- * Usuarios creados si no existen:
- * - admin@rednorte.cl / Admin1234! → ROLE_ADMIN
- * - medico@rednorte.cl / Medico1234! → ROLE_MEDICO
- * - paciente@rednorte.cl / Paciente1234! → ROLE_PACIENTE (con ficha)
  */
 @Component
 public class DataInitializer implements CommandLineRunner {

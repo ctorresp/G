@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "RedNorteApplication",
+            "request": "launch",
+            "mainClass": "cl.duoc.rednorte.RedNorteApplication",
+            "projectName": "auth-service"
+        },
+        {
+            "type": "java",
             "name": "Spring Boot-AuthServiceApplication<auth-service>",
             "request": "launch",
             "cwd": "${workspaceFolder}",
