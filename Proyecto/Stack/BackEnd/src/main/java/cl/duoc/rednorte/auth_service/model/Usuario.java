@@ -11,8 +11,6 @@ import lombok.ToString;
 import java.util.HashSet;
 import java.util.Set;
 
-import cl.duoc.rednorte.paciente.model.Paciente;
-
 /**
  * Entidad que representa a los usuarios del sistema.
  * Tabla: usuarios — DB_Pacientes
@@ -25,7 +23,7 @@ import cl.duoc.rednorte.paciente.model.Paciente;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@ToString(exclude = {"paciente", "roles"})
+@ToString(exclude = {"roles"})
 public class Usuario {
 
     @Id
@@ -63,8 +61,4 @@ public class Usuario {
         inverseJoinColumns = @JoinColumn(name = "id_rol")
     )
     private Set<Rol> roles = new HashSet<>();
-
-    /** Referencia opcional al paciente asociado a este usuario */
-    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, optional = true)
-    private Paciente paciente;
 }
