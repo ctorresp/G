@@ -47,6 +47,13 @@
 			<scope>runtime</scope>
 		</dependency>
 
+		<!-- ── PostgreSQL Connector ────────────────────────── -->
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
 		<!-- ── Lombok ──────────────────────────────────────── -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -94,6 +101,7 @@
 	</dependencies>
 
 	<build>
+		<finalName>auth-service</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>

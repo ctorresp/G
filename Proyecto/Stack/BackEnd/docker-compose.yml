@@ -6,12 +6,12 @@ services:
     image: postgres:15-alpine
     container_name: rednorte-db-postgre
     environment:
-      # Toma los valores dinámicamente del archivo .env
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      # Toma los valores del .env, o usa los valores por defecto (después del :-) si falla
+      POSTGRES_DB: ${DB_NAME:-postgres}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-admin}
     ports:
-      - "${DB_PORT}:5432"
+      - "${DB_PORT:-5432}:5432"
     networks:
       - rednorte-network
     volumes:
@@ -34,16 +34,16 @@ services:
     build: .
     container_name: rednorte-backend
     ports:
-      - "8080:8080"
+      - "8080:8081"
     depends_on:
       - db-postgre
       - db-mysql
     environment:
       - DB_HOST=db-postgre
       - DB_PORT=5432
-      - DB_NAME=${DB_NAME}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME:-postgres}
+      - DB_USER=${DB_USER:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-admin}
       - SPRING_PROFILES_ACTIVE=test
     networks:
       - rednorte-network
