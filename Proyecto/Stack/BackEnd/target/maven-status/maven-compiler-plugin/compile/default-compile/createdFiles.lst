@@ -11,7 +11,6 @@ cl\duoc\rednorte\auth_service\dto\LoginRequestDTO.class
 cl\duoc\rednorte\auth_service\model\Usuario.class
 cl\duoc\rednorte\datos_clinicos\dto\DatosClinicosUpdateRequestDTO.class
 cl\duoc\rednorte\auth_service\security\CustomUserDetailsService.class
-cl\duoc\rednorte\exception\GlobalExceptionHandler.class
 cl\duoc\rednorte\paciente\model\Paciente.class
 cl\duoc\rednorte\auth_service\dto\RegistroRequestDTO.class
 cl\duoc\rednorte\paciente\service\PacienteService.class
