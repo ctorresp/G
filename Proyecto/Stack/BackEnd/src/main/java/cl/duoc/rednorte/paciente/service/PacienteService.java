@@ -14,11 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Servicio para la gestión de pacientes.
- * Expone operaciones de consulta y administración sobre la tabla pacientes
- * y su relación con usuarios de DB_Pacientes.
- */
+// Servicio principal para la gestión de pacientes
 @Service
 @Transactional(readOnly = true)
 public class PacienteService {
@@ -29,12 +25,7 @@ public class PacienteService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    /**
-     * Retorna la lista completa de pacientes registrados.
-     * Solo accesible por ROLE_ADMIN o ROLE_MEDICO.
-     *
-     * @return lista de PacienteResponseDTO
-     */
+    // Retorna todos los pacientes (Solo para Admin y Médico)
     public List<PacienteResponseDTO> listarTodos() {
         return pacienteRepository.findAll()
                 .stream()
@@ -42,26 +33,12 @@ public class PacienteService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Busca un paciente por su ID de paciente.
-     *
-     * @param idPaciente ID de la tabla pacientes
-     * @return PacienteResponseDTO si existe
-     * @throws RuntimeException si no se encuentra
-     */
     public PacienteResponseDTO buscarPorId(Long idPaciente) {
         Paciente paciente = pacienteRepository.findById(idPaciente)
                 .orElseThrow(() -> new RuntimeException("Paciente no encontrado con ID: " + idPaciente));
         return toDTO(paciente);
     }
 
-    /**
-     * Busca un paciente por el ID de su usuario asociado.
-     *
-     * @param idUsuario ID de la tabla usuarios
-     * @return PacienteResponseDTO si existe
-     * @throws RuntimeException si no se encuentra
-     */
     public PacienteResponseDTO buscarPorIdUsuario(Long idUsuario) {
         Paciente paciente = pacienteRepository.findByUsuario_IdUsuario(idUsuario)
                 .orElseThrow(() -> new RuntimeException(
@@ -69,13 +46,6 @@ public class PacienteService {
         return toDTO(paciente);
     }
 
-    /**
-     * Busca un paciente por el RUT del usuario asociado.
-     *
-     * @param rut RUT del usuario
-     * @return PacienteResponseDTO si existe
-     * @throws RuntimeException si el usuario o paciente no existe
-     */
     public PacienteResponseDTO buscarPorRut(String rut) {
         Long idUsuario = usuarioRepository.findByRut(rut)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con RUT: " + rut))
@@ -84,16 +54,7 @@ public class PacienteService {
         return buscarPorIdUsuario(idUsuario);
     }
 
-    /**
-     * Actualiza los datos clínicos sensibles de un paciente.
-     * Solo accesible por ROLE_ADMIN o ROLE_MEDICO.
-     *
-     * @param idPaciente             ID del paciente a actualizar
-     * @param prevision              nueva previsión (puede ser null para no cambiar)
-     * @param datosClinicosSensibles nuevos datos clínicos (puede ser null para no cambiar)
-     * @return PacienteResponseDTO actualizado
-     * @throws RuntimeException si el paciente no existe
-     */
+    // Actualiza los datos clínicos específicos de un paciente
     @Transactional
     public PacienteResponseDTO actualizarDatosClinicos(
             Long idPaciente,
@@ -113,15 +74,7 @@ public class PacienteService {
         return toDTO(pacienteRepository.save(paciente));
     }
 
-    /**
-     * Desactiva (bloquea) la cuenta de un paciente.
-     * El paciente no podrá iniciar sesión hasta que sea reactivado.
-     * Solo accesible por ROLE_ADMIN.
-     *
-     * @param idPaciente ID del paciente
-     * @return mensaje de confirmación
-     * @throws RuntimeException si el paciente no existe
-     */
+    // Bloquea el acceso del paciente al sistema
     @Transactional
     public String desactivarPaciente(Long idPaciente) {
         Paciente paciente = pacienteRepository.findById(idPaciente)
@@ -133,14 +86,7 @@ public class PacienteService {
         return "Cuenta del paciente ID " + idPaciente + " desactivada exitosamente";
     }
 
-    /**
-     * Reactiva la cuenta de un paciente desactivado.
-     * Solo accesible por ROLE_ADMIN.
-     *
-     * @param idPaciente ID del paciente
-     * @return mensaje de confirmación
-     * @throws RuntimeException si el paciente no existe
-     */
+    // Restaura el acceso de un paciente desactivado
     @Transactional
     public String activarPaciente(Long idPaciente) {
         Paciente paciente = pacienteRepository.findById(idPaciente)
@@ -152,13 +98,7 @@ public class PacienteService {
         return "Cuenta del paciente ID " + idPaciente + " activada exitosamente";
     }
 
-    /**
-     * Convierte una entidad Paciente al DTO de respuesta.
-     * La contraseña NUNCA se incluye en la respuesta.
-     *
-     * @param paciente entidad Paciente
-     * @return PacienteResponseDTO sin datos sensibles de seguridad
-     */
+    // Convierte la entidad a DTO omitiendo datos sensibles como la contraseña
     private PacienteResponseDTO toDTO(Paciente paciente) {
         return new PacienteResponseDTO(
                 paciente.getIdPaciente(),

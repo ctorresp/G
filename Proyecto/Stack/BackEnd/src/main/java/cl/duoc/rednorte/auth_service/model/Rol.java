@@ -11,10 +11,7 @@ import lombok.ToString;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Entidad que representa los roles del sistema (RBAC).
- * Tabla: roles — DB_Pacientes
- */
+// Entidad que representa los roles del sistema (RBAC)
 @Entity
 @Table(name = "roles")
 @Getter
@@ -31,7 +28,6 @@ public class Rol {
     @EqualsAndHashCode.Include
     private Long idRol;
 
-    /** Nombre único del rol (ej. ROLE_ADMIN, ROLE_PACIENTE, ROLE_MEDICO) */
     @Column(name = "nombre_rol", nullable = false, unique = true, length = 50)
     private String nombreRol;
 

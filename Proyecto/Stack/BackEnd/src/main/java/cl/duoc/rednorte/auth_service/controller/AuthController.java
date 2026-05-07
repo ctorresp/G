@@ -12,20 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-/**
- * Controlador REST del microservicio auth-service.
- * Expone los endpoints de autenticación y registro.
- *
- * Base URL: /api/auth
- *
- * Endpoints públicos (no requieren JWT):
- *   POST /api/auth/login          — Login de usuario
- *   POST /api/auth/registro       — Registro de nuevo paciente
- *
- * Endpoints protegidos:
- *   POST /api/auth/admin/registro — Registro de usuario admin (solo ROLE_ADMIN)
- *   POST /api/auth/validar        — Validar token JWT (uso interno entre microservicios)
- */
+// Controlador REST público y protegido para autenticación y registro
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -33,13 +20,7 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
-    /**
-     * Inicia sesión con email o RUT + contraseña.
-     * Retorna un token JWT válido si las credenciales son correctas.
-     *
-     * @param request body con email/rut y contraseña
-     * @return 200 con LoginResponseDTO o 401 con mensaje de error
-     */
+    // Inicia sesión y retorna un token JWT
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDTO request) {
         try {
@@ -55,13 +36,7 @@ public class AuthController {
         }
     }
 
-    /**
-     * Registra un nuevo paciente en el sistema.
-     * Crea el usuario con ROLE_PACIENTE y su ficha de paciente.
-     *
-     * @param request body con datos del paciente
-     * @return 201 con mensaje de éxito o 400 con mensaje de error
-     */
+    // Registra un nuevo paciente y su ficha médica
     @PostMapping("/registro")
     public ResponseEntity<?> registrarPaciente(@RequestBody RegistroRequestDTO request) {
         try {
@@ -79,14 +54,7 @@ public class AuthController {
         }
     }
 
-    /**
-     * Registra un usuario con rol administrativo (ROLE_ADMIN o ROLE_MEDICO).
-     * Solo puede ser ejecutado por un usuario con ROLE_ADMIN.
-     *
-     * @param request body con datos del usuario
-     * @param rol     parámetro de query con el nombre del rol a asignar
-     * @return 201 con mensaje de éxito o 400/403 con mensaje de error
-     */
+    // Registra personal administrativo (Solo accesible por ROLE_ADMIN)
     @PostMapping("/admin/registro")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> registrarAdmin(
@@ -107,14 +75,7 @@ public class AuthController {
         }
     }
 
-    /**
-     * Valida un token JWT y retorna la información del usuario.
-     * Endpoint de uso interno: otros microservicios lo llaman para
-     * verificar la autenticidad de tokens sin depender de Spring Security.
-     *
-     * @param authHeader header Authorization con el token "Bearer <token>"
-     * @return 200 con LoginResponseDTO si el token es válido, o 401 si no lo es
-     */
+    // Valida tokens externamente (uso interno para microservicios)
     @PostMapping("/validar")
     public ResponseEntity<?> validarToken(
             @RequestHeader(value = "Authorization", required = false) String authHeader) {

@@ -8,7 +8,6 @@ import cl.duoc.rednorte.auth_service.model.Usuario;
 import cl.duoc.rednorte.auth_service.repository.RolRepository;
 import cl.duoc.rednorte.auth_service.repository.UsuarioRepository;
 import cl.duoc.rednorte.auth_service.security.JwtTokenProvider;
-import cl.duoc.rednorte.datos_clinicos.model.DatosClinicos;
 import cl.duoc.rednorte.paciente.model.Paciente;
 import cl.duoc.rednorte.paciente.repository.PacienteRepository;
 
@@ -25,11 +24,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
- * Servicio principal de autenticación del microservicio auth-service.
- * Gestiona login, registro de usuarios y pacientes, y validación de tokens.
- * Trabaja sobre DB_Pacientes: tablas usuarios, roles, usuario_roles, pacientes.
- */
 @Service
 @Transactional
 public class AuthService {
@@ -52,14 +46,7 @@ public class AuthService {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
-    /**
-     * Autentica un usuario usando email o RUT + contraseña.
-     * Genera y retorna un token JWT con los roles del usuario.
-     *
-     * @param request DTO con email/rut y contraseña
-     * @return LoginResponseDTO con token JWT e información del usuario
-     * @throws RuntimeException si el usuario no existe, está inactivo o la contraseña es incorrecta
-     */
+    // Autentica al usuario (por email o RUT) y genera su token JWT
     public LoginResponseDTO login(LoginRequestDTO request) {
         String emailResuelto = resolverEmail(request);
 
@@ -88,14 +75,7 @@ public class AuthService {
         );
     }
 
-    /**
-     * Registra un nuevo usuario con rol ROLE_PACIENTE y crea su ficha de paciente.
-     * Valida que el email y RUT no estén duplicados.
-     *
-     * @param request DTO con datos del nuevo usuario/paciente
-     * @return mensaje de confirmación
-     * @throws RuntimeException si el email o RUT ya están registrados
-     */
+    // Registra un nuevo usuario y crea su ficha médica asociada
     public String registrarPaciente(RegistroRequestDTO request) {
         if (usuarioRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("El email ya está registrado: " + request.getEmail());
@@ -138,14 +118,7 @@ public class AuthService {
         return "Paciente registrado exitosamente con ID: " + usuarioGuardado.getIdUsuario();
     }
 
-    /**
-     * Registra un nuevo usuario administrativo (ROLE_ADMIN o ROLE_MEDICO).
-     * Solo puede ser invocado por un administrador (validado en el controlador).
-     *
-     * @param request  DTO con datos del usuario
-     * @param nombreRol nombre del rol a asignar (ej. "ROLE_ADMIN", "ROLE_MEDICO")
-     * @return mensaje de confirmación
-     */
+    // Registra personal administrativo (ROLE_ADMIN o ROLE_MEDICO)
     public String registrarUsuarioAdmin(RegistroRequestDTO request, String nombreRol) {
         if (usuarioRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("El email ya está registrado: " + request.getEmail());
@@ -177,14 +150,7 @@ public class AuthService {
         return "Usuario " + nombreRol + " registrado con ID: " + guardado.getIdUsuario();
     }
 
-    /**
-     * Valida un token JWT recibido y retorna los datos del usuario si es válido.
-     * Útil para que otros microservicios validen tokens externamente.
-     *
-     * @param token token JWT a validar
-     * @return LoginResponseDTO con la información del usuario si el token es válido
-     * @throws RuntimeException si el token es inválido o el usuario no existe
-     */
+    // Verifica la validez del token (útil para comunicación interna entre microservicios)
     @Transactional(readOnly = true)
     public LoginResponseDTO validarToken(String token) {
         if (!jwtTokenProvider.validarToken(token)) {
@@ -210,14 +176,6 @@ public class AuthService {
         );
     }
 
-    /**
-     * Resuelve el email del usuario a partir de la solicitud de login.
-     * Acepta login por email o por RUT.
-     *
-     * @param request DTO de login
-     * @return email del usuario
-     * @throws RuntimeException si el RUT no está registrado
-     */
     private String resolverEmail(LoginRequestDTO request) {
         if (request.getEmail() != null && !request.getEmail().isBlank()) {
             return request.getEmail();

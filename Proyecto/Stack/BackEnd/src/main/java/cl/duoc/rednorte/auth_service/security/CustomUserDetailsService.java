@@ -14,36 +14,23 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Implementación de UserDetailsService de Spring Security.
- * Carga los detalles del usuario desde la base de datos para la autenticación.
- * El "username" en este contexto es el email del usuario.
- */
+// Integración con Spring Security para cargar usuarios desde la base de datos
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    /**
-     * Carga un usuario por su email para que Spring Security
-     * pueda autenticar y autorizar la solicitud.
-     * Usa una query nativa para cargar los roles, evitando problemas
-     * de sesión Hibernate con relaciones @ManyToMany.
-     *
-     * @param email email del usuario (usado como username)
-     * @return UserDetails con credenciales y roles del usuario
-     * @throws UsernameNotFoundException si el usuario no existe o está inactivo
-     */
+    // Carga las credenciales y roles del usuario autenticado
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        // Cargar el usuario básico (sin roles para evitar problemas Hibernate)
+        // Carga el usuario básico
         Usuario usuario = usuarioRepository.findByEmailAndEstadoTrue(email)
                 .orElseThrow(() -> new UsernameNotFoundException(
                         "Usuario no encontrado o inactivo con email: " + email));
 
-        // Cargar roles con query nativa SQL — garantiza que estén disponibles
+        // Carga roles por separado para evitar problemas de N+1
         List<String> roleNames = usuarioRepository.findRoleNamesByEmail(email);
 
         List<SimpleGrantedAuthority> authorities = roleNames.stream()

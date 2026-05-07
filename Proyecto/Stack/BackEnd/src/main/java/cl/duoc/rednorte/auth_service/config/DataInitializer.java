@@ -21,13 +21,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Inicializador de datos de la aplicación.
- * Se ejecuta una sola vez al arrancar el microservicio.
- *
- * Garantiza que TODAS las contraseñas de los usuarios semilla
- * sean cifradas con BCrypt mediante el PasswordEncoder de Spring Security.
- */
+// Inicializador de datos: Crea roles y usuarios semilla al arrancar la aplicación
 @Component
 public class DataInitializer implements CommandLineRunner {
 
@@ -48,9 +42,7 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) {
-        log.info("═══════════════════════════════════════════");
-        log.info("  Iniciando DataInitializer — auth-service ");
-        log.info("═══════════════════════════════════════════");
+        log.info("Iniciando DataInitializer — auth-service");
 
         Rol rolAdmin = crearRolSiNoExiste("ROLE_ADMIN", "Administrador del sistema");
         Rol rolMedico = crearRolSiNoExiste("ROLE_MEDICO", "Médico o profesional de salud");
@@ -61,18 +53,9 @@ public class DataInitializer implements CommandLineRunner {
         crearPacienteSiNoExiste(rolPaciente);
         crearPaciente2SiNoExiste(rolPaciente);
 
-        log.info("═══════════════════════════════════════════");
-        log.info("  DataInitializer completado exitosamente  ");
-        log.info("═══════════════════════════════════════════");
+        log.info("DataInitializer completado exitosamente");
     }
 
-    /**
-     * Crea un rol si aún no existe en la base de datos.
-     *
-     * @param nombre      nombre del rol (ej. "ROLE_ADMIN")
-     * @param descripcion descripción del rol
-     * @return entidad Rol persistida o ya existente
-     */
     private Rol crearRolSiNoExiste(String nombre, String descripcion) {
         return rolRepository.findByNombreRol(nombre).orElseGet(() -> {
             Rol rol = new Rol();
@@ -84,12 +67,7 @@ public class DataInitializer implements CommandLineRunner {
         });
     }
 
-    /**
-     * Crea el usuario administrador por defecto si no existe.
-     * La contraseña "Admin1234!" se cifra con BCrypt al momento de la creación.
-     *
-     * @param rolAdmin entidad Rol del administrador
-     */
+    // Crea el usuario administrador por defecto
     private void crearAdminSiNoExiste(Rol rolAdmin) {
         String email = "admin@rednorte.cl";
         if (usuarioRepository.existsByEmail(email)) {
@@ -112,12 +90,7 @@ public class DataInitializer implements CommandLineRunner {
         log.info("  [USUARIO CREADO]  {} (contraseña cifrada con BCrypt)", email);
     }
 
-    /**
-     * Crea un usuario médico de prueba si no existe.
-     * La contraseña "Medico1234!" se cifra con BCrypt al momento de la creación.
-     *
-     * @param rolMedico entidad Rol del médico
-     */
+    // Crea un usuario médico de prueba
     private void crearMedicoSiNoExiste(Rol rolMedico) {
         String email = "medico@rednorte.cl";
         if (usuarioRepository.existsByEmail(email)) {
@@ -140,12 +113,7 @@ public class DataInitializer implements CommandLineRunner {
         log.info("  [USUARIO CREADO]  {} (contraseña cifrada con BCrypt)", email);
     }
 
-    /**
-     * Crea un usuario paciente de prueba con su ficha clínica si no existe.
-     * La contraseña "Paciente1234!" se cifra con BCrypt al momento de la creación.
-     *
-     * @param rolPaciente entidad Rol del paciente
-     */
+    // Crea un paciente de prueba con su ficha clínica
     private void crearPacienteSiNoExiste(Rol rolPaciente) {
         String email = "paciente@rednorte.cl";
         if (usuarioRepository.existsByEmail(email)) {
@@ -183,9 +151,7 @@ public class DataInitializer implements CommandLineRunner {
         log.info("  [USUARIO + FICHA CREADOS]  {} (contraseña cifrada con BCrypt)", email);
     }
 
-    /**
-     * Crea un segundo paciente de prueba con su ficha clínica si no existe.
-     */
+    // Crea un segundo paciente de prueba
     private void crearPaciente2SiNoExiste(Rol rolPaciente) {
         String email = "paciente2@rednorte.cl";
         if (usuarioRepository.existsByEmail(email)) {

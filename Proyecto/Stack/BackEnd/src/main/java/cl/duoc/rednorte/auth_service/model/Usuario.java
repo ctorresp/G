@@ -11,11 +11,7 @@ import lombok.ToString;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Entidad que representa a los usuarios del sistema.
- * Tabla: usuarios — DB_Pacientes
- * Gestiona credenciales de acceso (JWT/RBAC).
- */
+// Entidad para gestionar credenciales y acceso (JWT/RBAC)
 @Entity
 @Table(name = "usuarios")
 @Getter
@@ -32,7 +28,6 @@ public class Usuario {
     @EqualsAndHashCode.Include
     private Long idUsuario;
 
-    /** RUT del usuario (identificador nacional chileno) */
     @Column(name = "rut", nullable = false, unique = true, length = 12)
     private String rut;
 
@@ -42,18 +37,15 @@ public class Usuario {
     @Column(name = "email", nullable = false, unique = true, length = 150)
     private String email;
 
-    /** Contraseña almacenada con BCrypt */
+    // Contraseña almacenada de forma segura con BCrypt
     @Column(name = "contrasena", nullable = false, length = 255)
     private String contrasena;
 
-    /**
-     * Estado de la cuenta:
-     * true = activa, false = desactivada/bloqueada
-     */
+    // Estado de la cuenta (true = activa, false = bloqueada)
     @Column(name = "estado", nullable = false)
     private Boolean estado = true;
 
-    /** Relación muchos-a-muchos con Rol a través de la tabla usuario_roles */
+    // Relación de roles asignados al usuario
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "usuario_roles",
