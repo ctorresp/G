@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  # Componente 1: Base de Datos Principal (PostgreSQL)
+  db-postgre:
+    image: postgres:15-alpine
+    container_name: rednorte-db-postgre
+    environment:
+      # Toma los valores dinámicamente del archivo .env
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "${DB_PORT}:5432"
+    networks:
+      - rednorte-network
+    volumes:
+      - pgdata:/var/lib/postgresql/data # Guarda los datos si se apaga el contenedor
+
+  # Componente 2: Base de Datos Secundaria (MySQL)
+  db-mysql:
+    image: mysql:8.0
+    container_name: rednorte-db-mysql
+    environment:
+      MYSQL_DATABASE: rednorte_logs
+      MYSQL_ROOT_PASSWORD: rootpassword
+    ports:
+      - "3306:3306"
+    networks:
+      - rednorte-network
+
+  # Componente 3: Tu Backend (Spring Boot)
+  backend:
+    build: .
+    container_name: rednorte-backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db-postgre
+      - db-mysql
+    environment:
+      # Inyectamos las variables al contenedor para que application-test.yml las lea.
+      # DB_HOST se sobrescribe aquí porque en Docker la BD se llama "db-postgre", no "localhost".
+      - DB_HOST=db-postgre
+      - DB_PORT=5432
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      # Activa tu archivo application-test.yml
+      - SPRING_PROFILES_ACTIVE=test
+    networks:
+      - rednorte-network
+
+networks:
+  rednorte-network:
+    driver: bridge
+
+# Declaración del volumen para persistencia de PostgreSQL
+volumes:
+  pgdata:

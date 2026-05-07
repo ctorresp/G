@@ -1,10 +1,10 @@
-FROM maven:3.8.5-openjdk-17 AS build
-WORKDIR /app
-COPY . .
-RUN mvn clean package -DskipTests
+# Usamos una imagen ligera de Java 17 como base
+FROM eclipse-temurin:17-jre-alpine
 
-FROM eclipse-temurin:17-jdk-alpine
 WORKDIR /app
-COPY --from=build /app/target/*.jar app.jar
+
+# Copiamos el JAR generado por Maven al contenedor
+COPY target/auth-service.jar app.jar
+
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]

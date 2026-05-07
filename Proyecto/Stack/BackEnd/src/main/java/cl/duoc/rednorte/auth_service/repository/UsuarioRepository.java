@@ -58,7 +58,9 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
             FROM roles r
             INNER JOIN usuario_roles ur ON r.id_rol = ur.id_rol
             INNER JOIN usuarios u ON u.id_usuario = ur.id_usuario
-            WHERE u.email = :email AND u.estado = 1
+            WHERE u.email = :email AND u.estado = true
             """, nativeQuery = true)
     List<String> findRoleNamesByEmail(@Param("email") String email);
+
+    
 }

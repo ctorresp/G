@@ -137,7 +137,7 @@ public class DataInitializer implements CommandLineRunner {
         medico.setRoles(roles);
 
         usuarioRepository.save(medico);
-        log.info("  [USUARIO CREADO]  {} (contraseña cifrada con BCrypt)", email);
+        log.info("  [USUARIO CREADO]  {} ", email);
     }
 
     /**
