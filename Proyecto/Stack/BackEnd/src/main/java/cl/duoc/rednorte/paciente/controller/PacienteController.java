@@ -1,7 +1,5 @@
 package cl.duoc.rednorte.paciente.controller;
 
-import cl.duoc.rednorte.auth_service.model.Usuario;
-import cl.duoc.rednorte.auth_service.repository.UsuarioRepository;
 import cl.duoc.rednorte.datos_clinicos.dto.DatosClinicosUpdateRequestDTO;
 import cl.duoc.rednorte.paciente.dto.PacienteResponseDTO;
 import cl.duoc.rednorte.datos_clinicos.model.DatosClinicos;
@@ -11,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,9 +22,6 @@ public class PacienteController {
 
     @Autowired
     private PacienteService pacienteService;
-
-    @Autowired
-    private UsuarioRepository usuarioRepository;
 
     @GetMapping
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MEDICO')")
@@ -45,68 +39,6 @@ public class PacienteController {
         }
     }
 
-    // Obtiene la ficha del paciente autenticado extrayendo sus datos directamente del Token JWT
-    @GetMapping("/me")
-    @PreAuthorize("hasAuthority('ROLE_PACIENTE')")
-    public ResponseEntity<?> obtenerMiFicha(Authentication authentication) {
-        try {
-            Long idUsuarioToken = getIdUsuarioAutenticado(authentication);
-            PacienteResponseDTO paciente = pacienteService.buscarPorIdUsuario(idUsuarioToken);
-            return ResponseEntity.ok(paciente);
-        } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", e.getMessage() != null ? e.getMessage() : "Error al obtener ficha"));
-        }
-    }
-
-    @GetMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MEDICO', 'ROLE_PACIENTE')")
-    public ResponseEntity<?> buscarPorId(@PathVariable Long id, Authentication authentication) {
-        try {
-            PacienteResponseDTO paciente = pacienteService.buscarPorId(id);
-
-            // Si es ROLE_PACIENTE, verificar que solo acceda a su propia ficha
-            if (esSoloPaciente(authentication)) {
-                Long idUsuarioToken = getIdUsuarioAutenticado(authentication);
-                if (!paciente.getIdUsuario().equals(idUsuarioToken)) {
-                    return ResponseEntity
-                            .status(HttpStatus.FORBIDDEN)
-                            .body(Map.of("error", "No tienes permiso para ver la ficha de otro paciente"));
-                }
-            }
-
-            return ResponseEntity.ok(paciente);
-        } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", e.getMessage() != null ? e.getMessage() : "Error al buscar paciente"));
-        }
-    }
-
-    @GetMapping("/usuario/{idUsuario}")
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MEDICO', 'ROLE_PACIENTE')")
-    public ResponseEntity<?> buscarPorIdUsuario(@PathVariable Long idUsuario, Authentication authentication) {
-        try {
-            // Si es ROLE_PACIENTE, solo puede consultar su propio idUsuario
-            if (esSoloPaciente(authentication)) {
-                Long idUsuarioToken = getIdUsuarioAutenticado(authentication);
-                if (!idUsuario.equals(idUsuarioToken)) {
-                    return ResponseEntity
-                            .status(HttpStatus.FORBIDDEN)
-                            .body(Map.of("error", "Solo puedes consultar tu propia ficha"));
-                }
-            }
-
-            PacienteResponseDTO paciente = pacienteService.buscarPorIdUsuario(idUsuario);
-            return ResponseEntity.ok(paciente);
-        } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", e.getMessage() != null ? e.getMessage() : "Error al buscar usuario"));
-        }
-    }
-
     @GetMapping("/rut/{rut}")
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MEDICO')")
     public ResponseEntity<?> buscarPorRut(@PathVariable String rut) {
@@ -121,10 +53,10 @@ public class PacienteController {
     }
 
     // Actualiza datos clínicos (los campos que no se envíen en el request se mantienen igual)
-    @PutMapping("/{id}/clinicos")
+    @PutMapping("/rut/{rut}/clinicos")
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MEDICO')")
     public ResponseEntity<?> actualizarDatosClinicos(
-            @PathVariable Long id,
+            @PathVariable String rut,
             @Valid @RequestBody DatosClinicosUpdateRequestDTO request) {
         try {
             DatosClinicos datosModel = null;
@@ -133,7 +65,7 @@ public class PacienteController {
             }
 
             PacienteResponseDTO actualizado = pacienteService.actualizarDatosClinicos(
-                    id,
+                    rut,
                     request.getPrevision(),
                     datosModel
             );
@@ -145,11 +77,11 @@ public class PacienteController {
         }
     }
 
-    @PatchMapping("/{id}/desactivar")
+    @PatchMapping("/rut/{rut}/desactivar")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<?> desactivar(@PathVariable Long id) {
+    public ResponseEntity<?> desactivar(@PathVariable String rut) {
         try {
-            String mensaje = pacienteService.desactivarPaciente(id);
+            String mensaje = pacienteService.desactivarPaciente(rut);
             return ResponseEntity.ok(Map.of("mensaje", mensaje));
         } catch (Exception e) {
             return ResponseEntity
@@ -158,32 +90,16 @@ public class PacienteController {
         }
     }
 
-    @PatchMapping("/{id}/activar")
+    @PatchMapping("/rut/{rut}/activar")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<?> activar(@PathVariable Long id) {
+    public ResponseEntity<?> activar(@PathVariable String rut) {
         try {
-            String mensaje = pacienteService.activarPaciente(id);
+            String mensaje = pacienteService.activarPaciente(rut);
             return ResponseEntity.ok(Map.of("mensaje", mensaje));
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
                     .body(Map.of("error", e.getMessage() != null ? e.getMessage() : "Error al activar"));
         }
-    }
-
-    // Verifica si el usuario autenticado tiene exclusivamente el rol de paciente
-    private boolean esSoloPaciente(Authentication authentication) {
-        boolean esAdmin = authentication.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-        boolean esMedico = authentication.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_MEDICO"));
-        return !esAdmin && !esMedico;
-    }
-
-    private Long getIdUsuarioAutenticado(Authentication authentication) {
-        String email = authentication.getName();
-        Usuario usuario = usuarioRepository.findByEmailAndEstadoTrue(email)
-                .orElseThrow(() -> new RuntimeException("Usuario autenticado no encontrado"));
-        return usuario.getIdUsuario();
     }
 }

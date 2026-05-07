@@ -33,36 +33,19 @@ public class PacienteService {
                 .collect(Collectors.toList());
     }
 
-    public PacienteResponseDTO buscarPorId(Long idPaciente) {
-        Paciente paciente = pacienteRepository.findById(idPaciente)
-                .orElseThrow(() -> new RuntimeException("Paciente no encontrado con ID: " + idPaciente));
-        return toDTO(paciente);
-    }
-
-    public PacienteResponseDTO buscarPorIdUsuario(Long idUsuario) {
-        Paciente paciente = pacienteRepository.findByUsuario_IdUsuario(idUsuario)
-                .orElseThrow(() -> new RuntimeException(
-                        "No se encontró ficha de paciente para el usuario ID: " + idUsuario));
-        return toDTO(paciente);
-    }
-
     public PacienteResponseDTO buscarPorRut(String rut) {
-        Long idUsuario = usuarioRepository.findByRut(rut)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con RUT: " + rut))
-                .getIdUsuario();
-
-        return buscarPorIdUsuario(idUsuario);
+        Paciente paciente = getPacienteEntityByRut(rut);
+        return toDTO(paciente);
     }
 
     // Actualiza los datos clínicos específicos de un paciente
     @Transactional
     public PacienteResponseDTO actualizarDatosClinicos(
-            Long idPaciente,
+            String rut,
             String prevision,
             DatosClinicos datosClinicosSensibles) {
 
-        Paciente paciente = pacienteRepository.findById(idPaciente)
-                .orElseThrow(() -> new RuntimeException("Paciente no encontrado con ID: " + idPaciente));
+        Paciente paciente = getPacienteEntityByRut(rut);
 
         if (prevision != null && !prevision.isBlank()) {
             paciente.setPrevision(prevision);
@@ -76,26 +59,35 @@ public class PacienteService {
 
     // Bloquea el acceso del paciente al sistema
     @Transactional
-    public String desactivarPaciente(Long idPaciente) {
-        Paciente paciente = pacienteRepository.findById(idPaciente)
-                .orElseThrow(() -> new RuntimeException("Paciente no encontrado con ID: " + idPaciente));
+    public String desactivarPaciente(String rut) {
+        Paciente paciente = getPacienteEntityByRut(rut);
 
         paciente.getUsuario().setEstado(false);
         usuarioRepository.save(paciente.getUsuario());
 
-        return "Cuenta del paciente ID " + idPaciente + " desactivada exitosamente";
+        return "Cuenta del paciente con RUT " + rut + " desactivada exitosamente";
     }
 
     // Restaura el acceso de un paciente desactivado
     @Transactional
-    public String activarPaciente(Long idPaciente) {
-        Paciente paciente = pacienteRepository.findById(idPaciente)
-                .orElseThrow(() -> new RuntimeException("Paciente no encontrado con ID: " + idPaciente));
+    public String activarPaciente(String rut) {
+        Paciente paciente = getPacienteEntityByRut(rut);
 
         paciente.getUsuario().setEstado(true);
         usuarioRepository.save(paciente.getUsuario());
 
-        return "Cuenta del paciente ID " + idPaciente + " activada exitosamente";
+        return "Cuenta del paciente con RUT " + rut + " activada exitosamente";
+    }
+
+    // Busca internamente la entidad Paciente usando el RUT
+    private Paciente getPacienteEntityByRut(String rut) {
+        Long idUsuario = usuarioRepository.findByRut(rut)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con RUT: " + rut))
+                .getIdUsuario();
+
+        return pacienteRepository.findByUsuario_IdUsuario(idUsuario)
+                .orElseThrow(() -> new RuntimeException(
+                        "No se encontró ficha de paciente para el usuario con RUT: " + rut));
     }
 
     // Convierte la entidad a DTO omitiendo datos sensibles como la contraseña

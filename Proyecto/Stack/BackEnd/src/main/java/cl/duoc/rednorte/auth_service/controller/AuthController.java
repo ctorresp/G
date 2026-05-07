@@ -38,6 +38,7 @@ public class AuthController {
 
     // Registra un nuevo paciente y su ficha médica
     @PostMapping("/registro")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> registrarPaciente(@RequestBody RegistroRequestDTO request) {
         try {
             String mensaje = authService.registrarPaciente(request);
