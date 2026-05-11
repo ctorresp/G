@@ -42,7 +42,7 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) {
-        log.info("Iniciando DataInitializer — auth-service");
+        log.info("Iniciando Datos — auth-service");
 
         Rol rolAdmin = crearRolSiNoExiste("ROLE_ADMIN", "Administrador del sistema");
         Rol rolMedico = crearRolSiNoExiste("ROLE_MEDICO", "Médico o profesional de salud");
@@ -53,7 +53,7 @@ public class DataInitializer implements CommandLineRunner {
         crearPacienteSiNoExiste(rolPaciente);
         crearPaciente2SiNoExiste(rolPaciente);
 
-        log.info("DataInitializer completado exitosamente");
+        log.info("Datos Iniciados exitosamente");
     }
 
     private Rol crearRolSiNoExiste(String nombre, String descripcion) {
@@ -87,7 +87,7 @@ public class DataInitializer implements CommandLineRunner {
         admin.setRoles(roles);
 
         usuarioRepository.save(admin);
-        log.info("  [USUARIO CREADO]  {} (contraseña cifrada con BCrypt)", email);
+        log.info("  [USUARIO CREADO]  {} (contraseña cifrada)", email);
     }
 
     // Crea un usuario médico de prueba
@@ -110,7 +110,7 @@ public class DataInitializer implements CommandLineRunner {
         medico.setRoles(roles);
 
         usuarioRepository.save(medico);
-        log.info("  [USUARIO CREADO]  {} (contraseña cifrada con BCrypt)", email);
+        log.info("  [USUARIO CREADO]  {} (contraseña cifrada)", email);
     }
 
     // Crea un paciente de prueba con su ficha clínica
@@ -148,7 +148,7 @@ public class DataInitializer implements CommandLineRunner {
 
         pacienteRepository.save(ficha);
 
-        log.info("  [USUARIO + FICHA CREADOS]  {} (contraseña cifrada con BCrypt)", email);
+        log.info("  [USUARIO + FICHA CREADOS]  {} (contraseña cifrada)", email);
     }
 
     // Crea un segundo paciente de prueba
@@ -186,6 +186,6 @@ public class DataInitializer implements CommandLineRunner {
 
         pacienteRepository.save(ficha);
 
-        log.info("  [USUARIO + FICHA CREADOS]  {} (contraseña cifrada con BCrypt)", email);
+        log.info("  [USUARIO + FICHA CREADOS]  {} (contraseña cifrada)", email);
     }
 }
