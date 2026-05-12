@@ -6,5 +6,5 @@ WORKDIR /app
 # Copiamos el JAR generado por Maven al contenedor
 COPY target/auth-service.jar app.jar
 
-EXPOSE 8080
+EXPOSE 8081
 ENTRYPOINT ["java", "-jar", "app.jar"]

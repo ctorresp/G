@@ -33,15 +33,16 @@ export class Login implements OnInit {
   iniciarSesion() {
     this.mensajeError = '';
     
+    const inputLimpio = this.emailOrRut.trim();
     // 1. Armamos el paquete de datos para Spring Boot
     const body = {
-      email: this.emailOrRut.includes('@') ? this.emailOrRut : null,
-      rut: !this.emailOrRut.includes('@') ? this.emailOrRut : null,
+      email: inputLimpio.includes('@') ? inputLimpio : null,
+      rut: !inputLimpio.includes('@') ? inputLimpio : null,
       contrasena: this.password
     };
 
     // 2. Disparamos la petición real al Backend
-    this.http.post('http://localhost:8080/api/auth/login', body).subscribe({
+    this.http.post('http://localhost:8081/api/auth/login', body).subscribe({
       next: (respuesta: any) => {
         console.log('¡Conectado exitosamente!', respuesta);
         // Guardamos el TOKEN real de seguridad en el navegador
