@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  # Componente 1: Base de Datos Principal (PostgreSQL)
+  db-postgre:
+    image: postgres:15-alpine
+    container_name: rednorte-db-postgre
+    environment:
+      # Toma los valores del .env, o usa los valores por defecto (después del :-) si falla
+      POSTGRES_DB: ${DB_NAME:-postgres}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-admin}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    networks:
+      - rednorte-network
+    volumes:
+      - pgdata:/var/lib/postgresql/data # Guarda los datos si se apaga el contenedor
+
+  # Componente 2: Base de Datos Secundaria (MySQL)
+  db-mysql:
+    image: mysql:8.0
+    container_name: rednorte-db-mysql
+    environment:
+      MYSQL_DATABASE: rednorte_logs
+      MYSQL_ROOT_PASSWORD: rootpassword
+    ports:
+      - "3306:3306"
+    networks:
+      - rednorte-network
+
+  # Componente 3: Tu Backend (Spring Boot)
+  backend:
+    build: .
+    container_name: rednorte-backend
+    ports:
+      - "8081:8081"
+    depends_on:
+      - db-postgre
+      - db-mysql
+    environment:
+      - DB_HOST=db-postgre
+      - DB_PORT=5432
+      - DB_NAME=${DB_NAME:-postgres}
+      - DB_USER=${DB_USER:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-admin}
+      - SPRING_PROFILES_ACTIVE=test
+    networks:
+      - rednorte-network
+
+networks:
+  rednorte-network:
+    driver: bridge
+
+volumes:
+  pgdata:
