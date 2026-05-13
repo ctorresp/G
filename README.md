@@ -1,15 +1,24 @@
-Pasos para levantar los contenedores:
+# 🚀 Entregable Backend - Sistema RedNorte
 
-Abrir una terminal y dirigete a la carpeta raiz utilizando el comando cd para mover entre directorios
+Esta carpeta contiene los archivos compilados y configuraciones necesarias para levantar la infraestructura completa del backend de RedNorte mediante Docker, sin necesidad de compilar el código fuente.
 
-Dirigirse a la carpeta "Stack/BackEnd", carpeta principal del proyecto.
+### Pasos para levantar los contenedores:
 
-Ya dentro de esta carpeta, asegurarse de que exista el archivo de docker-compose y las carpetas del microservicio separada en partes el auth_service ,datos_clinicos y paciente y  verificar la existencia de la carpeta target/ y Dockerfile. Puedes confirmar el contenido de los archivos con ls.
+1. Abrir una terminal (preferencia Git Bash o PowerShell) y dirigirse a la raíz del proyecto usando el comando `cd`.
+2. Dirigirse a esta carpeta principal ejecutando:
+   `cd Contenedores_RedNorte`
+3. Ya dentro de esta carpeta, asegurarse de que exista el archivo `docker-compose.yml` y la carpeta `Contenedor_Backend`. Dentro del contenedor debe verificar la existencia de la carpeta `target/` y el `Dockerfile`. Puede confirmar el contenido de los archivos usando el comando `ls`.
+4. Ahora se debe realizar el siguiente comando para levantar la base de datos (PostgreSQL, MySQL) y la API:
+   `docker-compose up -d --build`
 
-Ahora se debe realizar el siguiente comando: docker-compose up -d --build
+---
 
-Lista de comandos de valor:
+### 📋 Lista de comandos de valor:
 
-docker-compose up -d --build, crea las instancias
-docker-compose up -d, levanta las instancias ya creadas
-docker ps, para ver que las instancias están correctamente levantadas
+* `docker-compose down`: Elimina las instancias Docker que componen el proyecto.
+* `docker-compose up -d --build`: Crea las instancias Docker en segundo plano (`-d`) y fuerza la reconstrucción de la imagen (`--build`) en caso de existir actualizaciones en la carpeta target.
+* `docker ps`: Permite ver que las instancias estén correctamente levantadas y corriendo.
+
+**Ver logs de las instancias:**
+Para visualizar en tiempo real que el backend de Spring Boot se inició sin problemas:
+* `docker logs -f rednorte-backend`
