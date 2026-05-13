@@ -67,6 +67,7 @@ public class PacienteController {
             PacienteResponseDTO actualizado = pacienteService.actualizarDatosClinicos(
                     rut,
                     request.getPrevision(),
+                    request.getEmail(),
                     datosModel
             );
             return ResponseEntity.ok(actualizado);

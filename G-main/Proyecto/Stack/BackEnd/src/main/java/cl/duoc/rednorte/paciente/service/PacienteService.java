@@ -43,12 +43,17 @@ public class PacienteService {
     public PacienteResponseDTO actualizarDatosClinicos(
             String rut,
             String prevision,
+            String email,
             DatosClinicos datosClinicosSensibles) {
 
         Paciente paciente = getPacienteEntityByRut(rut);
 
         if (prevision != null && !prevision.isBlank()) {
             paciente.setPrevision(prevision);
+        }
+        if (email != null && !email.isBlank()) {
+            paciente.getUsuario().setEmail(email);
+            usuarioRepository.save(paciente.getUsuario()); // Actualizamos el usuario
         }
         if (datosClinicosSensibles != null) {
             paciente.setDatosClinicosSensibles(datosClinicosSensibles);

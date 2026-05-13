@@ -33,10 +33,11 @@ export class Login implements OnInit {
   iniciarSesion() {
     this.mensajeError = '';
     
+    const inputLimpio = this.emailOrRut ? this.emailOrRut.trim() : '';
     // 1. Armamos el paquete de datos para Spring Boot
     const body = {
-      email: this.emailOrRut.includes('@') ? this.emailOrRut : null,
-      rut: !this.emailOrRut.includes('@') ? this.emailOrRut : null,
+      email: inputLimpio.includes('@') ? inputLimpio : null,
+      rut: !inputLimpio.includes('@') ? inputLimpio : null,
       contrasena: this.password
     };
 
