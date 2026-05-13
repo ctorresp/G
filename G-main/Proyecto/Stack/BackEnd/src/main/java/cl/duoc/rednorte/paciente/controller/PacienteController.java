@@ -17,7 +17,6 @@ import java.util.Map;
 
 // Controlador REST para gestión de pacientes. Requiere autenticación JWT.
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/api/pacientes")
 public class PacienteController {
 
@@ -25,7 +24,7 @@ public class PacienteController {
     private PacienteService pacienteService;
 
     @GetMapping
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MEDICO')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MEDICO', 'ADMIN', 'MEDICO', 'Administrador')")
     public ResponseEntity<?> listarTodos() {
         try {
             List<PacienteResponseDTO> pacientes = pacienteService.listarTodos();
@@ -41,7 +40,7 @@ public class PacienteController {
     }
 
     @GetMapping("/rut/{rut}")
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MEDICO')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MEDICO', 'ADMIN', 'MEDICO', 'Administrador')")
     public ResponseEntity<?> buscarPorRut(@PathVariable String rut) {
         try {
             PacienteResponseDTO paciente = pacienteService.buscarPorRut(rut);
@@ -55,7 +54,7 @@ public class PacienteController {
 
     // Actualiza datos clínicos (los campos que no se envíen en el request se mantienen igual)
     @PutMapping("/rut/{rut}/clinicos")
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MEDICO')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MEDICO', 'ADMIN', 'MEDICO', 'Administrador')")
     public ResponseEntity<?> actualizarDatosClinicos(
             @PathVariable String rut,
             @Valid @RequestBody DatosClinicosUpdateRequestDTO request) {
@@ -79,7 +78,7 @@ public class PacienteController {
     }
 
     @PatchMapping("/rut/{rut}/desactivar")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ADMIN', 'Administrador')")
     public ResponseEntity<?> desactivar(@PathVariable String rut) {
         try {
             String mensaje = pacienteService.desactivarPaciente(rut);
@@ -92,7 +91,7 @@ public class PacienteController {
     }
 
     @PatchMapping("/rut/{rut}/activar")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ADMIN', 'Administrador')")
     public ResponseEntity<?> activar(@PathVariable String rut) {
         try {
             String mensaje = pacienteService.activarPaciente(rut);

@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Component({
   selector: 'app-dashboard',
@@ -59,7 +59,17 @@ export class Dashboard implements OnInit {
     return this.pacientes.filter(p => p.estado).length;
   }
 
-  constructor(private http: HttpClient) {}
+  // Obtenemos el token guardado en el login para enviarlo en cada petición
+  private getHttpOptions() {
+    const token = localStorage.getItem('token_clinica');
+    return {
+      headers: new HttpHeaders({
+        'Authorization': `Bearer ${token}`
+      })
+    };
+  }
+
+  constructor(private http: HttpClient, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
     // Leemos el rol temporal que guardamos en la pantalla de Inicio
@@ -73,7 +83,7 @@ export class Dashboard implements OnInit {
   }
 
   cargarPacientes() {
-    this.http.get<any[]>('http://localhost:8080/api/pacientes').subscribe({
+    this.http.get<any[]>('http://localhost:8080/api/pacientes', this.getHttpOptions()).subscribe({
       next: (data) => {
         // Adaptamos la estructura del backend a la estructura visual de tu tabla
         this.pacientes = data.map(p => ({
@@ -88,13 +98,22 @@ export class Dashboard implements OnInit {
           alergias: p.datosClinicosSensibles?.alergias || [],
           enfermedadesCronicas: p.datosClinicosSensibles?.enfermedadesCronicas || []
         }));
+        console.log('Pacientes cargados con éxito:', this.pacientes);
+        // Forzar a Angular a dibujar la tabla inmediatamente
+        this.cdr.detectChanges();
       },
-      error: (error) => this.mensajeError = 'Error al cargar pacientes'
+      error: (error) => {
+        console.error('Error al cargar pacientes:', error);
+        this.mensajeError = 'Error al cargar pacientes';
+      }
     });
   }
 
   cambiarVista(vista: 'listado' | 'registro' | 'detalle') {
     this.vistaActual = vista;
+    if (vista === 'listado') {
+      this.cargarPacientes();
+    }
   }
 
   verDetalle(paciente: any) {
@@ -148,6 +167,26 @@ export class Dashboard implements OnInit {
     this.pacienteSeleccionado.alergias = [...this.alergiasEditList];
     this.pacienteSeleccionado.enfermedadesCronicas = [...this.enfermedadesEditList];
     console.log('Ficha médica actualizada:', this.pacienteSeleccionado);
+
+    // Preparamos los datos
+    const payload = {
+      prevision: this.pacienteSeleccionado.prevision,
+      datosClinicosSensibles: {
+        grupoSanguineo: this.pacienteSeleccionado.grupoSanguineo,
+        pesoKg: this.pacienteSeleccionado.pesoKg,
+        alturaCm: this.pacienteSeleccionado.alturaCm,
+        alergias: this.pacienteSeleccionado.alergias,
+        enfermedadesCronicas: this.pacienteSeleccionado.enfermedadesCronicas
+      }
+    };
+
+    // Enviamos los cambios al Backend
+    this.http.put(`http://localhost:8080/api/pacientes/rut/${this.pacienteSeleccionado.rut}/clinicos`, payload, this.getHttpOptions()).subscribe({
+      next: (res) => {
+        this.cargarPacientes(); // Recargamos para reflejar cambios
+      },
+      error: (err) => alert('Hubo un error al guardar los cambios en la BD.')
+    });
   }
 
   agregarAlergiaReg() {
@@ -192,7 +231,7 @@ export class Dashboard implements OnInit {
     };
 
     // Enviamos el paciente a Spring Boot para guardarlo en la Base de Datos
-    this.http.post('http://localhost:8080/api/auth/registro', payload).subscribe({
+    this.http.post('http://localhost:8080/api/auth/registro', payload, this.getHttpOptions()).subscribe({
       next: (res) => {
         console.log('¡Paciente guardado exitosamente en BD!', res);
         this.cargarPacientes(); // Pedimos al backend la lista actualizada de inmediato
