@@ -177,6 +177,7 @@
             <div class="form-group">
               <label>RUT del Paciente</label>
               <input type="text" name="rut" [(ngModel)]="nuevoPaciente.rut"
+                (ngModelChange)="formatearRutIngreso($event)"
                 placeholder="Ej: 11111111-1" pattern="^[0-9]+-[0-9kK]{1}$"
                 required #rutInput="ngModel"
                 [ngClass]="{'has-error': (rutInput.invalid && rutInput.touched) || erroresRegistro.rut}">

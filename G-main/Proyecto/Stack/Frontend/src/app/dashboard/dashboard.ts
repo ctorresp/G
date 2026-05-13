@@ -148,6 +148,24 @@ export class Dashboard implements OnInit {
     }
   }
 
+  // Formatea el RUT automáticamente (ej: 123456789 -> 12345678-9)
+  formatearRutIngreso(valor: string) {
+    if (!valor) {
+      this.nuevoPaciente.rut = '';
+      return;
+    }
+    // Quita todo lo que no sea número o K, y lo pasa a mayúscula
+    let rutLimpio = valor.replace(/[^0-9kK]/g, '').toUpperCase();
+    
+    if (rutLimpio.length > 1) {
+      const cuerpo = rutLimpio.slice(0, -1);
+      const dv = rutLimpio.slice(-1);
+      this.nuevoPaciente.rut = `${cuerpo}-${dv}`;
+    } else {
+      this.nuevoPaciente.rut = rutLimpio;
+    }
+  }
+
   verDetalle(paciente: any) {
     console.log('Clic en el ojo. Abriendo ficha médica de:', paciente.nombre);
     this.pacienteSeleccionado = paciente;
