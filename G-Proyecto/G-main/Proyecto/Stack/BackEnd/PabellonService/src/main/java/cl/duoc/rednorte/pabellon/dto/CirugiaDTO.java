@@ -17,10 +17,8 @@ public class CirugiaDTO {
     private LocalTime horaInicio;
     private LocalTime horaFin;
     private String estado;
-    private String notas;
     private String motivoCancelacion;
     private LocalDateTime fechaCancelacion;
-    private boolean notificadoRecordatorio;
 
     public static CirugiaDTO fromEntity(Cirugia c) {
         CirugiaDTO dto = new CirugiaDTO();
@@ -39,10 +37,8 @@ public class CirugiaDTO {
         dto.setHoraInicio(c.getHoraInicio());
         dto.setHoraFin(c.getHoraFin());
         dto.setEstado(c.getEstado() != null ? c.getEstado().name() : null);
-        dto.setNotas(c.getNotas());
         dto.setMotivoCancelacion(c.getMotivoCancelacion());
         dto.setFechaCancelacion(c.getFechaCancelacion());
-        dto.setNotificadoRecordatorio(c.isNotificadoRecordatorio());
         return dto;
     }
 
@@ -68,12 +64,8 @@ public class CirugiaDTO {
     public void setHoraFin(LocalTime h) { this.horaFin = h; }
     public String getEstado() { return estado; }
     public void setEstado(String e) { this.estado = e; }
-    public String getNotas() { return notas; }
-    public void setNotas(String n) { this.notas = n; }
     public String getMotivoCancelacion() { return motivoCancelacion; }
     public void setMotivoCancelacion(String m) { this.motivoCancelacion = m; }
     public LocalDateTime getFechaCancelacion() { return fechaCancelacion; }
     public void setFechaCancelacion(LocalDateTime f) { this.fechaCancelacion = f; }
-    public boolean isNotificadoRecordatorio() { return notificadoRecordatorio; }
-    public void setNotificadoRecordatorio(boolean n) { this.notificadoRecordatorio = n; }
 }

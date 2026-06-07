@@ -5,7 +5,6 @@ export interface Cirugia {
   pacienteRut: string;
   especialidadId?: number;
   medicoRut?: string;
-  notas?: string;
   fechaProgramada?: string;
   estado: CirugiaEstado;
   pabellonId?: number;
@@ -17,7 +16,6 @@ export interface CirugiaSolicitarPayload {
   pacienteRut: string;
   especialidad: { idEspecialidad: number };
   medicoRut: string;
-  notas?: string;
   fechaProgramada?: string;
 }
 

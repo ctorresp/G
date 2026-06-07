@@ -45,17 +45,11 @@ public class Cirugia {
     @Column(nullable = false, length = 20)
     private EstadoCirugia estado;
 
-    @Column(columnDefinition = "TEXT")
-    private String notas;
-
     @Column(name = "motivo_cancelacion", length = 255)
     private String motivoCancelacion;
 
     @Column(name = "fecha_cancelacion")
     private LocalDateTime fechaCancelacion;
-
-    @Column(name = "notificado_recordatorio", nullable = false)
-    private boolean notificadoRecordatorio = false;
 
     @Column(name = "triaje_completado", nullable = false)
     private boolean triajeCompletado = false;
@@ -78,14 +72,10 @@ public class Cirugia {
     public void setHoraFin(LocalTime h) { this.horaFin = h; }
     public EstadoCirugia getEstado() { return estado; }
     public void setEstado(EstadoCirugia e) { this.estado = e; }
-    public String getNotas() { return notas; }
-    public void setNotas(String n) { this.notas = n; }
     public String getMotivoCancelacion() { return motivoCancelacion; }
     public void setMotivoCancelacion(String m) { this.motivoCancelacion = m; }
     public LocalDateTime getFechaCancelacion() { return fechaCancelacion; }
     public void setFechaCancelacion(LocalDateTime f) { this.fechaCancelacion = f; }
-    public boolean isNotificadoRecordatorio() { return notificadoRecordatorio; }
-    public void setNotificadoRecordatorio(boolean n) { this.notificadoRecordatorio = n; }
     public boolean isTriajeCompletado() { return triajeCompletado; }
     public void setTriajeCompletado(boolean t) { this.triajeCompletado = t; }
 }

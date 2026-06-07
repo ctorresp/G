@@ -28,4 +28,8 @@ export class AuthService {
   eliminarMedico(rut: string): Observable<void> {
     return this.http.delete<void>(`${this.api}/admin/medicos/rut/${rut}`);
   }
+
+  obtenerPerfilMedico(): Observable<any> {
+    return this.http.get(`${this.api}/auth/usuario/medico/perfil`);
+  }
 }

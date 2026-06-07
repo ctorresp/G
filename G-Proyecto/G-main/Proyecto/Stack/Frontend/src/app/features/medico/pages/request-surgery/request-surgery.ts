@@ -5,9 +5,9 @@ import { Router } from '@angular/router';
 import { CirugiaService } from '../../../../core/services/cirugia.service';
 import { PacienteService } from '../../../../core/services/paciente.service';
 import { AuthService } from '../../../../core/services/auth.service';
-import { PabellonService } from '../../../../core/services/pabellon.service';
 import { ToastService } from '../../../../core/services/toast.service';
-import { Paciente, Medico, Especialidad } from '../../../../core/interfaces';
+import { STORAGE_KEYS } from '../../../../core/constants';
+import { Paciente } from '../../../../core/interfaces';
 
 @Component({
   selector: 'app-request-surgery',
@@ -19,26 +19,41 @@ export class RequestSurgeryComponent implements OnInit {
   private cirugiaService = inject(CirugiaService);
   private pacienteService = inject(PacienteService);
   private authService = inject(AuthService);
-  private pabellonService = inject(PabellonService);
   private toastService = inject(ToastService);
   private router = inject(Router);
 
   pacientes: Paciente[] = [];
-  medicos: Medico[] = [];
-  especialidades: Especialidad[] = [];
+
+  medicoNombre = '';
+  especialidadNombre = '';
 
   solicitudCirugia = {
     pacienteRut: '',
     especialidadId: null as number | null,
     medicoRut: '',
-    notas: '',
     fechaProgramada: '',
   };
 
   ngOnInit() {
+    this.cargarPerfilMedico();
     this.cargarPacientes();
-    this.cargarMedicos();
-    this.cargarEspecialidades();
+  }
+
+  cargarPerfilMedico() {
+    const rut = localStorage.getItem(STORAGE_KEYS.USUARIO_RUT);
+    if (rut) {
+      this.solicitudCirugia.medicoRut = rut;
+    }
+    this.authService.obtenerPerfilMedico().subscribe({
+      next: (perfil) => {
+        this.medicoNombre = perfil.nombre;
+        this.solicitudCirugia.especialidadId = perfil.especialidadId;
+        this.especialidadNombre = perfil.especialidadNombre;
+      },
+      error: () => {
+        this.toastService.mostrar('Error al cargar perfil médico', 'error');
+      },
+    });
   }
 
   cargarPacientes() {
@@ -50,28 +65,11 @@ export class RequestSurgeryComponent implements OnInit {
     });
   }
 
-  cargarMedicos() {
-    this.authService.listarMedicos().subscribe({
-      next: (data) => {
-        this.medicos = data;
-      },
-    });
-  }
-
-  cargarEspecialidades() {
-    this.pabellonService.listarEspecialidades().subscribe({
-      next: (data) => {
-        this.especialidades = data;
-      },
-    });
-  }
-
   solicitarCirugiaMedico() {
     const payload = {
       pacienteRut: this.solicitudCirugia.pacienteRut,
       especialidad: { idEspecialidad: this.solicitudCirugia.especialidadId! },
       medicoRut: this.solicitudCirugia.medicoRut,
-      notas: this.solicitudCirugia.notas,
       fechaProgramada: this.solicitudCirugia.fechaProgramada || null,
     };
 

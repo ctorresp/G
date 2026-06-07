@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CirugiaService } from '../../../../core/services/cirugia.service';
+import { AuthService } from '../../../../core/services/auth.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { STORAGE_KEYS } from '../../../../core/constants';
 
@@ -16,15 +17,17 @@ export class PatientRequestSurgeryComponent implements AfterViewInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private cirugiaService = inject(CirugiaService);
+  private authService = inject(AuthService);
   private toastService = inject(ToastService);
 
   pacienteRut: string = '';
   medicoNombre: string = '';
+  especialidadNombre: string = '';
+  especialidadId: number | null = null;
   loading = signal(true);
 
   solicitud = {
     fechaProgramada: '',
-    notas: '',
   };
 
   ngAfterViewInit() {
@@ -35,7 +38,17 @@ export class PatientRequestSurgeryComponent implements AfterViewInit {
       this.router.navigate(['/medico/pacientes']);
       return;
     }
+    this.cargarPerfilMedico();
     this.loading.set(false);
+  }
+
+  cargarPerfilMedico() {
+    this.authService.obtenerPerfilMedico().subscribe({
+      next: (perfil) => {
+        this.especialidadId = perfil.especialidadId;
+        this.especialidadNombre = perfil.especialidadNombre;
+      },
+    });
   }
 
   enviarSolicitud() {
@@ -47,8 +60,8 @@ export class PatientRequestSurgeryComponent implements AfterViewInit {
 
     const payload = {
       pacienteRut: this.pacienteRut,
+      especialidad: { idEspecialidad: this.especialidadId! },
       medicoRut: medicoRut,
-      notas: this.solicitud.notas || undefined,
       fechaProgramada: this.solicitud.fechaProgramada || null,
     };
 

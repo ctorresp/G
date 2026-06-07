@@ -17,7 +17,6 @@
             <th>Médico</th>
             <th>Especialidad</th>
             <th>Fechas Sugeridas</th>
-            <th>Notas</th>
             <th>Acción</th>
           </tr>
         </thead>
@@ -32,7 +31,6 @@
               <td>{{ getNombreMedico(c.medicoRut) }}</td>
               <td>{{ c.especialidadNombre }}</td>
               <td>{{ c.fechaProgramada || '—' }}</td>
-              <td>{{ c.notas || '—' }}</td>
               <td>
                 <button class="btn-save btn-md"
                   (click)="abrirProgramar(c)">Programar</button>
@@ -41,7 +39,7 @@
           }
           @if (solicitudesPendientes.length === 0) {
             <tr>
-              <td colspan="6" class="empty-table">
+              <td colspan="5" class="empty-table">
                 No hay solicitudes pendientes
               </td>
             </tr>

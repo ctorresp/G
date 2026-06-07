@@ -23,36 +23,13 @@
 
       <div class="form-group">
         <label>Médico Solicitante</label>
-        <select name="solMed" [(ngModel)]="solicitudCirugia.medicoRut" required>
-          <option value disabled selected>Seleccione...</option>
-          @for (m of medicos; track m.rut) {
-          <option [value]="m.rut">{{ m.nombre }} ({{ m.rut }})</option>
-          }
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label>Especialidad Requerida</label>
-        <select name="solEsp" [(ngModel)]="solicitudCirugia.especialidadId"
-          required>
-          <option value disabled selected>Seleccione...</option>
-          @for (e of especialidades; track e.idEspecialidad) {
-          <option [value]="e.idEspecialidad">{{ e.nombre }}</option>
-          }
-        </select>
+        <input type="text" [value]="medicoNombre" disabled class="input-disabled" />
       </div>
 
       <div class="form-group">
         <label>Fecha Sugerida</label>
         <input type="date" name="solFecha"
           [(ngModel)]="solicitudCirugia.fechaProgramada">
-      </div>
-
-      <div class="form-group full-width">
-        <label>Notas / Observaciones</label>
-        <textarea name="solNotas" [(ngModel)]="solicitudCirugia.notas"
-          placeholder="Indica cualquier información relevante..." rows="3"
-          class="edit-input"></textarea>
       </div>
     </div>
 

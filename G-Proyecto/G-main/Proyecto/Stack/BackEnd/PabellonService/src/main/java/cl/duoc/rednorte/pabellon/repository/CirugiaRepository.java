@@ -11,5 +11,4 @@ public interface CirugiaRepository extends JpaRepository<Cirugia, Long> {
     List<Cirugia> findByEstado(String estado);
     List<Cirugia> findByEstadoAndTriajeCompletado(String estado, boolean triajeCompletado);
     List<Cirugia> findByPabellonIdPabellonOrderByFechaProgramadaAsc(Long pabellonId);
-    List<Cirugia> findByEstadoAndFechaProgramadaAndNotificadoRecordatorioFalse(String estado, LocalDate fecha);
 }

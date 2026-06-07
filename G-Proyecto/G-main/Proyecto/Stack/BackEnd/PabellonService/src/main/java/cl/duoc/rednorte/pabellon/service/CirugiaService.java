@@ -71,7 +71,6 @@ public class CirugiaService {
         c.setFechaProgramada(datos.getFechaProgramada());
         c.setHoraInicio(datos.getHoraInicio());
         c.setHoraFin(datos.getHoraFin());
-        c.setNotas(datos.getNotas());
         return cirugiaRepository.save(c);
     }
 
@@ -140,8 +139,6 @@ public class CirugiaService {
         nueva.setHoraInicio(original.getHoraInicio());
         nueva.setHoraFin(original.getHoraFin());
         nueva.setEstado(EstadoCirugia.PROGRAMADA);
-        nueva.setNotas("Reasignación de cirugía cancelada #" + cirugiaCanceladaId + ". " +
-                (motivo != null ? motivo : ""));
         if (original.getPabellon() != null) {
             Pabellon p = pabellonRepository.findById(original.getPabellon().getIdPabellon())
                     .orElseThrow(() -> new RuntimeException("Pabellón no encontrado"));

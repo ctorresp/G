@@ -11,7 +11,6 @@
           <th>RUT</th>
           <th>Médico Solicitante</th>
           <th>Fecha Sugerida</th>
-          <th>Notas</th>
           <th>Acción</th>
         </tr>
       </thead>
@@ -22,7 +21,6 @@
             <td>{{ c.pacienteRut }}</td>
             <td>{{ c.medicoNombre || c.medicoRut }}</td>
             <td>{{ c.fechaProgramada | date:'dd/MM/yyyy' }}</td>
-            <td>{{ c.notas }}</td>
             <td>
               <button class="btn-action" (click)="seleccionarPendiente(c)">
                 Realizar Triaje
