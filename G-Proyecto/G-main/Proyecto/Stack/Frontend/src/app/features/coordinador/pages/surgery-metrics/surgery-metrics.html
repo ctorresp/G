@@ -1,0 +1,137 @@
+@if (loadingCirugias() || loadingPabellones()) {
+  <div class="loading-text">Cargando métricas...</div>
+} @else {
+  <div class="stats-grid">
+    <shared-stat-card label="Cirugías Programadas" [value]="cirugiasProgramadas" color="blue" />
+    <shared-stat-card label="Cirugías Canceladas" [value]="cirugiasCanceladas" color="red" />
+    <shared-stat-card label="Total Pacientes" [value]="totalPacientes" color="teal" />
+    <shared-stat-card label="Pabellones Ocupados" [value]="pabellonesOcupados + ' / ' + pabellones.length" color="green" />
+  </div>
+
+  <div class="card mb-4">
+    <div class="table-header">
+      <h2>Estado de Pabellones</h2>
+      <button class="btn-save" (click)="mostrarFormCrearPabellon = true">+ Registrar Pabellón</button>
+    </div>
+    <div class="pabellones-grid">
+      @for (p of pabellones; track p.idPabellon) {
+        <div class="pabellon-card">
+          <div class="pabellon-card__header">
+            <strong>Pabellón N° {{ p.numero }}</strong>
+            <span class="status-badge"
+              [class.active]="p.estado === 'DISPONIBLE'"
+              [class.inactive]="p.estado !== 'DISPONIBLE'">
+              {{ p.estado }}
+            </span>
+          </div>
+          <div class="pabellon-card__numero">N° {{ p.numero }}</div>
+          <div class="pabellon-card__actions">
+            <select (change)="cambiarEstadoPabellon(p, $any($event.target).value)">
+              <option value disabled selected>Estado...</option>
+              <option value="DISPONIBLE">Disponible</option>
+              <option value="OCUPADO">Ocupado</option>
+              <option value="MANTENCION">Mantención</option>
+            </select>
+            <button (click)="abrirEditarPabellon(p)">Editar</button>
+            <button class="btn-danger-sm" (click)="eliminarPabellon(p)">Eliminar</button>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="table-header">
+      <h2>Cirugías Recientes</h2>
+    </div>
+    <div class="table-responsive">
+      <table class="modern-table">
+        <thead>
+          <tr>
+            <th>Paciente</th>
+            <th>Médico</th>
+            <th>Especialidad</th>
+            <th>Fecha</th>
+            <th>Pabellón</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (c of cirugias.slice(0, 10); track c.idCirugia) {
+            <tr>
+              <td>{{ getNombrePaciente(c.pacienteRut) }}</td>
+              <td>{{ getNombreMedico(c.medicoRut) }}</td>
+              <td>{{ c.especialidadNombre }}</td>
+              <td>{{ c.fechaProgramada }}</td>
+              <td class="font-mono">{{ c.pabellonNumero || '—' }}</td>
+              <td>
+                <span class="status-badge"
+                  [class.active]="c.estado === 'PROGRAMADA'"
+                  [class.inactive]="c.estado === 'CANCELADA' || c.estado === 'NO_SHOW'">
+                  {{ c.estado }}
+                </span>
+              </td>
+              <td>
+                @if (c.estado === 'PROGRAMADA') {
+                  <div class="acciones-cirugia">
+                    <button class="btn-success" (click)="completarCirugia(c)">Completar</button>
+                    <button class="btn-warning" (click)="marcarNoShow(c)">No Show</button>
+                    <button class="btn-danger" (click)="cancelarCirugia(c)">Cancelar</button>
+                  </div>
+                }
+              </td>
+            </tr>
+          }
+          @if (cirugias.length === 0) {
+            <tr>
+              <td colspan="7" class="empty-table">
+                No hay cirugías registradas
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+}
+
+<!-- Modal Crear Pabellón -->
+@if (mostrarFormCrearPabellon) {
+  <div class="modal-overlay" (click)="mostrarFormCrearPabellon = false">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <h3>Crear Nuevo Pabellón</h3>
+      <div class="form-grid modal-form-grid">
+        <div class="form-group">
+          <label>Número *</label>
+          <input type="text" [(ngModel)]="nuevoPabellon.numero" placeholder="Ej: PAB-06" required>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn-cancel" (click)="mostrarFormCrearPabellon = false">Cancelar</button>
+        <button class="btn-save" (click)="crearPabellon()"
+          [disabled]="!nuevoPabellon.numero">Crear Pabellón</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Modal Editar Pabellón -->
+@if (mostrarFormEditarPabellon && pabellonEditando) {
+  <div class="modal-overlay" (click)="mostrarFormEditarPabellon = false">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <h3>Editar Pabellón</h3>
+      <div class="form-grid modal-form-grid">
+        <div class="form-group">
+          <label>Número *</label>
+          <input type="text" [(ngModel)]="pabellonEditando.numero" required>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn-cancel" (click)="mostrarFormEditarPabellon = false">Cancelar</button>
+        <button class="btn-save" (click)="guardarEdicionPabellon()"
+          [disabled]="!pabellonEditando.numero">Guardar Cambios</button>
+      </div>
+    </div>
+  </div>
+}

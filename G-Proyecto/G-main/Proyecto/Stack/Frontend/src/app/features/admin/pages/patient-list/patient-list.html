@@ -1,0 +1,86 @@
+<div class="stats-grid">
+  <shared-stat-card label="Total Pacientes" [value]="pacientes.length" color="blue" />
+  <shared-stat-card label="Con Previsión" [value]="pacientes.filter(p => p.prevision).length" color="green" />
+  <shared-stat-card label="Sin Previsión" [value]="pacientes.filter(p => !p.prevision).length" color="red" />
+</div>
+
+<div class="card">
+  <div class="table-header">
+    <h2>Gestión de Pacientes</h2>
+    <div class="filter-bar">
+      <input type="text" class="input-tight"
+        placeholder="Buscar por RUT, nombre o email..."
+        [(ngModel)]="busqueda">
+      <a class="btn-save btn-sm" routerLink="/admin/pacientes/registro" style="padding:8px 16px;font-size:13px;text-decoration:none;display:inline-flex;align-items:center;gap:6px">
+        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        Nuevo Paciente
+      </a>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="empty-table">Cargando pacientes...</div>
+  } @else if (pacientesFiltrados.length === 0) {
+    <div class="empty-table">No se encontraron pacientes</div>
+  } @else {
+    <div class="table-responsive">
+      <table class="modern-table">
+        <thead>
+          <tr>
+            <th>RUT</th>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Previsión</th>
+            <th>Estado</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of pacientesFiltrados; track p.rut) {
+            <tr>
+              <td class="font-mono">{{ p.rut }}</td>
+              <td>
+                <div class="patient-info">
+                  <span class="name">{{ p.nombre }}</span>
+                </div>
+              </td>
+              <td>{{ p.email }}</td>
+              <td>
+                <span class="badge"
+                  [ngClass]="{
+                    'fonasa': p.prevision === 'FONASA',
+                    'isapre': p.prevision === 'ISAPRE',
+                    'particular': p.prevision === 'PARTICULAR'
+                  }">
+                  {{ p.prevision || 'N/A' }}
+                </span>
+              </td>
+              <td>
+                <span class="status-badge"
+                  [class.active]="p.estado"
+                  [class.inactive]="!p.estado">
+                  {{ p.estado ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td>
+                <div class="actions">
+                  <button class="btn-icon" (click)="verDetalle(p.rut)"
+                    title="Ver ficha clínica">
+                    <svg viewBox="0 0 24 24" width="18" height="18"
+                      stroke="currentColor" stroke-width="2" fill="none"
+                      stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                      <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

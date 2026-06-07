@@ -1,0 +1,111 @@
+<div class="stats-grid">
+  <shared-stat-card label="Total Usuarios" [value]="totalUsuarios" color="blue" />
+  <shared-stat-card label="Usuarios Activos" [value]="usuariosActivos" color="green" />
+  <shared-stat-card label="Usuarios Bloqueados" [value]="usuariosBloqueados" color="red" />
+</div>
+
+<div class="card">
+  <div class="table-header">
+    <h2>Usuarios del Sistema</h2>
+    <div class="filter-bar">
+      <input type="text" class="input-tight"
+        placeholder="Buscar por RUT, nombre o email..."
+        [(ngModel)]="busquedaUsuarios">
+      <select class="filter-select" [(ngModel)]="filtroRolUsuarios">
+        <option value>Todos los roles</option>
+        <option value="ROLE_ADMIN">Administrador</option>
+        <option value="ROLE_MEDICO">Médico</option>
+        <option value="ROLE_PACIENTE">Paciente</option>
+      </select>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="empty-table">Cargando usuarios...</div>
+  } @else {
+    <div class="table-responsive">
+      <table class="modern-table">
+        <thead>
+          <tr>
+            <th>RUT</th>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Rol(es)</th>
+            <th>Estado</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (u of usuariosFiltrados; track u.idUsuario) {
+            <tr>
+              <td class="font-mono">{{ u.rut }}</td>
+              <td>
+                <div class="patient-info">
+                  <span class="name">{{ u.nombre }}</span>
+                </div>
+              </td>
+              <td>{{ u.email }}</td>
+              <td>
+                <span class="badge"
+                  [ngClass]="{
+                    'fonasa': u.rol === 'ROLE_ADMIN',
+                    'isapre': u.rol === 'ROLE_MEDICO',
+                    'particular': u.rol === 'ROLE_PACIENTE'
+                  }"
+                  class="font-mono-sm">
+                  {{ u.rol.replace('ROLE_', '') }}
+                </span>
+              </td>
+              <td>
+                <span class="status-badge"
+                  [class.active]="u.estado"
+                  [class.inactive]="!u.estado">
+                  {{ u.estado ? 'Activo' : 'Bloqueado' }}
+                </span>
+              </td>
+              <td>
+                <div class="actions" style="gap:4px">
+                  @if (esPaciente(u)) {
+                    <button class="btn-icon" (click)="verDetalle(u)"
+                      title="Ver ficha clínica">
+                      <svg viewBox="0 0 24 24" width="18" height="18"
+                        stroke="currentColor" stroke-width="2" fill="none"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                      </svg>
+                    </button>
+                  }
+                  @if (esMedico(u)) {
+                    <button class="btn-icon" (click)="editarMedico(u)"
+                      title="Editar médico">
+                      <svg viewBox="0 0 24 24" width="18" height="18"
+                        stroke="currentColor" stroke-width="2" fill="none"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                      </svg>
+                    </button>
+                  }
+                  <button class="btn-icon toggle-btn"
+                    [class.active]="u.estado"
+                    (click)="toggleEstadoUsuario(u)"
+                    title="Cambiar estado">
+                    <svg viewBox="0 0 24 24" width="18" height="18"
+                      stroke="currentColor" stroke-width="2"
+                      fill="none" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="1" y="5" width="22" height="14" rx="7" ry="7"></rect>
+                      <circle cx="8" cy="12" r="3.5"
+                        [attr.fill]="u.estado ? 'currentColor' : 'none'">
+                      </circle>
+                    </svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

@@ -1,0 +1,79 @@
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon blue">
+      <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+      </svg>
+    </div>
+    <div class="stat-info">
+      <h3>Próximas Cirugías</h3>
+      <p class="stat-value">{{ misProximasCirugias.length }}</p>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon green">
+      <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+    </div>
+    <div class="stat-info">
+      <h3>Total Cirugías</h3>
+      <p class="stat-value">{{ cirugias.length }}</p>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="table-header">
+    <h2>Mis Cirugías</h2>
+  </div>
+  <div class="table-responsive">
+    <table class="modern-table">
+      <thead>
+        <tr>
+          <th>Paciente</th>
+          <th>RUT</th>
+          <th>Fecha</th>
+          <th>Hora</th>
+          <th>Especialidad</th>
+          <th>Pabellón</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (c of cirugias; track c.idCirugia) {
+          <tr>
+            <td>{{ getNombrePaciente(c.pacienteRut) }}</td>
+            <td class="font-mono">{{ c.pacienteRut }}</td>
+            <td>{{ c.fechaProgramada }}</td>
+            <td>{{ c.horaInicio }} - {{ c.horaFin }}</td>
+            <td>{{ c.especialidadId }}</td>
+            <td class="font-mono">{{ c.pabellonId }}</td>
+            <td>
+              <span class="status-badge" [class.active]="c.estado === 'PROGRAMADA' || c.estado === 'REASIGNADA'">
+                {{ c.estado }}
+              </span>
+            </td>
+            <td>
+              <div class="acciones-cirugia">
+                @if (c.estado === 'PROGRAMADA' || c.estado === 'REASIGNADA') {
+                  <button class="btn-success" (click)="completarCirugia(c)">Completar</button>
+                  <button class="btn-warning" (click)="cancelarCirugia(c)">Cancelar</button>
+                  <button class="btn-danger" (click)="marcarNoShow(c)">No Show</button>
+                }
+              </div>
+            </td>
+          </tr>
+        }
+        @if (cirugias.length === 0) {
+          <tr>
+            <td colspan="8" class="empty-state">
+              No tienes cirugías programadas
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

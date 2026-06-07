@@ -1,0 +1,33 @@
+@if (loading()) {
+  <div class="loading-text">Cargando reportes...</div>
+} @else {
+  <div class="card">
+    <div class="table-header">
+      <h2>Reporte de Pérdidas</h2>
+      <div class="filter-bar">
+        <label class="filter-label">Desde:</label>
+        <input type="date" [(ngModel)]="desde"
+          class="filter-input">
+        <label class="filter-label">Hasta:</label>
+        <input type="date" [(ngModel)]="hasta"
+          class="filter-input">
+        <button class="btn-save btn-md" (click)="cargarReporte()">Filtrar</button>
+      </div>
+    </div>
+  </div>
+
+  @if (reporte) {
+    <div class="stats-grid">
+      <shared-stat-card label="Total Pérdidas" [value]="'$' + ((reporte.totalPerdidas || 0) | number:'1.0-0')" color="red" />
+      <shared-stat-card label="Penalizaciones" [value]="'$' + ((reporte.totalPenalizaciones || 0) | number:'1.0-0')" color="orange" />
+      <shared-stat-card label="Cirugías Canceladas" [value]="reporte.cirugiasCanceladas ?? 0" color="blue" />
+      <shared-stat-card label="Cirugías No Show" [value]="reporte.cirugiasNoShow ?? 0" color="teal" />
+    </div>
+  }
+
+  @if (!reporte) {
+    <div class="card">
+      <div class="card-loading">No hay datos de reporte disponibles</div>
+    </div>
+  }
+}

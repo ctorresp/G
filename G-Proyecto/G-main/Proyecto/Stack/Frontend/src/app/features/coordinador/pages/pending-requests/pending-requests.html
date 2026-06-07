@@ -1,0 +1,108 @@
+@if (loading()) {
+  <div class="loading-text">Cargando solicitudes...</div>
+} @else {
+  <div class="stats-grid">
+    <shared-stat-card label="Solicitudes Pendientes" [value]="solicitudesPendientes.length" color="blue" />
+  </div>
+
+  <div class="card">
+    <div class="table-header">
+      <h2>Cirugías Solicitadas</h2>
+    </div>
+    <div class="table-responsive">
+      <table class="modern-table">
+        <thead>
+          <tr>
+            <th>Paciente</th>
+            <th>Médico</th>
+            <th>Especialidad</th>
+            <th>Fechas Sugeridas</th>
+            <th>Notas</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (c of solicitudesPendientes; track c.idCirugia) {
+            <tr>
+              <td>
+                {{ getNombrePaciente(c.pacienteRut) }}
+                <br>
+                <span class="font-mono font-mono-sm">{{ c.pacienteRut }}</span>
+              </td>
+              <td>{{ getNombreMedico(c.medicoRut) }}</td>
+              <td>{{ c.especialidadNombre }}</td>
+              <td>{{ c.fechaProgramada || '—' }}</td>
+              <td>{{ c.notas || '—' }}</td>
+              <td>
+                <button class="btn-save btn-md"
+                  (click)="abrirProgramar(c)">Programar</button>
+              </td>
+            </tr>
+          }
+          @if (solicitudesPendientes.length === 0) {
+            <tr>
+              <td colspan="6" class="empty-table">
+                No hay solicitudes pendientes
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+}
+
+@if (cirugiaAProgramar) {
+  <div class="modal-overlay" (click)="cancelarProgramar()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <h3>Programar Cirugía</h3>
+      <p>Paciente: {{ getNombrePaciente(cirugiaAProgramar.pacienteRut) }} |
+        Médico: {{ getNombreMedico(cirugiaAProgramar.medicoRut) }}</p>
+
+      <div class="form-grid modal-form-grid">
+        <div class="form-group form-full-width">
+          <label>Seleccionar Fecha</label>
+          <div class="radio-group">
+            <label class="radio-card">
+              <input type="radio" name="fechaSel" [value]="'principal'"
+                [(ngModel)]="programarData.fechaSeleccionada"
+                (change)="programarData.fechaProgramada = cirugiaAProgramar.fechaProgramada">
+              <strong>Principal:</strong> {{ cirugiaAProgramar.fechaProgramada || 'Sin fecha' }}
+            </label>
+  
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Hora Inicio</label>
+          <input type="time" [(ngModel)]="programarData.horaInicio" required>
+        </div>
+
+        <div class="form-group">
+          <label>Hora Fin</label>
+          <input type="time" [(ngModel)]="programarData.horaFin" required>
+        </div>
+
+        <div class="form-group">
+          <label>Pabellón</label>
+          <select [(ngModel)]="programarData.pabellonId" required>
+            <option value disabled selected>Seleccione...</option>
+            @for (p of pabellonesDisponibles; track p.idPabellon) {
+              <option [value]="p.idPabellon">Pabellón N° {{ p.numero }}</option>
+            }
+          </select>
+          @if (pabellonesDisponibles.length === 0) {
+            <span class="text-warning">No hay pabellones disponibles</span>
+          }
+        </div>
+
+      </div>
+
+      <div class="form-actions">
+        <button class="btn-cancel" (click)="cancelarProgramar()">Cancelar</button>
+        <button class="btn-save" (click)="confirmarProgramar()"
+          [disabled]="!programarData.fechaProgramada">Confirmar Programación</button>
+      </div>
+    </div>
+  </div>
+}

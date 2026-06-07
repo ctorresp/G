@@ -1,0 +1,7 @@
+Administrador	admin@rednorte.cl  Admin1234!
+
+Médico	medico@rednorte.cl  Medico1234!
+
+Triajer	triajer@rednorte.cl  Triajer1234!
+
+Coordinador coordinador@rednorte.cl  Coordi1234!

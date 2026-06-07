@@ -1,0 +1,44 @@
+@if (cargando) {
+  <div class="card card-loading">Cargando datos del médico...</div>
+}
+
+@if (medicoEditando && !cargando) {
+  <div class="card">
+    <div class="table-header">
+      <h2>Editar Médico</h2>
+    </div>
+
+    <form class="registro-form">
+
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label>RUT</label>
+          <input type="text" name="editRut"
+            [(ngModel)]="medicoEditando.rut" required>
+        </div>
+
+        <div class="form-group">
+          <label>Nombre Completo</label>
+          <input type="text" name="editNombre"
+            [(ngModel)]="medicoEditando.nombre" required>
+        </div>
+
+        <div class="form-group">
+          <label>Correo Electrónico</label>
+          <input type="email" name="editEmail"
+            [(ngModel)]="medicoEditando.email" required>
+        </div>
+
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn-cancel"
+          (click)="volver()">Cancelar</button>
+        <button type="button" class="btn-save"
+          (click)="guardarEdicionMedico()">Guardar Cambios</button>
+      </div>
+
+    </form>
+  </div>
+}

@@ -1,0 +1,108 @@
+<div class="card">
+  <div class="table-header">
+    <h2>Registrar Nuevo Médico</h2>
+  </div>
+
+  <form class="registro-form" #medicoForm="ngForm"
+    (ngSubmit)="medicoForm.form.valid && registrarMedico()">
+
+    <div class="form-grid">
+
+      <div class="form-group">
+        <label>RUT</label>
+        <input type="text" name="rut"
+          [(ngModel)]="nuevoMedico.rut"
+          (ngModelChange)="formatearRutIngresoMedico($event)"
+          placeholder="Ej: 11111111-1"
+          pattern="^\d{7,8}-[\dkK]$"
+          required
+          #rutMed="ngModel"
+          [ngClass]="{'has-error': (rutMed.invalid && rutMed.touched) || erroresMedico.rut}">
+        @if ((rutMed.invalid && rutMed.touched) || erroresMedico.rut) {
+          <span class="error-text">{{ erroresMedico.rut || 'Formato inválido (Ej: 11111111-1)' }}</span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label>Nombre Completo</label>
+        <input type="text" name="nombre"
+          [(ngModel)]="nuevoMedico.nombre"
+          placeholder="Ej: Dr. Juan Pérez"
+          pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$"
+          required
+          #nomMed="ngModel"
+          [ngClass]="{'has-error': (nomMed.invalid && nomMed.touched) || erroresMedico.nombre}">
+        @if ((nomMed.invalid && nomMed.touched) || erroresMedico.nombre) {
+          <span class="error-text">{{ erroresMedico.nombre || 'Solo letras' }}</span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label>Correo Electrónico</label>
+        <input type="email" name="email"
+          [(ngModel)]="nuevoMedico.email"
+          placeholder="Ej: juan@clinica.cl"
+          pattern="^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$"
+          required
+          #emailMed="ngModel"
+          [ngClass]="{'has-error': (emailMed.invalid && emailMed.touched) || erroresMedico.email}">
+        @if ((emailMed.invalid && emailMed.touched) || erroresMedico.email) {
+          <span class="error-text">{{ erroresMedico.email || 'Correo inválido' }}</span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label>Especialidad</label>
+        <select name="especialidad"
+          [(ngModel)]="especialidadSeleccionada"
+          required
+          #espMed="ngModel"
+          [ngClass]="{'has-error': (espMed.invalid && espMed.touched) || erroresMedico.especialidad}">
+          <option [ngValue]="null" disabled>Seleccione especialidad</option>
+          @for (esp of especialidades; track esp.idEspecialidad) {
+            <option [ngValue]="esp.idEspecialidad">{{ esp.nombre }}</option>
+          }
+        </select>
+        @if ((espMed.invalid && espMed.touched) || erroresMedico.especialidad) {
+          <span class="error-text">{{ erroresMedico.especialidad || 'Selecciona una especialidad' }}</span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label>Contraseña</label>
+        <div class="password-wrapper">
+          <input [type]="mostrarPass ? 'text' : 'password'" name="contrasena"
+            [(ngModel)]="nuevoMedico.contrasena"
+            placeholder="Mín. 8 caracteres, 1 mayúscula"
+            minlength="8"
+            pattern="^(?=.*[A-Z]).{8,}$"
+            required
+            #passMed="ngModel"
+            [ngClass]="{'has-error': (passMed.invalid && passMed.touched) || erroresMedico.contrasena}">
+          <button type="button" class="btn-toggle-pass"
+            (click)="mostrarPass = !mostrarPass"
+            [title]="mostrarPass ? 'Ocultar' : 'Mostrar'">
+            {{ mostrarPass ? '🙈' : '👁️' }}
+          </button>
+        </div>
+        @if ((passMed.invalid && passMed.touched) || erroresMedico.contrasena) {
+          <span class="error-text">{{ erroresMedico.contrasena || 'Mínimo 8 caracteres y 1 mayúscula' }}</span>
+        }
+      </div>
+
+      <div class="form-group" style="display:flex;align-items:end;justify-content:end;padding-bottom:14px">
+        <button type="button" class="btn-cancel btn-md"
+          (click)="nuevoMedico.contrasena = generarPass()">
+          Generar Contraseña
+        </button>
+      </div>
+
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn-save"
+        [disabled]="!medicoForm.valid">Guardar Médico</button>
+    </div>
+
+  </form>
+</div>

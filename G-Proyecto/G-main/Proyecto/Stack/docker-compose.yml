@@ -1,0 +1,106 @@
+services:
+  db-postgre:
+    image: postgres:15-alpine
+    container_name: rednorte-db-postgre
+    restart: unless-stopped
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: db_pacientes
+      POSTGRES_USER: rednorte
+      POSTGRES_PASSWORD: rednorte123
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rednorte -d db_pacientes"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - rednorte-network
+
+  db-pabellon:
+    image: postgres:15-alpine
+    container_name: rednorte-db-pabellon
+    restart: unless-stopped
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_DB: db_pabellon
+      POSTGRES_USER: rednorte
+      POSTGRES_PASSWORD: rednorte123
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rednorte -d db_pabellon"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - pabellon-pgdata:/var/lib/postgresql/data
+    networks:
+      - rednorte-network
+
+  backend:
+    build:
+      context: ./BackEnd/UsuarioService
+      dockerfile: Dockerfile
+    container_name: rednorte-backend
+    restart: unless-stopped
+    ports:
+      - "8080:8081"
+    environment:
+      SPRING_PROFILES_ACTIVE: test
+      DB_HOST: db-postgre
+      DB_PORT: 5432
+      DB_NAME: db_pacientes
+      DB_USER: rednorte
+      DB_PASSWORD: rednorte123
+      JWT_SECRET: ${JWT_SECRET:-RedNorte2024SecretKeyMuySeguraDe256BitsParaJWT}
+    depends_on:
+      db-postgre:
+        condition: service_healthy
+    networks:
+      - rednorte-network
+
+  pabellon-service:
+    build:
+      context: ./BackEnd/PabellonService
+      dockerfile: Dockerfile
+    container_name: rednorte-pabellon
+    restart: unless-stopped
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_PROFILES_ACTIVE: test
+      DB_HOST: db-pabellon
+      DB_PORT: 5432
+      DB_NAME: db_pabellon
+      DB_USER: rednorte
+      DB_PASSWORD: rednorte123
+      JWT_SECRET: ${JWT_SECRET:-RedNorte2024SecretKeyMuySeguraDe256BitsParaJWT}
+    depends_on:
+      db-pabellon:
+        condition: service_healthy
+    networks:
+      - rednorte-network
+
+  frontend:
+    build:
+      context: ./Frontend
+      dockerfile: Dockerfile
+    container_name: rednorte-frontend
+    restart: unless-stopped
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+      - pabellon-service
+    networks:
+      - rednorte-network
+
+networks:
+  rednorte-network:
+    driver: bridge
+
+volumes:
+  pgdata:
+  pabellon-pgdata:

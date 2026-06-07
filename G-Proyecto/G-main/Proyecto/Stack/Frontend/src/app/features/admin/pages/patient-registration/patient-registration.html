@@ -1,0 +1,224 @@
+<div class="card">
+  <div class="table-header">
+    <h2>Registrar Nuevo Paciente</h2>
+  </div>
+
+  <form class="registro-form" #registroForm="ngForm"
+    (ngSubmit)="registroForm.form.valid && registrar()">
+
+    <div class="form-grid">
+
+      <div class="form-group">
+        <label>RUT del Paciente</label>
+        <input type="text" name="rut"
+          [(ngModel)]="nuevoPaciente.rut"
+          (ngModelChange)="formatearRutIngreso($event)"
+          placeholder="Ej: 11111111-1"
+          pattern="^[0-9]+-[0-9kK]{1}$"
+          required
+          #rutInput="ngModel"
+          [ngClass]="{'has-error': (rutInput.invalid && rutInput.touched) || erroresRegistro.rut}">
+        @if ((rutInput.invalid && rutInput.touched) || erroresRegistro.rut) {
+          <span class="error-text">{{ erroresRegistro.rut || 'Formato incorrecto (Ej: 12345678-9)' }}</span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label>Nombre Completo</label>
+        <input type="text" name="nombre"
+          [(ngModel)]="nuevoPaciente.nombre"
+          placeholder="Ej: Juan Pérez"
+          pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$"
+          required
+          #nombreInput="ngModel"
+          [ngClass]="{'has-error': (nombreInput.invalid && nombreInput.touched) || erroresRegistro.nombre}">
+        @if ((nombreInput.invalid && nombreInput.touched) || erroresRegistro.nombre) {
+          <span class="error-text">{{ erroresRegistro.nombre || 'Ingresa un nombre válido (solo letras)' }}</span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label>Correo Electrónico</label>
+        <input type="email" name="email"
+          [(ngModel)]="nuevoPaciente.email"
+          placeholder="Ej: juan@correo.cl"
+          pattern="^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$"
+          required
+          #emailInput="ngModel"
+          [ngClass]="{'has-error': (emailInput.invalid && emailInput.touched) || erroresRegistro.email}">
+        @if ((emailInput.invalid && emailInput.touched) || erroresRegistro.email) {
+          <span class="error-text">{{ erroresRegistro.email || 'Ingresa un correo válido que incluya "@"' }}</span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label>Previsión Médica</label>
+        <select name="prevision"
+          [(ngModel)]="nuevoPaciente.prevision"
+          required
+          #previsionInput="ngModel"
+          [ngClass]="{'has-error': (previsionInput.invalid && previsionInput.touched) || erroresRegistro.prevision}">
+          <option value disabled selected>Seleccione...</option>
+          <option value="FONASA">FONASA</option>
+          <option value="ISAPRE">ISAPRE</option>
+          <option value="PARTICULAR">PARTICULAR</option>
+        </select>
+        @if ((previsionInput.invalid && previsionInput.touched) || erroresRegistro.prevision) {
+          <span class="error-text">{{ erroresRegistro.prevision || 'Falta información: Selecciona una previsión' }}</span>
+        }
+      </div>
+
+      <div class="form-group autocomplete-group">
+        <label>Médico Asignado</label>
+        <div class="autocomplete-wrapper">
+          <input type="text"
+            name="medicoBusqueda"
+            [(ngModel)]="medicoBusqueda"
+            (input)="buscarMedico()"
+            (focus)="buscarMedico()"
+            (blur)="cerrarDropdown()"
+            placeholder="Buscar médico por nombre o RUT..."
+            class="autocomplete-input">
+          @if (medicoSeleccionado) {
+            <button type="button" class="btn-clear" (click)="limpiarMedico()">×</button>
+          }
+          @if (mostrarDropdownMedico && medicosFiltrados.length > 0) {
+            <ul class="autocomplete-dropdown">
+              @for (m of medicosFiltrados; track m.idUsuario) {
+                <li (mousedown)="seleccionarMedico(m)">
+                  <strong>{{ m.nombre }}</strong>
+                  <span class="text-muted">{{ m.rut }}</span>
+                </li>
+              }
+            </ul>
+          }
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Grupo Sanguíneo</label>
+        <select name="grupoSanguineo"
+          [(ngModel)]="nuevoPaciente.grupoSanguineo"
+          required
+          #grupoInput="ngModel"
+          [ngClass]="{'has-error': (grupoInput.invalid && grupoInput.touched) || erroresRegistro.grupoSanguineo}">
+          <option value disabled selected>Seleccione...</option>
+          <option value="A+">A+</option>
+          <option value="A-">A-</option>
+          <option value="B+">B+</option>
+          <option value="B-">B-</option>
+          <option value="AB+">AB+</option>
+          <option value="AB-">AB-</option>
+          <option value="O+">O+</option>
+          <option value="O-">O-</option>
+        </select>
+        @if ((grupoInput.invalid && grupoInput.touched) || erroresRegistro.grupoSanguineo) {
+          <span class="error-text">{{ erroresRegistro.grupoSanguineo || 'Falta información: Selecciona un grupo sanguíneo' }}</span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label>Peso (Kg)</label>
+        <input type="number" name="pesoKg"
+          [(ngModel)]="nuevoPaciente.pesoKg"
+          placeholder="Ej: 70.5"
+          min="0.1" max="999.9" step="0.1"
+          required
+          #pesoInput="ngModel"
+          [ngClass]="{'has-error': (pesoInput.invalid && pesoInput.touched) || erroresRegistro.pesoKg}">
+        @if ((pesoInput.invalid && pesoInput.touched) || erroresRegistro.pesoKg) {
+          <span class="error-text">{{ erroresRegistro.pesoKg || 'Ingresa un peso válido (Ej: 78.7)' }}</span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label>Altura (cm)</label>
+        <input type="number" name="alturaCm"
+          [(ngModel)]="nuevoPaciente.alturaCm"
+          placeholder="Ej: 170"
+          min="2" max="250" step="1"
+          required
+          #alturaInput="ngModel"
+          [ngClass]="{'has-error': (alturaInput.invalid && alturaInput.touched) || erroresRegistro.alturaCm}">
+        @if ((alturaInput.invalid && alturaInput.touched) || erroresRegistro.alturaCm) {
+          <span class="error-text">{{ erroresRegistro.alturaCm || 'Ingresa una altura válida (Ej: 175)' }}</span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label>Contacto Emergencia — Nombre</label>
+        <input type="text" name="contactoEmergenciaNombre"
+          [(ngModel)]="nuevoPaciente.contactoEmergenciaNombre"
+          placeholder="Ej: María Pérez"
+          #contactoNombreInput="ngModel"
+          [ngClass]="{'has-error': erroresRegistro.contactoEmergenciaNombre}">
+        @if (erroresRegistro.contactoEmergenciaNombre) {
+          <span class="error-text">{{ erroresRegistro.contactoEmergenciaNombre }}</span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label>Contacto Emergencia — Teléfono</label>
+        <input type="tel" name="contactoEmergenciaTelefono"
+          [(ngModel)]="nuevoPaciente.contactoEmergenciaTelefono"
+          placeholder="Ej: +569 1234 5678"
+          #contactoTelefonoInput="ngModel"
+          [ngClass]="{'has-error': erroresRegistro.contactoEmergenciaTelefono}">
+        @if (erroresRegistro.contactoEmergenciaTelefono) {
+          <span class="error-text">{{ erroresRegistro.contactoEmergenciaTelefono }}</span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label>Alergias</label>
+        <div class="tags-edit-container">
+          <div class="tags-container mb-2">
+            @for (alergia of alergiasRegList; track alergia; let i = $index) {
+              <span class="tag allergy edit-tag">
+                {{ alergia }}
+                <button type="button" class="btn-remove" (click)="removerAlergiaReg(i)">×</button>
+              </span>
+            }
+          </div>
+          <div class="add-tag-group">
+            <input type="text" class="edit-input"
+              name="nuevaAlergiaReg"
+              [(ngModel)]="nuevaAlergiaReg"
+              placeholder="Agregar alergia..."
+              (keydown.enter)="$event.preventDefault(); agregarAlergiaReg()">
+            <button type="button" class="btn-add" (click)="agregarAlergiaReg()">+</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Enfermedades Crónicas</label>
+        <div class="tags-edit-container">
+          <div class="tags-container mb-2">
+            @for (enf of enfermedadesRegList; track enf; let i = $index) {
+              <span class="tag chronic edit-tag">
+                {{ enf }}
+                <button type="button" class="btn-remove" (click)="removerEnfermedadReg(i)">×</button>
+              </span>
+            }
+          </div>
+          <div class="add-tag-group">
+            <input type="text" class="edit-input"
+              name="nuevaEnfermedadReg"
+              [(ngModel)]="nuevaEnfermedadReg"
+              placeholder="Agregar enfermedad..."
+              (keydown.enter)="$event.preventDefault(); agregarEnfermedadReg()">
+            <button type="button" class="btn-add" (click)="agregarEnfermedadReg()">+</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn-save"
+        [disabled]="!registroForm.valid">Guardar Paciente</button>
+    </div>
+
+  </form>
+</div>

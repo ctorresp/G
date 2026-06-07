@@ -1,0 +1,36 @@
+<div class="tags-editor">
+  @if (label) {
+    <label class="tags-editor__label">{{ label }}</label>
+  }
+  <div class="tags-editor__input-row">
+    <input
+      class="tags-editor__input"
+      type="text"
+      [(ngModel)]="nuevoTag"
+      [placeholder]="placeholder"
+      (keydown.enter)="$event.preventDefault(); agregar()"
+    />
+    <button class="tags-editor__btn" type="button" (click)="agregar()">
+      <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
+      Agregar
+    </button>
+  </div>
+  @if (tags.length > 0) {
+    <div class="tags-editor__list">
+      @for (tag of tags; track $index) {
+        <span class="tags-editor__tag">
+          {{ tag }}
+          <button class="tags-editor__tag-remove" type="button" (click)="remover($index)">
+            <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </span>
+      }
+    </div>
+  }
+</div>

@@ -1,0 +1,27 @@
+# --- Maven ---
+BackEnd/target/
+PabellonService/target/
+
+# --- Angular ---
+Frontend/dist/
+Frontend/.angular/cache/
+Frontend/node_modules/
+Frontend/coverage/
+
+# --- IDE ---
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+
+# --- Environment ---
+.env
+BackEnd/.env
+
+# --- Logs ---
+*.log

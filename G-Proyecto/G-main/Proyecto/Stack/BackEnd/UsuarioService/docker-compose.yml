@@ -1,0 +1,58 @@
+services:
+  db-postgre:
+    image: postgres:15-alpine
+    container_name: rednorte-db-postgre
+    environment:
+      POSTGRES_DB: ${DB_NAME:-postgres}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-admin}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    networks:
+      - rednorte-network
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: .
+    container_name: rednorte-backend
+    ports:
+      - "8080:8081"
+    depends_on:
+      db-postgre:
+        condition: service_healthy
+    environment:
+      DB_HOST: db-postgre
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-postgres}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-admin}
+      SPRING_PROFILES_ACTIVE: test
+      SERVER_PORT: 8081
+      APP_CORS_ALLOWED_ORIGINS: http://localhost:4200,http://localhost,http://frontend
+    networks:
+      - rednorte-network
+
+  frontend:
+    build: ../Frontend
+    container_name: rednorte-frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+    environment:
+      API_URL: http://backend:8081/api
+    networks:
+      - rednorte-network
+
+networks:
+  rednorte-network:
+    driver: bridge
+
+volumes:
+  pgdata:

@@ -1,0 +1,59 @@
+<div class="card">
+  <div class="table-header">
+    <button class="btn-back" (click)="volver()">
+      <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+      Volver
+    </button>
+    <h2>Solicitar Cirugía</h2>
+  </div>
+
+  @if (loading()) {
+    <p class="empty-state">Cargando información...</p>
+  }
+
+  @if (!loading()) {
+    <p class="descripcion">
+      Solicitud de cirugía para el paciente <strong>{{ pacienteRut }}</strong>.
+    </p>
+
+    <form class="registro-form" #solForm="ngForm" (ngSubmit)="solForm.form.valid && enviarSolicitud()">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Paciente</label>
+          <input type="text" [value]="pacienteRut" disabled class="input-disabled" />
+        </div>
+
+        <div class="form-group">
+          <label>Médico Solicitante</label>
+          <input type="text" [value]="medicoNombre" disabled class="input-disabled" />
+        </div>
+
+        <div class="form-group">
+          <label>Fecha de la Cirugía</label>
+          <input type="date" name="solFecha" [(ngModel)]="solicitud.fechaProgramada" required />
+        </div>
+
+        <div class="form-group full-width">
+          <label>Notas / Observaciones</label>
+          <textarea
+            name="solNotas"
+            [(ngModel)]="solicitud.notas"
+            placeholder="Indica cualquier información relevante para la cirugía..."
+            rows="3"
+            class="edit-input"
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn-cancel" (click)="volver()">Cancelar</button>
+        <button type="submit" class="btn-save" [disabled]="!solForm.valid">
+          Enviar Solicitud
+        </button>
+      </div>
+    </form>
+  }
+</div>

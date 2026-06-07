@@ -1,0 +1,279 @@
+@if (loading()) {
+  <div class="card card-loading">Cargando ficha clínica...</div>
+}
+
+@if (paciente && !loading()) {
+  <div class="detail-container">
+    <div class="detail-header">
+      <div class="header-actions-top">
+
+        <a class="btn-back" routerLink="/admin/usuarios">
+          <svg viewBox="0 0 24 24" width="20" height="20"
+            stroke="currentColor" stroke-width="2" fill="none"
+            stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          Volver
+        </a>
+
+        @if (!modoEdicion) {
+          <button class="btn-edit-mode" (click)="activarEdicion()">
+            <svg viewBox="0 0 24 24" width="16" height="16"
+              stroke="currentColor" stroke-width="2" fill="none"
+              style="vertical-align:middle;margin-right:6px">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
+            Editar Perfil
+          </button>
+        } @else {
+          <button class="btn-save-mode" (click)="guardarEdicion()">
+            <svg viewBox="0 0 24 24" width="16" height="16"
+              stroke="currentColor" stroke-width="2" fill="none"
+              style="vertical-align:middle;margin-right:6px">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+              <polyline points="17 21 17 13 7 13 7 21"></polyline>
+              <polyline points="7 3 7 8 15 8"></polyline>
+            </svg>
+            Guardar Cambios
+          </button>
+        }
+
+      </div>
+
+      <div class="patient-title">
+        <h2>{{ paciente.nombre }}</h2>
+        <span class="badge"
+          [ngClass]="paciente.prevision.toLowerCase()">
+          {{ paciente.prevision }}
+        </span>
+      </div>
+
+      <p class="patient-rut">RUT: {{ paciente.rut }}</p>
+    </div>
+
+    <div class="detail-grid">
+
+      <!-- Info Personal -->
+      <div class="info-card">
+        <div class="card-header">
+          <div class="icon-wrapper blue">
+            <svg viewBox="0 0 24 24" width="20" height="20"
+              stroke="currentColor" stroke-width="2" fill="none"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </div>
+          <h3>Información Personal</h3>
+        </div>
+        <div class="card-body">
+
+          <div class="data-row">
+            <span class="label">Correo Electrónico</span>
+            @if (!modoEdicion) {
+              <span class="value">{{ paciente.email }}</span>
+            } @else {
+              <input type="email" class="edit-input"
+                [(ngModel)]="paciente.email">
+            }
+          </div>
+
+          <div class="data-row">
+            <span class="label">Previsión Médica</span>
+            @if (!modoEdicion) {
+              <span class="value">{{ paciente.prevision }}</span>
+            } @else {
+              <select class="edit-input" [(ngModel)]="paciente.prevision">
+                <option value="FONASA">FONASA</option>
+                <option value="ISAPRE">ISAPRE</option>
+                <option value="PARTICULAR">PARTICULAR</option>
+              </select>
+            }
+          </div>
+
+          <div class="data-row">
+            <span class="label">Estado en Sistema</span>
+            <span class="status-badge"
+              [class.active]="paciente.estado"
+              [class.inactive]="!paciente.estado">
+              {{ paciente.estado ? 'Activo' : 'Bloqueado' }}
+            </span>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Médico Asignado -->
+      <div class="info-card">
+        <div class="card-header">
+          <div class="icon-wrapper green">
+            <svg viewBox="0 0 24 24" width="20" height="20"
+              stroke="currentColor" stroke-width="2" fill="none"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+            </svg>
+          </div>
+          <h3>Médico Asignado</h3>
+        </div>
+        <div class="card-body">
+          @if (paciente.nombreMedicoAsignado) {
+            <div class="data-row">
+              <span class="label">Nombre</span>
+              <span class="value">{{ paciente.nombreMedicoAsignado }}</span>
+            </div>
+          } @else {
+            <div class="data-row">
+              <span class="label">Sin médico asignado</span>
+              <span class="value text-muted">—</span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Indicadores Físicos -->
+      <div class="info-card">
+        <div class="card-header">
+          <div class="icon-wrapper red">
+            <svg viewBox="0 0 24 24" width="20" height="20"
+              stroke="currentColor" stroke-width="2" fill="none"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+            </svg>
+          </div>
+          <h3>Indicadores Físicos</h3>
+        </div>
+        <div class="card-body grid-2">
+
+          <div class="data-item">
+            <span class="label">Grupo Sang.</span>
+            <span class="value blood-type">
+              {{ paciente.datosClinicosSensibles?.grupoSanguineo || 'N/R' }}
+            </span>
+          </div>
+
+          <div class="data-item">
+            <span class="label">Peso</span>
+            @if (!modoEdicion) {
+              <span class="value">
+                {{ paciente.datosClinicosSensibles?.pesoKg ? paciente.datosClinicosSensibles!.pesoKg + ' kg' : 'N/R' }}
+              </span>
+            } @else {
+              <input type="number" name="pesoEdit"
+                class="edit-input small-input"
+                [(ngModel)]="paciente.datosClinicosSensibles!.pesoKg"
+                placeholder="Kg" required
+                min="0.1" max="999.9" step="0.1"
+                #pesoEdit="ngModel"
+                [ngClass]="{'has-error': (pesoEdit.invalid && pesoEdit.touched) || erroresEdicion.pesoKg}">
+            }
+          </div>
+
+          <div class="data-item">
+            <span class="label">Altura</span>
+            @if (!modoEdicion) {
+              <span class="value">
+                {{ paciente.datosClinicosSensibles?.alturaCm ? paciente.datosClinicosSensibles!.alturaCm + ' cm' : 'N/R' }}
+              </span>
+            } @else {
+              <input type="number" name="alturaEdit"
+                class="edit-input small-input"
+                [(ngModel)]="paciente.datosClinicosSensibles!.alturaCm"
+                placeholder="cm" required
+                min="2" max="250" step="1"
+                #alturaEdit="ngModel"
+                [ngClass]="{'has-error': (alturaEdit.invalid && alturaEdit.touched) || erroresEdicion.alturaCm}">
+            }
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Antecedentes Médicos -->
+      <div class="info-card full-width">
+        <div class="card-header">
+          <div class="icon-wrapper orange">
+            <svg viewBox="0 0 24 24" width="20" height="20"
+              stroke="currentColor" stroke-width="2" fill="none"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+              <line x1="12" y1="9" x2="12" y2="13"></line>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+          </div>
+          <h3>Antecedentes Médicos Relevantes</h3>
+        </div>
+        <div class="card-body grid-2">
+
+          <div class="tags-section">
+            <span class="label">Alergias</span>
+            @if (!modoEdicion) {
+              <div class="tags-container">
+                @if (paciente.datosClinicosSensibles?.alergias && paciente.datosClinicosSensibles!.alergias.length > 0) {
+                  @for (alergia of paciente.datosClinicosSensibles!.alergias; track alergia) {
+                    <span class="tag allergy">{{ alergia }}</span>
+                  }
+                } @else {
+                  <span class="no-data">Sin alergias registradas</span>
+                }
+              </div>
+            } @else {
+              <div class="tags-edit-container">
+                <div class="tags-container mb-2">
+                  @for (alergia of alergiasEditList; track alergia; let i = $index) {
+                    <span class="tag allergy edit-tag">
+                      {{ alergia }}
+                      <button class="btn-remove" (click)="removerAlergia(i)">×</button>
+                    </span>
+                  }
+                </div>
+                <div class="add-tag-group">
+                  <input type="text" class="edit-input"
+                    [(ngModel)]="nuevaAlergia"
+                    placeholder="Agregar alergia..."
+                    (keyup.enter)="agregarAlergia()">
+                  <button class="btn-add" (click)="agregarAlergia()">+</button>
+                </div>
+              </div>
+            }
+          </div>
+
+          <div class="tags-section">
+            <span class="label">Enfermedades Crónicas</span>
+            @if (!modoEdicion) {
+              <div class="tags-container">
+                @if (paciente.datosClinicosSensibles?.enfermedadesCronicas && paciente.datosClinicosSensibles!.enfermedadesCronicas.length > 0) {
+                  @for (enf of paciente.datosClinicosSensibles!.enfermedadesCronicas; track enf) {
+                    <span class="tag chronic">{{ enf }}</span>
+                  }
+                } @else {
+                  <span class="no-data">Sin enfermedades crónicas</span>
+                }
+              </div>
+            } @else {
+              <div class="tags-edit-container">
+                <div class="tags-container mb-2">
+                  @for (enf of enfermedadesEditList; track enf; let i = $index) {
+                    <span class="tag chronic edit-tag">
+                      {{ enf }}
+                      <button class="btn-remove" (click)="removerEnfermedad(i)">×</button>
+                    </span>
+                  }
+                </div>
+                <div class="add-tag-group">
+                  <input type="text" class="edit-input"
+                    [(ngModel)]="nuevaEnfermedad"
+                    placeholder="Agregar enfermedad..."
+                    (keyup.enter)="agregarEnfermedad()">
+                  <button class="btn-add" (click)="agregarEnfermedad()">+</button>
+                </div>
+              </div>
+            }
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+}

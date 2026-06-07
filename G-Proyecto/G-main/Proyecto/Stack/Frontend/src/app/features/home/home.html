@@ -1,0 +1,113 @@
+<div class="portal-container">
+  <div class="bg-pattern"></div>
+  <div class="portal-inner">
+    <div class="brand-header">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" width="28" height="28" stroke="white"
+          stroke-width="3" fill="none" stroke-linecap="round"
+          stroke-linejoin="round"><line x1="12" y1="5" x2="12"
+            y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      </div>
+      <h1>RedNorte</h1>
+      <p class="subtitle">Sistema de Gestión Clínica</p>
+      <p class="instruction">Selecciona tu portal de acceso</p>
+    </div>
+
+    <div class="split-cards">
+      <div class="role-card medico" (click)="irAlLogin('Médico')" tabindex="0">
+        <div class="card-accent"></div>
+        <div class="card-content">
+          <div class="icon-wrapper">
+            <svg viewBox="0 0 24 24" width="28" height="28"
+              stroke="currentColor" stroke-width="1.5" fill="none"
+              stroke-linecap="round" stroke-linejoin="round"><path
+                d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+          </div>
+          <h2>Portal Médico</h2>
+          <p>Acceso a fichas clínicas, diagnósticos y atención de pacientes.</p>
+          <span class="action-link">
+            Ingresar
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round"><line x1="5" y1="12" x2="19"
+                y2="12"></line><polyline
+                points="12 5 19 12 12 19"></polyline></svg>
+          </span>
+        </div>
+      </div>
+
+      <div class="role-card admin" (click)="irAlLogin('Administrador')"
+        tabindex="0">
+        <div class="card-accent"></div>
+        <div class="card-content">
+          <div class="icon-wrapper">
+            <svg viewBox="0 0 24 24" width="28" height="28"
+              stroke="currentColor" stroke-width="1.5" fill="none"
+              stroke-linecap="round" stroke-linejoin="round"><path
+                d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          </div>
+          <h2>Portal Administrador</h2>
+          <p>Gestión central del sistema, pacientes, bloqueos y personal.</p>
+          <span class="action-link">
+            Ingresar
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round"><line x1="5" y1="12" x2="19"
+                y2="12"></line><polyline
+                points="12 5 19 12 12 19"></polyline></svg>
+          </span>
+        </div>
+      </div>
+
+      <div class="role-card triajer" (click)="irAlLogin('Triajer')"
+        tabindex="0">
+        <div class="card-accent"></div>
+        <div class="card-content">
+          <div class="icon-wrapper">
+            <svg viewBox="0 0 24 24" width="28" height="28"
+              stroke="currentColor" stroke-width="1.5" fill="none"
+              stroke-linecap="round" stroke-linejoin="round"><circle cx="12"
+                cy="12" r="10"></circle><line x1="12" y1="8" x2="12"
+                y2="12"></line><line x1="12" y1="16" x2="12.01"
+                y2="16"></line></svg>
+          </div>
+          <h2>Portal Triajer</h2>
+          <p>Evaluación de pacientes, registro de triaje y priorización.</p>
+          <span class="action-link">
+            Ingresar
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round"><line x1="5" y1="12" x2="19"
+                y2="12"></line><polyline
+                points="12 5 19 12 12 19"></polyline></svg>
+          </span>
+        </div>
+      </div>
+
+      <div class="role-card coordinador" (click)="irAlLogin('Coordinador')"
+        tabindex="0">
+        <div class="card-accent"></div>
+        <div class="card-content">
+          <div class="icon-wrapper">
+            <svg viewBox="0 0 24 24" width="28" height="28"
+              stroke="currentColor" stroke-width="1.5" fill="none"
+              stroke-linecap="round" stroke-linejoin="round"><polyline
+                points="9 11 12 14 22 4"></polyline><path
+                d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+          </div>
+          <h2>Portal Coordinador</h2>
+          <p>Gestión de agenda quirúrgica, programación y reasignación de
+            cirugías.</p>
+          <span class="action-link">
+            Ingresar
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round"><line x1="5" y1="12" x2="19"
+                y2="12"></line><polyline
+                points="12 5 19 12 12 19"></polyline></svg>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

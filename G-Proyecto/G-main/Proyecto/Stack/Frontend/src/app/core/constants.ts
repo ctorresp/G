@@ -1,0 +1,10 @@
+export const STORAGE_KEYS = {
+  TOKEN: 'token_clinica',
+  PORTAL: 'portalSeleccionado',
+  USUARIO_RUT: 'usuario_rut',
+  USUARIO_ID: 'usuario_id',
+  USUARIO_NOMBRE: 'usuario_nombre',
+  ROLES: 'usuario_roles',
+};
+
+export const AUTH_ERROR_KEY = 'auth_error';

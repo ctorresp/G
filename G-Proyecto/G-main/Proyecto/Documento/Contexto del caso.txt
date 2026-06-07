@@ -1,0 +1,35 @@
+# 📄 Contexto del Caso: Plataforma "RedNorte"
+
+## 1. Identificación del Proyecto
+* **Nombre del Sistema:** RedNorte - Sistema de Gestión de Listas de Espera Hospitalaria
+* **Área de Aplicación:** Sector Salud / Gestión Clínica
+* **Equipo de Trabajo:** Joaquín Gaete, Matías Concha, Samuel Villanueva, Víctor Pinilla.
+
+## 2. Problemática Actual (El Caso)
+En la actualidad, los recintos hospitalarios del sector público enfrentan un desafío crítico: la congestión y desorganización en las listas de espera para atención de especialidades médicas e intervenciones quirúrgicas. 
+
+La gestión actual a menudo depende de sistemas fragmentados o bases de datos obsoletas, lo que genera:
+* **Falta de visibilidad:** Dificultad para identificar rápidamente a los pacientes con mayor riesgo clínico.
+* **Tiempos de respuesta deficientes:** Demoras en la categorización y asignación de horas médicas.
+* **Vulnerabilidad de datos:** Manejo inseguro de la información clínica y personal de los pacientes.
+
+## 3. Propuesta de Solución (Nuestra Plataforma)
+Para resolver esta problemática, el equipo de desarrollo ha diseñado **RedNorte**, una plataforma web integral orientada a la eficiencia administrativa y clínica. 
+
+El sistema digitaliza y centraliza las listas de espera, permitiendo al personal de salud gestionar los flujos de pacientes mediante una interfaz ágil (basada en tarjetas visuales de alto contraste) que prioriza la atención según el **Nivel de Urgencia** y la especialidad requerida.
+
+## 4. Objetivos del Sistema
+* **Triage Visual Rápido:** Proveer una vista en grilla (estilo catálogo avanzado) donde los pacientes críticos destaquen inmediatamente por sobre los de menor urgencia.
+* **Seguridad y Privacidad:** Implementar un sistema de autenticación robusto (basado en tokens JWT) para asegurar que solo el personal médico y administrativo autorizado acceda a los antecedentes clínicos.
+* **Escalabilidad:** Utilizar una arquitectura basada en microservicios y contenedores (Docker) para garantizar que el sistema soporte un alto volumen de usuarios y pacientes concurrentes sin caídas.
+
+## 5. Perfiles de Usuario y Roles
+El sistema contempla distintos niveles de acceso para proteger la información:
+1. **Administrador del Sistema:** Encargado de gestionar las cuentas de los funcionarios, roles y mantención general de la plataforma.
+2. **Personal Clínico (Médicos/Enfermería):** Tienen acceso para registrar nuevos pacientes, actualizar diagnósticos, modificar el nivel de urgencia (ALTA, MEDIA, BAJA) y dar de alta a los pacientes que ya fueron atendidos.
+
+## 6. Alcance Técnico
+El proyecto se entrega como una solución Fullstack construida sobre:
+* **Backend:** Spring Boot (Java) para la lógica de negocio y seguridad.
+* **Frontend:** Angular para una experiencia de usuario (UX) reactiva y sin recargas, con un diseño limpio e intuitivo.
+* **Persistencia:** PostgreSQL gestionado a través de contenedores Docker.
