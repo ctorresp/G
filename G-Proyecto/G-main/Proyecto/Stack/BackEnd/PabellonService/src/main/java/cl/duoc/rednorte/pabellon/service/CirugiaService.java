@@ -1,11 +1,13 @@
 package cl.duoc.rednorte.pabellon.service;
 
 import cl.duoc.rednorte.pabellon.model.Cirugia;
+import cl.duoc.rednorte.pabellon.model.Especialidad;
 import cl.duoc.rednorte.pabellon.model.EstadoCirugia;
 import cl.duoc.rednorte.pabellon.model.EstadoPabellon;
 import cl.duoc.rednorte.pabellon.model.Pabellon;
 import cl.duoc.rednorte.pabellon.model.Reasignacion;
 import cl.duoc.rednorte.pabellon.repository.CirugiaRepository;
+import cl.duoc.rednorte.pabellon.repository.EspecialidadRepository;
 import cl.duoc.rednorte.pabellon.repository.PabellonRepository;
 import cl.duoc.rednorte.pabellon.repository.ReasignacionRepository;
 import org.slf4j.Logger;
@@ -27,13 +29,16 @@ public class CirugiaService {
     private final CirugiaRepository cirugiaRepository;
     private final PabellonRepository pabellonRepository;
     private final ReasignacionRepository reasignacionRepository;
+    private final EspecialidadRepository especialidadRepository;
 
     public CirugiaService(CirugiaRepository cirugiaRepository,
                           PabellonRepository pabellonRepository,
-                          ReasignacionRepository reasignacionRepository) {
+                          ReasignacionRepository reasignacionRepository,
+                          EspecialidadRepository especialidadRepository) {
         this.cirugiaRepository = cirugiaRepository;
         this.pabellonRepository = pabellonRepository;
         this.reasignacionRepository = reasignacionRepository;
+        this.especialidadRepository = especialidadRepository;
     }
 
     @Transactional(readOnly = true)
@@ -164,6 +169,18 @@ public class CirugiaService {
         if (cirugia.getEspecialidad() == null) {
             throw new RuntimeException("La especialidad es obligatoria para solicitar una cirugía");
         }
+        Especialidad esp = null;
+        if (cirugia.getEspecialidad().getIdEspecialidad() != null) {
+            esp = especialidadRepository.findById(cirugia.getEspecialidad().getIdEspecialidad()).orElse(null);
+        }
+        if (esp == null && cirugia.getEspecialidad().getNombre() != null) {
+            esp = especialidadRepository.findByNombre(cirugia.getEspecialidad().getNombre())
+                .orElseThrow(() -> new RuntimeException("Especialidad '" + cirugia.getEspecialidad().getNombre() + "' no encontrada en pabellon-service"));
+        }
+        if (esp == null) {
+            throw new RuntimeException("La especialidad es obligatoria para solicitar una cirugía");
+        }
+        cirugia.setEspecialidad(esp);
         cirugia.setEstado(EstadoCirugia.SOLICITADA);
         cirugia.setTriajeCompletado(false);
         cirugia.setPabellon(null);

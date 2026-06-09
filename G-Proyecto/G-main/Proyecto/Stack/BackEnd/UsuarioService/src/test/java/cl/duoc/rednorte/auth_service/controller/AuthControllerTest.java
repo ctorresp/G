@@ -29,8 +29,15 @@ class AuthControllerTest {
         request.setEmail("admin@test.cl");
         request.setContrasena("pass");
 
-        LoginResponseDTO responseDTO = new LoginResponseDTO("token", "Bearer", 1L, "12345678-9",
-                "Admin", "admin@test.cl", "ROLE_ADMIN", 86400000L);
+        LoginResponseDTO responseDTO = new LoginResponseDTO();
+        responseDTO.setToken("token");
+        responseDTO.setTipoToken("Bearer");
+        responseDTO.setIdUsuario(1L);
+        responseDTO.setRut("12345678-9");
+        responseDTO.setNombre("Admin");
+        responseDTO.setEmail("admin@test.cl");
+        responseDTO.setRol("ROLE_ADMIN");
+        responseDTO.setExpiracion(86400000L);
 
         when(authService.login(request)).thenReturn(responseDTO);
 
@@ -81,8 +88,15 @@ class AuthControllerTest {
     @Test
     void validarToken_conHeaderValido_deberiaRetornar200() {
         String token = "Bearer token-valido";
-        LoginResponseDTO responseDTO = new LoginResponseDTO("token-valido", "Bearer", 1L, "12345678-9",
-                "Admin", "admin@test.cl", "ROLE_ADMIN", 86400000L);
+        LoginResponseDTO responseDTO = new LoginResponseDTO();
+        responseDTO.setToken("token-valido");
+        responseDTO.setTipoToken("Bearer");
+        responseDTO.setIdUsuario(1L);
+        responseDTO.setRut("12345678-9");
+        responseDTO.setNombre("Admin");
+        responseDTO.setEmail("admin@test.cl");
+        responseDTO.setRol("ROLE_ADMIN");
+        responseDTO.setExpiracion(86400000L);
 
         when(authService.validarToken("token-valido")).thenReturn(responseDTO);
 

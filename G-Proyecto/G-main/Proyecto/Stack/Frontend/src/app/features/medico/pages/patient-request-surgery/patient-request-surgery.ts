@@ -1,10 +1,10 @@
-import { Component, signal, inject, AfterViewInit } from '@angular/core';
+import { Component, inject, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CirugiaService } from '../../../../core/services/cirugia.service';
-import { AuthService } from '../../../../core/services/auth.service';
 import { ToastService } from '../../../../core/services/toast.service';
+import { AuthService } from '../../../../core/services/auth.service';
 import { STORAGE_KEYS } from '../../../../core/constants';
 
 @Component({
@@ -17,14 +17,12 @@ export class PatientRequestSurgeryComponent implements AfterViewInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private cirugiaService = inject(CirugiaService);
-  private authService = inject(AuthService);
   private toastService = inject(ToastService);
+  private authService = inject(AuthService);
 
   pacienteRut: string = '';
   medicoNombre: string = '';
   especialidadNombre: string = '';
-  especialidadId: number | null = null;
-  loading = signal(true);
 
   solicitud = {
     fechaProgramada: '',
@@ -38,16 +36,21 @@ export class PatientRequestSurgeryComponent implements AfterViewInit {
       this.router.navigate(['/medico/pacientes']);
       return;
     }
-    this.cargarPerfilMedico();
-    this.loading.set(false);
+    this.especialidadNombre = localStorage.getItem(STORAGE_KEYS.USUARIO_ESPECIALIDAD_NOMBRE) || '';
+    this.cargarEspecialidadFallback();
   }
 
-  cargarPerfilMedico() {
+  private cargarEspecialidadFallback() {
+    if (this.especialidadNombre) return;
     this.authService.obtenerPerfilMedico().subscribe({
-      next: (perfil) => {
-        this.especialidadId = perfil.especialidadId;
-        this.especialidadNombre = perfil.especialidadNombre;
+      next: (res) => {
+        const nombre = res?.especialidad?.nombre || res?.especialidadNombre || '';
+        if (nombre) {
+          this.especialidadNombre = nombre;
+          localStorage.setItem(STORAGE_KEYS.USUARIO_ESPECIALIDAD_NOMBRE, nombre);
+        }
       },
+      error: () => {},
     });
   }
 
@@ -60,7 +63,7 @@ export class PatientRequestSurgeryComponent implements AfterViewInit {
 
     const payload = {
       pacienteRut: this.pacienteRut,
-      especialidad: { idEspecialidad: this.especialidadId! },
+      especialidad: { nombre: this.especialidadNombre },
       medicoRut: medicoRut,
       fechaProgramada: this.solicitud.fechaProgramada || null,
     };

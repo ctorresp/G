@@ -5,7 +5,9 @@ import cl.duoc.rednorte.auth_service.dto.LoginResponseDTO;
 import cl.duoc.rednorte.auth_service.dto.RegistroRequestDTO;
 import cl.duoc.rednorte.auth_service.model.Rol;
 import cl.duoc.rednorte.auth_service.repository.RolRepository;
+import cl.duoc.rednorte.usuarios.model.Medico;
 import cl.duoc.rednorte.usuarios.model.Usuario;
+import cl.duoc.rednorte.usuarios.repository.MedicoRepository;
 import cl.duoc.rednorte.usuarios.repository.UsuarioRepository;
 import cl.duoc.rednorte.auth_service.security.JwtTokenProvider;
 import cl.duoc.rednorte.paciente.model.Paciente;
@@ -44,6 +46,9 @@ public class AuthService {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
+    @Autowired
+    private MedicoRepository medicoRepository;
+
     public LoginResponseDTO login(LoginRequestDTO request) {
         String emailResuelto = resolverEmail(request);
 
@@ -58,16 +63,24 @@ public class AuthService {
         Usuario usuario = usuarioRepository.findByEmailAndEstadoTrue(emailResuelto)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        return new LoginResponseDTO(
-                token,
-                "Bearer",
-                usuario.getIdUsuario(),
-                usuario.getRut(),
-                usuario.getNombre(),
-                usuario.getEmail(),
-                usuario.getRol().getNombreRol(),
-                jwtTokenProvider.getExpiracionMs()
-        );
+        LoginResponseDTO response = new LoginResponseDTO();
+        response.setToken(token);
+        response.setTipoToken("Bearer");
+        response.setIdUsuario(usuario.getIdUsuario());
+        response.setRut(usuario.getRut());
+        response.setNombre(usuario.getNombre());
+        response.setEmail(usuario.getEmail());
+        response.setRol(usuario.getRol().getNombreRol());
+        response.setExpiracion(jwtTokenProvider.getExpiracionMs());
+
+        if (usuario.getRol().getNombreRol().equals("ROLE_MEDICO")) {
+            medicoRepository.findByUsuario_IdUsuario(usuario.getIdUsuario()).ifPresent(medico -> {
+                response.setEspecialidadId(medico.getEspecialidad().getIdEspecialidad());
+                response.setEspecialidadNombre(medico.getEspecialidad().getNombre());
+            });
+        }
+
+        return response;
     }
 
     public String registrarPaciente(RegistroRequestDTO request) {
@@ -138,16 +151,24 @@ public class AuthService {
         Usuario usuario = usuarioRepository.findByEmailAndEstadoTrue(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado o inactivo"));
 
-        return new LoginResponseDTO(
-                token,
-                "Bearer",
-                usuario.getIdUsuario(),
-                usuario.getRut(),
-                usuario.getNombre(),
-                usuario.getEmail(),
-                usuario.getRol().getNombreRol(),
-                jwtTokenProvider.getExpiracionMs()
-        );
+        LoginResponseDTO response = new LoginResponseDTO();
+        response.setToken(token);
+        response.setTipoToken("Bearer");
+        response.setIdUsuario(usuario.getIdUsuario());
+        response.setRut(usuario.getRut());
+        response.setNombre(usuario.getNombre());
+        response.setEmail(usuario.getEmail());
+        response.setRol(usuario.getRol().getNombreRol());
+        response.setExpiracion(jwtTokenProvider.getExpiracionMs());
+
+        if (usuario.getRol().getNombreRol().equals("ROLE_MEDICO")) {
+            medicoRepository.findByUsuario_IdUsuario(usuario.getIdUsuario()).ifPresent(medico -> {
+                response.setEspecialidadId(medico.getEspecialidad().getIdEspecialidad());
+                response.setEspecialidadNombre(medico.getEspecialidad().getNombre());
+            });
+        }
+
+        return response;
     }
 
     private String resolverEmail(LoginRequestDTO request) {

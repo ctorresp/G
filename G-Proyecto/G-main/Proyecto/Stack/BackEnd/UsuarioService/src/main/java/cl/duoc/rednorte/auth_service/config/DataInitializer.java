@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import cl.duoc.rednorte.usuarios.model.Especialidad;
 import cl.duoc.rednorte.usuarios.repository.EspecialidadRepository;
 import java.math.BigDecimal;
+import java.util.Optional;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
@@ -96,8 +97,21 @@ public class DataInitializer implements CommandLineRunner {
 
     private void crearMedicoSiNoExiste(Rol rolMedico) {
         String email = "medico@rednorte.cl";
-        if (usuarioRepository.existsByEmail(email)) {
-            log.info("  [USUARIO YA EXISTE]  {}", email);
+        Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);
+        if (usuarioOpt.isPresent()) {
+            Usuario usuario = usuarioOpt.get();
+            if (medicoRepository.findById(usuario.getIdUsuario()).isPresent()) {
+                log.info("  [MEDICO YA EXISTE]  {}", email);
+                return;
+            }
+            log.warn("  [USUARIO EXISTE SIN MEDICO]  {} — creando registro medico", email);
+            Especialidad espCirugia = especialidadRepository.findByNombre("Cirugía General")
+                    .orElseThrow(() -> new RuntimeException("Especialidad Cirugía General no encontrada"));
+            Medico med = new Medico();
+            med.setUsuario(usuario);
+            med.setEspecialidad(espCirugia);
+            medicoRepository.save(med);
+            log.info("  [MEDICO RECUPERADO]  {}", email);
             return;
         }
         Usuario medico = new Usuario();

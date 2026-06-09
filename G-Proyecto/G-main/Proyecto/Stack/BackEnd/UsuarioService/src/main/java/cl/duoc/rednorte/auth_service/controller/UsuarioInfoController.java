@@ -1,7 +1,9 @@
 package cl.duoc.rednorte.auth_service.controller;
 
+import cl.duoc.rednorte.usuarios.model.Especialidad;
 import cl.duoc.rednorte.usuarios.model.Medico;
 import cl.duoc.rednorte.usuarios.model.Usuario;
+import cl.duoc.rednorte.usuarios.repository.EspecialidadRepository;
 import cl.duoc.rednorte.usuarios.repository.MedicoRepository;
 import cl.duoc.rednorte.usuarios.repository.UsuarioRepository;
 import org.springframework.http.ResponseEntity;
@@ -17,10 +19,13 @@ public class UsuarioInfoController {
 
     private final UsuarioRepository usuarioRepository;
     private final MedicoRepository medicoRepository;
+    private final EspecialidadRepository especialidadRepository;
 
-    public UsuarioInfoController(UsuarioRepository usuarioRepository, MedicoRepository medicoRepository) {
+    public UsuarioInfoController(UsuarioRepository usuarioRepository, MedicoRepository medicoRepository,
+            EspecialidadRepository especialidadRepository) {
         this.usuarioRepository = usuarioRepository;
         this.medicoRepository = medicoRepository;
+        this.especialidadRepository = especialidadRepository;
     }
 
     @GetMapping("/rut/{rut}")
@@ -42,8 +47,15 @@ public class UsuarioInfoController {
         Usuario usuario = usuarioRepository.findByEmailAndEstadoTrue(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        Medico medico = medicoRepository.findById(usuario.getIdUsuario())
-                .orElseThrow(() -> new RuntimeException("Perfil médico no encontrado"));
+        Medico medico = medicoRepository.findByUsuario_IdUsuario(usuario.getIdUsuario())
+                .orElseGet(() -> {
+                    Especialidad esp = especialidadRepository.findByNombre("Cirugía General")
+                            .orElseThrow(() -> new RuntimeException("Especialidad por defecto no encontrada"));
+                    Medico nuevo = new Medico();
+                    nuevo.setUsuario(usuario);
+                    nuevo.setEspecialidad(esp);
+                    return medicoRepository.save(nuevo);
+                });
 
         return ResponseEntity.ok(Map.of(
                 "idUsuario", medico.getIdUsuario(),

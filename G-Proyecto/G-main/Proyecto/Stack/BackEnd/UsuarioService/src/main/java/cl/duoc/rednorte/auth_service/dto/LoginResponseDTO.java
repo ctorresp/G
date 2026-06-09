@@ -17,4 +17,6 @@ public class LoginResponseDTO {
     private String email;
     private String rol;
     private Long expiracion;
+    private Long especialidadId;
+    private String especialidadNombre;
 }

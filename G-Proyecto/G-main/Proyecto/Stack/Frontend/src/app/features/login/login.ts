@@ -58,6 +58,8 @@ export class Login implements OnInit {
         if (respuesta.idUsuario) localStorage.setItem(STORAGE_KEYS.USUARIO_ID, String(respuesta.idUsuario));
         if (respuesta.nombre) localStorage.setItem(STORAGE_KEYS.USUARIO_NOMBRE, respuesta.nombre);
         if (respuesta.rol) localStorage.setItem(STORAGE_KEYS.ROLES, respuesta.rol);
+        if (respuesta.especialidadId != null) localStorage.setItem(STORAGE_KEYS.USUARIO_ESPECIALIDAD_ID, String(respuesta.especialidadId));
+        if (respuesta.especialidadNombre) localStorage.setItem(STORAGE_KEYS.USUARIO_ESPECIALIDAD_NOMBRE, respuesta.especialidadNombre);
         const ruta = rol === 'ROLE_ADMIN' ? '/admin'
           : rol === 'ROLE_COORDINADOR' ? '/coordinador'
             : rol === 'ROLE_MEDICO' ? '/medico'
