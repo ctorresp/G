@@ -13,6 +13,10 @@ export class TriajeService {
     return this.http.get<any[]>(`${this.api}/pabellon/triajes/paciente/${rut}`);
   }
 
+  listarTodos(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.api}/pabellon/triajes`);
+  }
+
   guardar(payload: any): Observable<any> {
     return this.http.post(`${this.api}/pabellon/triajes`, payload);
   }

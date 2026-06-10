@@ -1,12 +1,13 @@
-import { Component, OnInit, OnDestroy, AfterViewInit, ChangeDetectorRef, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { interval, Subscription } from 'rxjs';
-import { TriajeService } from '../../../../core/services/triaje.service';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CirugiaService } from '../../../../core/services/cirugia.service';
+import { TriajeService } from '../../../../core/services/triaje.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { STORAGE_KEYS } from '../../../../core/constants';
-import { Triaje, TriajeGuardarPayload } from '../../../../core/interfaces';
+import { storage } from '../../../../core/storage';
+import { TriajeGuardarPayload } from '../../../../core/interfaces';
 
 @Component({
   selector: 'app-triage',
@@ -14,17 +15,16 @@ import { Triaje, TriajeGuardarPayload } from '../../../../core/interfaces';
   templateUrl: './triage.html',
   styleUrl: './triage.scss',
 })
-export class TriageComponent implements OnInit, OnDestroy, AfterViewInit {
-  private triajeService = inject(TriajeService);
+export class TriageComponent implements OnInit {
   private cirugiaService = inject(CirugiaService);
+  private triajeService = inject(TriajeService);
   private toastService = inject(ToastService);
-  private cdr = inject(ChangeDetectorRef);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
-  triajes: Triaje[] = [];
-  triajeBusquedaRut: string = '';
-  pendientesTriaje: any[] = [];
-  selectedCirugiaId: number | null = null;
-  private pollingSub: Subscription | null = null;
+  pacienteRut: string = '';
+  solicitud: any = null;
+  idCirugia: number | null = null;
 
   nuevoTriaje: TriajeGuardarPayload = {
     pacienteRut: '',
@@ -38,66 +38,39 @@ export class TriageComponent implements OnInit, OnDestroy, AfterViewInit {
   };
 
   ngOnInit() {
-    this.nuevoTriaje.triajerRut = localStorage.getItem(STORAGE_KEYS.USUARIO_RUT) || '';
-    this.cargarPendientes();
-  }
-
-  ngAfterViewInit() {
-    this.cargarPendientes();
-    this.pollingSub = interval(5000).subscribe(() => this.cargarPendientes());
-  }
-
-  ngOnDestroy() {
-    if (this.pollingSub) {
-      this.pollingSub.unsubscribe();
+    this.nuevoTriaje.triajerRut = storage.getItem(STORAGE_KEYS.USUARIO_RUT) || '';
+    const rutParam = this.route.snapshot.paramMap.get('rut');
+    const idParam = this.route.snapshot.paramMap.get('idCirugia');
+    if (rutParam) {
+      this.pacienteRut = rutParam;
+      this.nuevoTriaje.pacienteRut = rutParam;
+    }
+    const state = history.state as any;
+    if (state?.solicitud) {
+      this.solicitud = state.solicitud;
+      this.idCirugia = this.solicitud.idCirugia;
+    } else if (idParam) {
+      this.idCirugia = Number(idParam);
+      this.cargarSolicitud(this.idCirugia);
     }
   }
 
-  cargarPendientes() {
-    this.cirugiaService.listarPendientesTriaje().subscribe({
-      next: (data) => {
-        this.pendientesTriaje = data;
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        console.error('Error cargando pendientes triaje:', err);
-        this.pendientesTriaje = [];
-        this.cdr.detectChanges();
-      },
+  cargarSolicitud(id: number) {
+    this.cirugiaService.obtenerPorId(id).subscribe({
+      next: (data) => { this.solicitud = data; },
+      error: () => { this.solicitud = null; },
     });
-  }
-
-  seleccionarPendiente(c: any) {
-    this.selectedCirugiaId = c.idCirugia;
-    this.nuevoTriaje.pacienteRut = c.pacienteRut;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  cargarTriajes(rut: string) {
-    this.triajeService.listarPorPaciente(rut).subscribe({
-      next: (data) => {
-        this.triajes = data;
-      },
-      error: () => {
-        this.triajes = [];
-      },
-    });
-  }
-
-  buscarTriajes() {
-    if (this.triajeBusquedaRut) {
-      this.cargarTriajes(this.triajeBusquedaRut);
-    }
   }
 
   guardarTriaje() {
     this.triajeService.guardar(this.nuevoTriaje).subscribe({
       next: () => {
-        const rutGuardado = this.nuevoTriaje.pacienteRut;
-        const cirugiaId = this.selectedCirugiaId;
+        if (this.idCirugia) {
+          this.cirugiaService.marcarTriajeCompletado(this.idCirugia).subscribe();
+        }
         this.nuevoTriaje = {
           pacienteRut: '',
-          triajerRut: localStorage.getItem(STORAGE_KEYS.USUARIO_RUT) || '',
+          triajerRut: storage.getItem(STORAGE_KEYS.USUARIO_RUT) || '',
           nivelUrgencia: 3,
           sintomas: '',
           presionArterial: '',
@@ -105,22 +78,17 @@ export class TriageComponent implements OnInit, OnDestroy, AfterViewInit {
           temperatura: null,
           observaciones: '',
         };
-        this.selectedCirugiaId = null;
         this.toastService.mostrar('Triaje guardado exitosamente', 'success');
-        this.triajeBusquedaRut = rutGuardado;
-        this.buscarTriajes();
-        if (cirugiaId) {
-          this.cirugiaService.marcarTriajeCompletado(cirugiaId).subscribe({
-            next: () => {
-              this.cargarPendientes();
-            },
-          });
-        }
+        this.router.navigate(['/triajer/solicitudes']);
       },
       error: (err) => {
         const mensaje = err.error?.mensaje || 'Error al guardar triaje';
         this.toastService.mostrar(mensaje, 'error');
       },
     });
+  }
+
+  volver() {
+    this.router.navigate(['/triajer/solicitudes']);
   }
 }

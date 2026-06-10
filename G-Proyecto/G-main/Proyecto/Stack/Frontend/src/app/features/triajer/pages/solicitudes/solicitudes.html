@@ -1,0 +1,39 @@
+<div class="card">
+  <div class="table-header">
+    <h2>Solicitudes Pendientes de Triaje</h2>
+  </div>
+
+  <div class="table-responsive">
+    <table class="modern-table">
+      <thead>
+        <tr>
+          <th>RUT Paciente</th>
+          <th>RUT Médico</th>
+          <th>Especialidad</th>
+          <th>Fecha Solicitud</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (c of pendientes; track c.idCirugia) {
+          <tr>
+            <td>{{ c.pacienteRut }}</td>
+            <td>{{ c.medicoRut }}</td>
+            <td>{{ c.especialidadNombre || '—' }}</td>
+            <td>{{ (c.fechaSolicitud | date:'dd/MM/yyyy HH:mm') || '—' }}</td>
+            <td>
+              <button class="btn-action" (click)="verSolicitud(c)">Ver</button>
+            </td>
+          </tr>
+        }
+        @if (pendientes.length === 0) {
+          <tr>
+            <td colspan="5" class="empty-state">
+              No hay solicitudes pendientes de triaje
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

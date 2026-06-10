@@ -3,10 +3,11 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
 import { STORAGE_KEYS } from '../constants';
+import { storage } from '../storage';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
-  const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+  const token = storage.getItem(STORAGE_KEYS.TOKEN);
 
   if (token) {
     const clonedRequest = req.clone({
@@ -16,9 +17,10 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     });
     return next(clonedRequest).pipe(
       catchError((err) => {
+        console.log('[authInterceptor] error status:', err.status, err.statusText);
         if (err.status === 401) {
-          localStorage.removeItem(STORAGE_KEYS.TOKEN);
-          localStorage.removeItem(STORAGE_KEYS.PORTAL);
+          console.log('[authInterceptor] 401 detectado, limpiando sesion');
+          storage.removeItem(STORAGE_KEYS.TOKEN);
           router.navigate(['/login']);
         }
         return throwError(() => err);

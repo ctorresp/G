@@ -16,6 +16,8 @@ import { MedicoLayout } from './features/medico/medico-layout';
 import { CoordinadorLayout } from './features/coordinador/coordinador-layout';
 import { TriajerLayout } from './features/triajer/triajer-layout';
 import { TriageComponent } from './features/triajer/pages/triage/triage';
+import { SolicitudesComponent } from './features/triajer/pages/solicitudes/solicitudes';
+import { HistorialComponent } from './features/triajer/pages/historial/historial';
 import { MySurgeriesComponent } from './features/medico/pages/my-surgeries/my-surgeries';
 import { PatientsComponent } from './features/medico/pages/patients/patients';
 import { PatientDetailComponent as MedicoPatientDetailComponent } from './features/medico/pages/patient-detail/patient-detail';
@@ -72,8 +74,11 @@ export const routes: Routes = [
     component: TriajerLayout,
     canActivate: [authGuard, triajerGuard],
     children: [
-      { path: '', redirectTo: 'triaje', pathMatch: 'full' },
-      { path: 'triaje', component: TriageComponent },
+      { path: '', redirectTo: 'solicitudes', pathMatch: 'full' },
+      { path: 'solicitudes', component: SolicitudesComponent },
+      { path: 'historial', component: HistorialComponent },
+      { path: 'triaje/:rut', component: TriageComponent },
+      { path: 'triaje/:rut/:idCirugia', component: TriageComponent },
     ],
   },
 ];

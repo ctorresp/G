@@ -11,11 +11,21 @@
     </div>
 
     <nav class="sidebar-nav">
-      <a class="nav-item" routerLink="/triajer/triaje" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+      <a class="nav-item" routerLink="/triajer/solicitudes" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
         <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"></path>
+          <rect x="9" y="3" width="6" height="4" rx="1"></rect>
+          <line x1="9" y1="12" x2="15" y2="12"></line>
+          <line x1="9" y1="16" x2="13" y2="16"></line>
         </svg>
-        Triaje
+        Solicitudes
+      </a>
+      <a class="nav-item" routerLink="/triajer/historial" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+        Historial
       </a>
     </nav>
 

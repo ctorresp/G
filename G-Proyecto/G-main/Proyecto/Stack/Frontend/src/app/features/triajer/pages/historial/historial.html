@@ -1,0 +1,39 @@
+<div class="card">
+  <div class="table-header">
+    <h2>Historial de Triajes</h2>
+  </div>
+
+  <div class="table-responsive">
+    <table class="modern-table">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>RUT Paciente</th>
+          <th>Nivel Urgencia</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (t of triajes; track t.idTriaje) {
+          <tr>
+            <td>{{ t.fechaTriaje || t.fecha | date:'dd/MM/yyyy HH:mm' }}</td>
+            <td>{{ t.pacienteRut }}</td>
+            <td>
+              <span class="status-badge"
+                [class.active]="t.nivelUrgencia <= 2"
+                [class.inactive]="t.nivelUrgencia > 2">
+                {{ t.nivelUrgencia }} — {{ nivelLabel(t.nivelUrgencia) }}
+              </span>
+            </td>
+          </tr>
+        }
+        @if (triajes.length === 0) {
+          <tr>
+            <td colspan="3" class="empty-state">
+              No hay triajes registrados
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -17,6 +17,10 @@ export class AuthService {
     return this.http.post(`${this.api}/auth/admin/registro?rol=${rol}`, payload);
   }
 
+  registrarMedicoCompleto(payload: any, especialidadId: number): Observable<any> {
+    return this.http.post(`${this.api}/auth/admin/registro-medico?especialidadId=${especialidadId}`, payload);
+  }
+
   listarMedicos(): Observable<any[]> {
     return this.http.get<any[]>(`${this.api}/admin/medicos`);
   }

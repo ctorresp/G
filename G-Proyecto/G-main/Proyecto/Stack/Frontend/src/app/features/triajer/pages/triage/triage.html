@@ -1,57 +1,31 @@
-<div class="card mb-4">
-  <div class="table-header">
-    <h2>Solicitudes de Cirugía Pendientes</h2>
-  </div>
-
-  <div class="table-responsive">
-    <table class="modern-table">
-      <thead>
-        <tr>
-          <th>Paciente</th>
-          <th>RUT</th>
-          <th>Médico Solicitante</th>
-          <th>Fecha Sugerida</th>
-          <th>Acción</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (c of pendientesTriaje; track c.idCirugia) {
-          <tr>
-            <td>{{ c.pacienteNombre || c.pacienteRut }}</td>
-            <td>{{ c.pacienteRut }}</td>
-            <td>{{ c.medicoNombre || c.medicoRut }}</td>
-            <td>{{ c.fechaProgramada | date:'dd/MM/yyyy' }}</td>
-            <td>
-              <button class="btn-action" (click)="seleccionarPendiente(c)">
-                Realizar Triaje
-              </button>
-            </td>
-          </tr>
-        }
-        @if (pendientesTriaje.length === 0) {
-          <tr>
-            <td colspan="6" class="empty-state">
-              No hay solicitudes pendientes de triaje
-            </td>
-          </tr>
-        }
-      </tbody>
-    </table>
-  </div>
-</div>
-
-<div class="card mb-4">
+<div class="card">
   <div class="table-header">
     <h2>Registrar Triaje</h2>
   </div>
 
+  <div class="solicitud-info">
+    <div class="info-grid">
+      <div class="info-item">
+        <span class="info-label">RUT Paciente</span>
+        <span class="info-value">{{ pacienteRut || 'Cargando...' }}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">RUT Médico</span>
+        <span class="info-value">{{ solicitud?.medicoRut || 'Cargando...' }}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Especialidad</span>
+        <span class="info-value">{{ solicitud?.especialidadNombre || 'Cargando...' }}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Fecha Solicitud</span>
+        <span class="info-value">{{ solicitud?.fechaSolicitud | date:'dd/MM/yyyy' }}</span>
+      </div>
+    </div>
+  </div>
+
   <form class="registro-form" #triajeForm="ngForm" (ngSubmit)="triajeForm.form.valid && guardarTriaje()">
     <div class="form-grid">
-      <div class="form-group">
-        <label>RUT del Paciente</label>
-        <input type="text" name="triPacRut" [(ngModel)]="nuevoTriaje.pacienteRut" placeholder="Ej: 11111111-1" required>
-      </div>
-
       <div class="form-group">
         <label>Nivel de Urgencia</label>
         <select name="triNivel" [(ngModel)]="nuevoTriaje.nivelUrgencia" required>
@@ -61,11 +35,6 @@
           <option value="4">4 — Urgencia Menor</option>
           <option value="5">5 — No Urgente</option>
         </select>
-      </div>
-
-      <div class="form-group">
-        <label>Síntomas</label>
-        <textarea name="triSintomas" [(ngModel)]="nuevoTriaje.sintomas" placeholder="Describa los síntomas..." rows="3" class="edit-input"></textarea>
       </div>
 
       <div class="form-group">
@@ -90,57 +59,8 @@
     </div>
 
     <div class="form-actions">
+      <button type="button" class="btn-cancel" (click)="volver()">Volver</button>
       <button type="submit" class="btn-save" [disabled]="!triajeForm.valid">Guardar Triaje</button>
     </div>
   </form>
-</div>
-
-<div class="card">
-  <div class="table-header">
-    <h2>Consultar Historial de Triajes</h2>
-    <div class="search-row">
-      <input type="text" [(ngModel)]="triajeBusquedaRut" placeholder="RUT del paciente..." class="search-input">
-      <button class="btn-save" (click)="buscarTriajes()">Buscar</button>
-    </div>
-  </div>
-
-  <div class="table-responsive">
-    <table class="modern-table">
-      <thead>
-        <tr>
-          <th>Fecha</th>
-          <th>Nivel</th>
-          <th>Síntomas</th>
-          <th>P.A.</th>
-          <th>F.C.</th>
-          <th>Temp.</th>
-          <th>Observaciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (t of triajes; track t.idTriaje) {
-          <tr>
-            <td>{{ t.fecha | date:'dd/MM/yyyy HH:mm' }}</td>
-            <td>
-              <span class="status-badge" [class.active]="t.nivelUrgencia <= 2" [class.inactive]="t.nivelUrgencia > 2">
-                {{ t.nivelUrgencia }}
-              </span>
-            </td>
-            <td>{{ t.sintomas }}</td>
-            <td>{{ t.presionArterial }}</td>
-            <td>{{ t.frecuenciaCardiaca }}</td>
-            <td>{{ t.temperatura }}</td>
-            <td>{{ t.observaciones }}</td>
-          </tr>
-        }
-        @if (triajes.length === 0) {
-          <tr>
-            <td colspan="7" class="empty-state">
-              Ingresa un RUT y presiona Buscar
-            </td>
-          </tr>
-        }
-      </tbody>
-    </table>
-  </div>
 </div>

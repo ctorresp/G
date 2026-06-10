@@ -76,6 +76,27 @@ public class AuthController {
         }
     }
 
+    // Registra un médico completo (Usuario + Medico + Especialidad)
+    @PostMapping("/admin/registro-medico")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<?> registrarMedicoCompleto(
+            @RequestBody RegistroRequestDTO request,
+            @RequestParam Long especialidadId) {
+        try {
+            String mensaje = authService.registrarMedicoCompleto(request, especialidadId);
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(Map.of("mensaje", mensaje));
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of(
+                            "error", "Error en el registro de médico",
+                            "mensaje", e.getMessage() != null ? e.getMessage() : "Error desconocido"
+                    ));
+        }
+    }
+
     // Valida tokens externamente (uso interno para microservicios)
     @PostMapping("/validar")
     public ResponseEntity<?> validarToken(

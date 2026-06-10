@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { Router, RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { STORAGE_KEYS } from '../../core/constants';
+import { storage } from '../../core/storage';
 
 
 @Component({
@@ -15,22 +16,22 @@ export class AdminLayout implements OnInit {
   usuarioNombre: string = '';
 
   ngOnInit() {
-    const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+    const token = storage.getItem(STORAGE_KEYS.TOKEN);
     if (!token) {
       this.router.navigate(['/login']);
       return;
     }
-    this.usuarioRut = localStorage.getItem(STORAGE_KEYS.USUARIO_RUT) || '';
-    this.usuarioNombre = localStorage.getItem(STORAGE_KEYS.USUARIO_RUT) || 'Admin';
+    this.usuarioRut = storage.getItem(STORAGE_KEYS.USUARIO_RUT) || '';
+    this.usuarioNombre = storage.getItem(STORAGE_KEYS.USUARIO_RUT) || 'Admin';
   }
 
   cerrarSesion() {
-    localStorage.removeItem(STORAGE_KEYS.TOKEN);
-    localStorage.removeItem(STORAGE_KEYS.PORTAL);
-    localStorage.removeItem(STORAGE_KEYS.USUARIO_RUT);
-    localStorage.removeItem(STORAGE_KEYS.USUARIO_ID);
-    localStorage.removeItem(STORAGE_KEYS.USUARIO_NOMBRE);
-    localStorage.removeItem(STORAGE_KEYS.ROLES);
+    storage.removeItem(STORAGE_KEYS.TOKEN);
+    storage.removeItem(STORAGE_KEYS.PORTAL);
+    storage.removeItem(STORAGE_KEYS.USUARIO_RUT);
+    storage.removeItem(STORAGE_KEYS.USUARIO_ID);
+    storage.removeItem(STORAGE_KEYS.USUARIO_NOMBRE);
+    storage.removeItem(STORAGE_KEYS.ROLES);
     this.router.navigate(['/']);
   }
 }

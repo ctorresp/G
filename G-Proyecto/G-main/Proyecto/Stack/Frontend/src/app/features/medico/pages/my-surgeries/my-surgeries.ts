@@ -4,6 +4,7 @@ import { CirugiaService } from '../../../../core/services/cirugia.service';
 import { PacienteService } from '../../../../core/services/paciente.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { STORAGE_KEYS } from '../../../../core/constants';
+import { storage } from '../../../../core/storage';
 import { Cirugia } from '../../../../core/interfaces';
 
 @Component({
@@ -44,7 +45,7 @@ export class MySurgeriesComponent implements OnInit {
   cargarCirugias() {
     if (this.loading) return;
     this.loading = true;
-    const rut = localStorage.getItem(STORAGE_KEYS.USUARIO_RUT);
+    const rut = storage.getItem(STORAGE_KEYS.USUARIO_RUT);
     if (!rut) { this.loading = false; return; }
 
     this.cirugiaService.listarPorMedico(rut).subscribe({

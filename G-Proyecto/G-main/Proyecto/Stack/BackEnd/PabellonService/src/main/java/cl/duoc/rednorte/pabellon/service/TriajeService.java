@@ -23,4 +23,8 @@ public class TriajeService {
     public List<Triaje> historialPorPaciente(String pacienteRut) {
         return repository.findByPacienteRutOrderByFechaTriajeDesc(pacienteRut);
     }
+
+    public List<Triaje> listarTodos() {
+        return repository.findAll();
+    }
 }

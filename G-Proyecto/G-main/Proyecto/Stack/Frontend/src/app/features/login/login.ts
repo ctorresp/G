@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { environment } from '../../../environments/environment';
 import { STORAGE_KEYS } from '../../core/constants';
+import { storage } from '../../core/storage';
 
 @Component({
   selector: 'app-login',
@@ -30,7 +31,7 @@ export class Login implements OnInit {
   constructor(private router: Router, private http: HttpClient, private cdr: ChangeDetectorRef) { }
 
   ngOnInit() {
-    const guardado = localStorage.getItem(STORAGE_KEYS.PORTAL);
+    const guardado =     storage.getItem(STORAGE_KEYS.PORTAL);
     if (guardado) this.portalSeleccionado = guardado;
   }
 
@@ -53,13 +54,13 @@ export class Login implements OnInit {
           this.cdr.detectChanges();
           return;
         }
-        localStorage.setItem(STORAGE_KEYS.TOKEN, respuesta.token);
-        if (respuesta.rut) localStorage.setItem(STORAGE_KEYS.USUARIO_RUT, respuesta.rut);
-        if (respuesta.idUsuario) localStorage.setItem(STORAGE_KEYS.USUARIO_ID, String(respuesta.idUsuario));
-        if (respuesta.nombre) localStorage.setItem(STORAGE_KEYS.USUARIO_NOMBRE, respuesta.nombre);
-        if (respuesta.rol) localStorage.setItem(STORAGE_KEYS.ROLES, respuesta.rol);
-        if (respuesta.especialidadId != null) localStorage.setItem(STORAGE_KEYS.USUARIO_ESPECIALIDAD_ID, String(respuesta.especialidadId));
-        if (respuesta.especialidadNombre) localStorage.setItem(STORAGE_KEYS.USUARIO_ESPECIALIDAD_NOMBRE, respuesta.especialidadNombre);
+        storage.setItem(STORAGE_KEYS.TOKEN, respuesta.token);
+        if (respuesta.rut) storage.setItem(STORAGE_KEYS.USUARIO_RUT, respuesta.rut);
+        if (respuesta.idUsuario) storage.setItem(STORAGE_KEYS.USUARIO_ID, String(respuesta.idUsuario));
+        if (respuesta.nombre) storage.setItem(STORAGE_KEYS.USUARIO_NOMBRE, respuesta.nombre);
+        if (respuesta.rol) storage.setItem(STORAGE_KEYS.ROLES, respuesta.rol);
+        if (respuesta.especialidadId != null) storage.setItem(STORAGE_KEYS.USUARIO_ESPECIALIDAD_ID, String(respuesta.especialidadId));
+        if (respuesta.especialidadNombre) storage.setItem(STORAGE_KEYS.USUARIO_ESPECIALIDAD_NOMBRE, respuesta.especialidadNombre);
         const ruta = rol === 'ROLE_ADMIN' ? '/admin'
           : rol === 'ROLE_COORDINADOR' ? '/coordinador'
             : rol === 'ROLE_MEDICO' ? '/medico'

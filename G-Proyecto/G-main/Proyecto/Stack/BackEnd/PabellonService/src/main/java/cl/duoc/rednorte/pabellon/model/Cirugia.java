@@ -51,6 +51,9 @@ public class Cirugia {
     @Column(name = "fecha_cancelacion")
     private LocalDateTime fechaCancelacion;
 
+    @Column(name = "fecha_solicitud")
+    private LocalDateTime fechaSolicitud;
+
     @Column(name = "triaje_completado", nullable = false)
     private boolean triajeCompletado = false;
 
@@ -76,6 +79,8 @@ public class Cirugia {
     public void setMotivoCancelacion(String m) { this.motivoCancelacion = m; }
     public LocalDateTime getFechaCancelacion() { return fechaCancelacion; }
     public void setFechaCancelacion(LocalDateTime f) { this.fechaCancelacion = f; }
+    public LocalDateTime getFechaSolicitud() { return fechaSolicitud; }
+    public void setFechaSolicitud(LocalDateTime f) { this.fechaSolicitud = f; }
     public boolean isTriajeCompletado() { return triajeCompletado; }
     public void setTriajeCompletado(boolean t) { this.triajeCompletado = t; }
 }

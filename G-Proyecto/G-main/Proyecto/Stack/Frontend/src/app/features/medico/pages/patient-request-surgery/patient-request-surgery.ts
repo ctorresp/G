@@ -6,6 +6,7 @@ import { CirugiaService } from '../../../../core/services/cirugia.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { STORAGE_KEYS } from '../../../../core/constants';
+import { storage } from '../../../../core/storage';
 
 @Component({
   selector: 'app-patient-request-surgery',
@@ -30,13 +31,13 @@ export class PatientRequestSurgeryComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     this.pacienteRut = this.route.snapshot.paramMap.get('rut') || '';
-    this.medicoNombre = localStorage.getItem(STORAGE_KEYS.USUARIO_NOMBRE) || 'Médico';
+    this.medicoNombre = storage.getItem(STORAGE_KEYS.USUARIO_NOMBRE) || 'Médico';
     if (!this.pacienteRut) {
       this.toastService.mostrar('RUT de paciente no especificado', 'error');
       this.router.navigate(['/medico/pacientes']);
       return;
     }
-    this.especialidadNombre = localStorage.getItem(STORAGE_KEYS.USUARIO_ESPECIALIDAD_NOMBRE) || '';
+    this.especialidadNombre = storage.getItem(STORAGE_KEYS.USUARIO_ESPECIALIDAD_NOMBRE) || '';
     this.cargarEspecialidadFallback();
   }
 
@@ -47,7 +48,7 @@ export class PatientRequestSurgeryComponent implements AfterViewInit {
         const nombre = res?.especialidad?.nombre || res?.especialidadNombre || '';
         if (nombre) {
           this.especialidadNombre = nombre;
-          localStorage.setItem(STORAGE_KEYS.USUARIO_ESPECIALIDAD_NOMBRE, nombre);
+          storage.setItem(STORAGE_KEYS.USUARIO_ESPECIALIDAD_NOMBRE, nombre);
         }
       },
       error: () => {},
@@ -55,7 +56,7 @@ export class PatientRequestSurgeryComponent implements AfterViewInit {
   }
 
   enviarSolicitud() {
-    const medicoRut = localStorage.getItem(STORAGE_KEYS.USUARIO_RUT);
+    const medicoRut = storage.getItem(STORAGE_KEYS.USUARIO_RUT);
     if (!medicoRut) {
       this.toastService.mostrar('Error de sesión', 'error');
       return;

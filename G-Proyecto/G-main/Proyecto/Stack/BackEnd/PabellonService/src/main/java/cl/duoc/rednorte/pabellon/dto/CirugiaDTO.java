@@ -19,6 +19,7 @@ public class CirugiaDTO {
     private String estado;
     private String motivoCancelacion;
     private LocalDateTime fechaCancelacion;
+    private LocalDateTime fechaSolicitud;
 
     public static CirugiaDTO fromEntity(Cirugia c) {
         CirugiaDTO dto = new CirugiaDTO();
@@ -39,6 +40,7 @@ public class CirugiaDTO {
         dto.setEstado(c.getEstado() != null ? c.getEstado().name() : null);
         dto.setMotivoCancelacion(c.getMotivoCancelacion());
         dto.setFechaCancelacion(c.getFechaCancelacion());
+        dto.setFechaSolicitud(c.getFechaSolicitud());
         return dto;
     }
 
@@ -68,4 +70,6 @@ public class CirugiaDTO {
     public void setMotivoCancelacion(String m) { this.motivoCancelacion = m; }
     public LocalDateTime getFechaCancelacion() { return fechaCancelacion; }
     public void setFechaCancelacion(LocalDateTime f) { this.fechaCancelacion = f; }
+    public LocalDateTime getFechaSolicitud() { return fechaSolicitud; }
+    public void setFechaSolicitud(LocalDateTime f) { this.fechaSolicitud = f; }
 }

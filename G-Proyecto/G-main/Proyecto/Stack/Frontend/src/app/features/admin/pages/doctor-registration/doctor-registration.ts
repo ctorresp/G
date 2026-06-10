@@ -89,27 +89,16 @@ export class DoctorRegistrationComponent implements OnInit {
 
     if (hasError) return;
 
-    const rut = this.nuevoMedico.rut;
     const espId = this.especialidadSeleccionada!;
 
-    this.authService.registrarMedico(this.nuevoMedico).subscribe({
+    this.authService.registrarMedicoCompleto(this.nuevoMedico, espId).subscribe({
       next: () => {
-        this.pabellonService.asignarEspecialidadAMedico(rut, [espId]).subscribe({
-          next: () => {
-            this.nuevoMedico = this.crearNuevoMedico();
-            this.especialidadSeleccionada = null;
-            this.toastService.mostrar('Médico registrado exitosamente', 'success');
-          },
-          error: () => this.toastService.mostrar('Médico creado pero hubo un error al asignar especialidad', 'error'),
-        });
+        this.nuevoMedico = this.crearNuevoMedico();
+        this.especialidadSeleccionada = null;
+        this.toastService.mostrar('Médico registrado exitosamente', 'success');
       },
       error: (err) => {
-        let mensaje = 'Error al registrar médico';
-        if (err.error) {
-          if (typeof err.error === 'string') mensaje = err.error;
-          else if (err.error.mensaje) mensaje = err.error.mensaje;
-          else if (err.error.error) mensaje = err.error.error;
-        }
+        const mensaje = err.error?.mensaje || 'Error al registrar médico';
         this.toastService.mostrar(mensaje, 'error');
       },
     });

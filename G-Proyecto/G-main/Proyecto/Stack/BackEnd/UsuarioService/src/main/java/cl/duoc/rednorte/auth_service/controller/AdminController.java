@@ -1,6 +1,6 @@
 package cl.duoc.rednorte.auth_service.controller;
 
-import cl.duoc.rednorte.auth_service.dto.UsuarioDTO;
+import cl.duoc.rednorte.usuarios.dto.UsuarioResponseDTO;
 import cl.duoc.rednorte.auth_service.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,7 +20,7 @@ public class AdminController {
     private AdminService adminService;
 
     @GetMapping
-    public ResponseEntity<List<UsuarioDTO>> listarUsuarios() {
+    public ResponseEntity<List<UsuarioResponseDTO>> listarUsuarios() {
         return ResponseEntity.ok(adminService.listarUsuarios());
     }
 
@@ -31,7 +31,7 @@ public class AdminController {
             if (nuevoEstado == null) {
                 return ResponseEntity.badRequest().body(Map.of("error", "Campo 'estado' requerido"));
             }
-            UsuarioDTO actualizado = adminService.cambiarEstadoUsuario(id, nuevoEstado);
+            UsuarioResponseDTO actualizado = adminService.cambiarEstadoUsuario(id, nuevoEstado);
             return ResponseEntity.ok(Map.of(
                     "mensaje", "Estado actualizado exitosamente",
                     "usuario", actualizado

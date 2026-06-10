@@ -31,4 +31,12 @@ public class TriajeController {
                 .map(TriajeDTO::fromEntity).collect(Collectors.toList());
         return ResponseEntity.ok(dtos);
     }
+
+    @GetMapping
+    @PreAuthorize("hasAuthority('ROLE_TRIAJER')")
+    public ResponseEntity<List<TriajeDTO>> listarTodos() {
+        List<TriajeDTO> dtos = service.listarTodos().stream()
+                .map(TriajeDTO::fromEntity).collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
+    }
 }

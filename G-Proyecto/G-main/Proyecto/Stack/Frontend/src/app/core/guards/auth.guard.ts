@@ -1,6 +1,7 @@
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { STORAGE_KEYS } from '../constants';
+import { storage } from '../storage';
 
 function isTokenExpired(token: string): boolean {
   try {
@@ -13,11 +14,16 @@ function isTokenExpired(token: string): boolean {
 
 export const authGuard = () => {
   const router = inject(Router);
-  const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
-  if (token && !isTokenExpired(token)) {
-    return true;
+  const token = storage.getItem(STORAGE_KEYS.TOKEN);
+  console.log('[authGuard] token encontrado:', !!token, 'storage:', storage.getItem(STORAGE_KEYS.TOKEN) ? 'session' : 'vacio');
+  if (token) {
+    const expired = isTokenExpired(token);
+    console.log('[authGuard] token expirado:', expired);
+    if (!expired) {
+      return true;
+    }
   }
-  localStorage.removeItem(STORAGE_KEYS.TOKEN);
-  localStorage.removeItem(STORAGE_KEYS.PORTAL);
+  console.log('[authGuard] redirigiendo a /login');
+  storage.removeItem(STORAGE_KEYS.TOKEN);
   return router.parseUrl('/login');
 };

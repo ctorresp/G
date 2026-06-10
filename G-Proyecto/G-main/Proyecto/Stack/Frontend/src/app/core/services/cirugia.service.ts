@@ -29,6 +29,10 @@ export class CirugiaService {
     return this.http.put<void>(`${this.api}/pabellon/cirugias/${id}/triaje-completado`, {});
   }
 
+  obtenerPorId(id: number): Observable<any> {
+    return this.http.get<any>(`${this.api}/pabellon/cirugias/${id}`);
+  }
+
   solicitar(payload: any): Observable<any> {
     return this.http.post(`${this.api}/pabellon/cirugias/solicitar`, payload);
   }

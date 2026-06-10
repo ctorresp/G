@@ -72,11 +72,12 @@
 
   input,
   select {
-    padding: 14px 16px;
+    padding: 10px 12px;
     border: 1px solid #e2e8f0;
-    border-radius: 12px;
+    border-radius: 10px;
     font-family: 'DM Sans', sans-serif;
     font-weight: 500;
+    font-size: 13px;
     color: #0f172a;
     background-color: #f8fafc;
     outline: none;
@@ -95,17 +96,17 @@
 }
 
 .edit-input {
-  padding: 12px 16px;
+  padding: 8px 12px;
   border: 1px solid #e2e8f0;
-  border-radius: 12px;
+  border-radius: 10px;
   font-family: 'DM Sans', sans-serif;
-  font-size: 14px;
+  font-size: 13px;
   color: #0f172a;
   background-color: #f8fafc;
   outline: none;
   resize: vertical;
   transition: all 0.2s;
-  min-height: 50px;
+  min-height: 36px;
 
   &:focus {
     border-color: #3b82f6;
@@ -215,6 +216,40 @@
   text-align: center;
   padding: 40px;
   color: #94a3b8;
+}
+
+.solicitud-info {
+  background: #f8fafc;
+  border-radius: 16px;
+  padding: 20px 24px;
+  margin-bottom: 24px;
+  border: 1px solid #e2e8f0;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.info-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.info-value {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
 }
 
 .btn-action {

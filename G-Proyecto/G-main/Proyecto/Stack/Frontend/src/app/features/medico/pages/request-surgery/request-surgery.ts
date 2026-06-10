@@ -7,6 +7,7 @@ import { PacienteService } from '../../../../core/services/paciente.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { STORAGE_KEYS } from '../../../../core/constants';
+import { storage } from '../../../../core/storage';
 import { Paciente } from '../../../../core/interfaces';
 
 @Component({
@@ -35,12 +36,12 @@ export class RequestSurgeryComponent implements OnInit {
   };
 
   ngOnInit() {
-    const rut = localStorage.getItem(STORAGE_KEYS.USUARIO_RUT);
+    const rut = storage.getItem(STORAGE_KEYS.USUARIO_RUT);
     if (rut) {
       this.solicitudCirugia.medicoRut = rut;
     }
-    this.medicoNombre = localStorage.getItem(STORAGE_KEYS.USUARIO_NOMBRE) || '';
-    this.especialidadNombre = localStorage.getItem(STORAGE_KEYS.USUARIO_ESPECIALIDAD_NOMBRE) || '';
+    this.medicoNombre = storage.getItem(STORAGE_KEYS.USUARIO_NOMBRE) || '';
+    this.especialidadNombre = storage.getItem(STORAGE_KEYS.USUARIO_ESPECIALIDAD_NOMBRE) || '';
     this.solicitudCirugia.especialidadNombre = this.especialidadNombre;
     this.cargarPacientes();
     this.cargarEspecialidadFallback();
@@ -54,7 +55,7 @@ export class RequestSurgeryComponent implements OnInit {
         if (nombre) {
           this.especialidadNombre = nombre;
           this.solicitudCirugia.especialidadNombre = nombre;
-          localStorage.setItem(STORAGE_KEYS.USUARIO_ESPECIALIDAD_NOMBRE, nombre);
+          storage.setItem(STORAGE_KEYS.USUARIO_ESPECIALIDAD_NOMBRE, nombre);
         }
       },
       error: () => {},

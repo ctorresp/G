@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { PacienteService } from '../../../../core/services/paciente.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { STORAGE_KEYS } from '../../../../core/constants';
+import { storage } from '../../../../core/storage';
 
 @Component({
   selector: 'app-patients',
@@ -25,7 +26,7 @@ export class PatientsComponent implements AfterViewInit {
 
   cargarPacientes() {
     this.loading.set(true);
-    const rutMedico = localStorage.getItem(STORAGE_KEYS.USUARIO_RUT);
+    const rutMedico = storage.getItem(STORAGE_KEYS.USUARIO_RUT);
     if (rutMedico) {
       this.pacienteService.listarPorMedicoRut(rutMedico).subscribe({
         next: (data) => {
@@ -38,7 +39,7 @@ export class PatientsComponent implements AfterViewInit {
         },
       });
     } else {
-      const idMedico = Number(localStorage.getItem(STORAGE_KEYS.USUARIO_ID));
+      const idMedico = Number(storage.getItem(STORAGE_KEYS.USUARIO_ID));
       if (!idMedico) {
         this.toastService.mostrar('No se pudo identificar al médico', 'error');
         this.loading.set(false);

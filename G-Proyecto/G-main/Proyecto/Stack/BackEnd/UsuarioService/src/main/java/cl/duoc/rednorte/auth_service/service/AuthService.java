@@ -3,22 +3,19 @@ package cl.duoc.rednorte.auth_service.service;
 import cl.duoc.rednorte.auth_service.dto.LoginRequestDTO;
 import cl.duoc.rednorte.auth_service.dto.LoginResponseDTO;
 import cl.duoc.rednorte.auth_service.dto.RegistroRequestDTO;
-import cl.duoc.rednorte.auth_service.model.Rol;
-import cl.duoc.rednorte.auth_service.repository.RolRepository;
-import cl.duoc.rednorte.usuarios.model.Medico;
-import cl.duoc.rednorte.usuarios.model.Usuario;
-import cl.duoc.rednorte.usuarios.repository.MedicoRepository;
-import cl.duoc.rednorte.usuarios.repository.UsuarioRepository;
 import cl.duoc.rednorte.auth_service.security.JwtTokenProvider;
 import cl.duoc.rednorte.paciente.model.Paciente;
 import cl.duoc.rednorte.paciente.repository.PacienteRepository;
+import cl.duoc.rednorte.usuarios.dto.UsuarioRequestDTO;
+import cl.duoc.rednorte.usuarios.model.Usuario;
+import cl.duoc.rednorte.usuarios.service.MedicoService;
+import cl.duoc.rednorte.usuarios.service.UsuarioService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,22 +29,16 @@ public class AuthService {
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    private UsuarioRepository usuarioRepository;
+    private UsuarioService usuarioService;
 
     @Autowired
-    private RolRepository rolRepository;
+    private MedicoService medicoService;
 
     @Autowired
     private PacienteRepository pacienteRepository;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
     private JwtTokenProvider jwtTokenProvider;
-
-    @Autowired
-    private MedicoRepository medicoRepository;
 
     public LoginResponseDTO login(LoginRequestDTO request) {
         String emailResuelto = resolverEmail(request);
@@ -60,7 +51,7 @@ public class AuthService {
 
         String token = jwtTokenProvider.generarToken(authentication);
 
-        Usuario usuario = usuarioRepository.findByEmailAndEstadoTrue(emailResuelto)
+        Usuario usuario = usuarioService.buscarPorEmailActivo(emailResuelto)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         LoginResponseDTO response = new LoginResponseDTO();
@@ -74,7 +65,7 @@ public class AuthService {
         response.setExpiracion(jwtTokenProvider.getExpiracionMs());
 
         if (usuario.getRol().getNombreRol().equals("ROLE_MEDICO")) {
-            medicoRepository.findByUsuario_IdUsuario(usuario.getIdUsuario()).ifPresent(medico -> {
+            medicoService.buscarPorIdUsuario(usuario.getIdUsuario()).ifPresent(medico -> {
                 response.setEspecialidadId(medico.getEspecialidad().getIdEspecialidad());
                 response.setEspecialidadNombre(medico.getEspecialidad().getNombre());
             });
@@ -102,7 +93,7 @@ public class AuthService {
         paciente.setContactoEmergenciaTelefono(request.getContactoEmergenciaTelefono());
 
         if (request.getIdMedico() != null) {
-            Usuario medico = usuarioRepository.findById(request.getIdMedico())
+            Usuario medico = usuarioService.buscarPorId(request.getIdMedico())
                     .orElseThrow(() -> new RuntimeException("Médico no encontrado con ID: " + request.getIdMedico()));
             paciente.setMedicoAsignado(medico);
         }
@@ -113,32 +104,24 @@ public class AuthService {
     }
 
     public String registrarUsuarioAdmin(RegistroRequestDTO request, String nombreRol) {
-        if (usuarioRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("El email ya está registrado: " + request.getEmail());
-        }
-        if (usuarioRepository.existsByRut(request.getRut())) {
-            throw new RuntimeException("El RUT ya está registrado: " + request.getRut());
-        }
-
-        Usuario usuario = new Usuario();
-        usuario.setRut(request.getRut());
-        usuario.setNombre(request.getNombre());
-        usuario.setEmail(request.getEmail());
-        usuario.setContrasena(passwordEncoder.encode(request.getContrasena()));
-        usuario.setEstado(true);
-
-        Rol rol = rolRepository.findByNombreRol(nombreRol)
-                .orElseGet(() -> {
-                    Rol nuevoRol = new Rol();
-                    nuevoRol.setNombreRol(nombreRol);
-                    nuevoRol.setDescripcion("Rol administrativo: " + nombreRol);
-                    return rolRepository.save(nuevoRol);
-                });
-
-        usuario.setRol(rol);
-
-        Usuario guardado = usuarioRepository.save(usuario);
+        UsuarioRequestDTO dto = new UsuarioRequestDTO();
+        dto.setRut(request.getRut());
+        dto.setNombre(request.getNombre());
+        dto.setEmail(request.getEmail());
+        dto.setContrasena(request.getContrasena());
+        Usuario guardado = usuarioService.crear(dto, nombreRol);
         return "Usuario " + nombreRol + " registrado con ID: " + guardado.getIdUsuario();
+    }
+
+    public String registrarMedicoCompleto(RegistroRequestDTO request, Long especialidadId) {
+        UsuarioRequestDTO dto = new UsuarioRequestDTO();
+        dto.setRut(request.getRut());
+        dto.setNombre(request.getNombre());
+        dto.setEmail(request.getEmail());
+        dto.setContrasena(request.getContrasena());
+        Usuario guardado = usuarioService.crear(dto, "ROLE_MEDICO");
+        medicoService.crearConUsuario(guardado, especialidadId);
+        return "Médico registrado exitosamente con ID: " + guardado.getIdUsuario();
     }
 
     @Transactional(readOnly = true)
@@ -148,7 +131,7 @@ public class AuthService {
         }
 
         String email = jwtTokenProvider.getEmailDesdeToken(token);
-        Usuario usuario = usuarioRepository.findByEmailAndEstadoTrue(email)
+        Usuario usuario = usuarioService.buscarPorEmailActivo(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado o inactivo"));
 
         LoginResponseDTO response = new LoginResponseDTO();
@@ -162,7 +145,7 @@ public class AuthService {
         response.setExpiracion(jwtTokenProvider.getExpiracionMs());
 
         if (usuario.getRol().getNombreRol().equals("ROLE_MEDICO")) {
-            medicoRepository.findByUsuario_IdUsuario(usuario.getIdUsuario()).ifPresent(medico -> {
+            medicoService.buscarPorIdUsuario(usuario.getIdUsuario()).ifPresent(medico -> {
                 response.setEspecialidadId(medico.getEspecialidad().getIdEspecialidad());
                 response.setEspecialidadNombre(medico.getEspecialidad().getNombre());
             });
@@ -176,7 +159,7 @@ public class AuthService {
             return request.getEmail();
         }
         if (request.getRut() != null && !request.getRut().isBlank()) {
-            return usuarioRepository.findByRut(request.getRut())
+            return usuarioService.buscarPorRut(request.getRut())
                     .map(Usuario::getEmail)
                     .orElseThrow(() -> new RuntimeException(
                             "No existe usuario con RUT: " + request.getRut()));

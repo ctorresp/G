@@ -184,16 +184,17 @@ public class CirugiaService {
         cirugia.setEstado(EstadoCirugia.SOLICITADA);
         cirugia.setTriajeCompletado(false);
         cirugia.setPabellon(null);
+        cirugia.setFechaSolicitud(LocalDateTime.now());
         return cirugiaRepository.save(cirugia);
     }
 
     @Transactional(readOnly = true)
     public List<Cirugia> listarSolicitadas() {
-        return cirugiaRepository.findByEstadoAndTriajeCompletado(EstadoCirugia.SOLICITADA.name(), true);
+        return cirugiaRepository.findByEstadoAndTriajeCompletado(EstadoCirugia.SOLICITADA, true);
     }
 
     public List<Cirugia> listarPendientesTriaje() {
-        return cirugiaRepository.findByEstadoAndTriajeCompletado(EstadoCirugia.SOLICITADA.name(), false);
+        return cirugiaRepository.findByEstadoAndTriajeCompletado(EstadoCirugia.SOLICITADA, false);
     }
 
     public void marcarTriajeCompletado(Long id) {
