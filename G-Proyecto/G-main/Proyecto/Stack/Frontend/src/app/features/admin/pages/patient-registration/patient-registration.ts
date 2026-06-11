@@ -1,6 +1,6 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, ViewChild, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
 import { ToastService } from '../../../../core/services/toast.service';
@@ -13,6 +13,8 @@ import { PacienteRegistroPayload, Medico } from '../../../../core/interfaces';
   styleUrl: './patient-registration.scss',
 })
 export class PatientRegistrationComponent implements OnInit {
+  @ViewChild('registroForm') registroForm!: NgForm;
+
   private authService = inject(AuthService);
   private toastService = inject(ToastService);
   private router = inject(Router);
@@ -38,6 +40,7 @@ export class PatientRegistrationComponent implements OnInit {
     rut: '', nombre: '', email: '', pesoKg: '', alturaCm: '',
     prevision: '', grupoSanguineo: '',
     contactoEmergenciaNombre: '', contactoEmergenciaTelefono: '',
+    idMedico: '',
   };
 
   ngOnInit() {
@@ -57,7 +60,7 @@ export class PatientRegistrationComponent implements OnInit {
       this.medicosFiltrados = this.medicos();
     } else {
       this.medicosFiltrados = this.medicos().filter(m =>
-        m.nombre.toLowerCase().includes(termino) || m.rut.includes(termino)
+        m.nombre.toLowerCase().includes(termino)
       );
     }
     this.mostrarDropdownMedico = true;
@@ -65,7 +68,7 @@ export class PatientRegistrationComponent implements OnInit {
 
   seleccionarMedico(m: Medico) {
     this.medicoSeleccionado = m;
-    this.medicoBusqueda = `${m.nombre} (${m.rut})`;
+    this.medicoBusqueda = `${m.nombre} (ID: ${m.idUsuario})`;
     this.mostrarDropdownMedico = false;
   }
 
@@ -121,6 +124,7 @@ export class PatientRegistrationComponent implements OnInit {
       rut: '', nombre: '', email: '', pesoKg: '', alturaCm: '',
       prevision: '', grupoSanguineo: '',
       contactoEmergenciaNombre: '', contactoEmergenciaTelefono: '',
+      idMedico: '',
     };
     let hasError = false;
 
@@ -155,6 +159,16 @@ export class PatientRegistrationComponent implements OnInit {
     if (!this.nuevoPaciente.prevision) { this.erroresRegistro.prevision = 'Selecciona una previsión.'; hasError = true; }
     if (!this.nuevoPaciente.grupoSanguineo) { this.erroresRegistro.grupoSanguineo = 'Selecciona un grupo sanguíneo.'; hasError = true; }
 
+    if (!this.medicoSeleccionado) { this.erroresRegistro.idMedico = 'Debes seleccionar un médico.'; hasError = true; }
+
+    const contactoNombre = this.nuevoPaciente.contactoEmergenciaNombre?.trim() || '';
+    if (!contactoNombre) { this.erroresRegistro.contactoEmergenciaNombre = 'El nombre de contacto es obligatorio.'; hasError = true; }
+    else if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/.test(contactoNombre)) { this.erroresRegistro.contactoEmergenciaNombre = 'Solo letras.'; hasError = true; }
+
+    const contactoTel = this.nuevoPaciente.contactoEmergenciaTelefono?.trim() || '';
+    if (!contactoTel) { this.erroresRegistro.contactoEmergenciaTelefono = 'El teléfono de contacto es obligatorio.'; hasError = true; }
+    else if (!/^\+?\d{1,4}[\s-]?\d{1,4}[\s-]?\d{4,8}$/.test(contactoTel)) { this.erroresRegistro.contactoEmergenciaTelefono = 'Formato inválido (Ej: +56912345678).'; hasError = true; }
+
     if (hasError) return;
 
     const payload = {
@@ -176,6 +190,7 @@ export class PatientRegistrationComponent implements OnInit {
         this.nuevoPaciente = { rut: '', nombre: '', email: '', prevision: '', pesoKg: null, alturaCm: null, grupoSanguineo: '', contactoEmergenciaNombre: '', contactoEmergenciaTelefono: '' };
         this.alergiasRegList = []; this.enfermedadesRegList = [];
         this.limpiarMedico();
+        setTimeout(() => this.registroForm?.resetForm(), 0);
       },
       error: (err) => {
         let mensaje = 'Error al registrar. RUT o Correo ya ocupados.';

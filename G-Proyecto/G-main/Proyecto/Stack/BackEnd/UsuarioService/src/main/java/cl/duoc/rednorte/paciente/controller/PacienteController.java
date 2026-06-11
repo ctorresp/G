@@ -134,6 +134,25 @@ public class PacienteController {
         }
     }
 
+    @PutMapping("/rut/{rut}/estado")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<?> cambiarEstado(
+            @PathVariable String rut,
+            @RequestBody Map<String, Boolean> body) {
+        try {
+            Boolean nuevoEstado = body.get("activo");
+            if (nuevoEstado == null) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Debe enviar el campo 'activo'"));
+            }
+            PacienteResponseDTO actualizado = pacienteService.cambiarEstado(rut, nuevoEstado);
+            return ResponseEntity.ok(actualizado);
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", e.getMessage() != null ? e.getMessage() : "Error al cambiar estado"));
+        }
+    }
+
     @PutMapping("/rut/{rut}/contacto")
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_MEDICO')")
     public ResponseEntity<?> actualizarContactoEmergencia(

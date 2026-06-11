@@ -1,7 +1,6 @@
 <div class="stats-grid">
   <shared-stat-card label="Total Pacientes" [value]="pacientes.length" color="blue" />
-  <shared-stat-card label="Con Previsión" [value]="pacientes.filter(p => p.prevision).length" color="green" />
-  <shared-stat-card label="Sin Previsión" [value]="pacientes.filter(p => !p.prevision).length" color="red" />
+  <shared-stat-card label="Bloqueados" [value]="pacientes.filter(p => !p.activo).length" color="red" />
 </div>
 
 <div class="card">
@@ -59,9 +58,9 @@
               </td>
               <td>
                 <span class="status-badge"
-                  [class.active]="p.estado"
-                  [class.inactive]="!p.estado">
-                  {{ p.estado ? 'Activo' : 'Inactivo' }}
+                  [class.active]="p.activo"
+                  [class.inactive]="!p.activo">
+                  {{ p.activo ? 'Activo' : 'Inactivo' }}
                 </span>
               </td>
               <td>
@@ -73,6 +72,19 @@
                       stroke-linecap="round" stroke-linejoin="round">
                       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                       <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                  </button>
+                  <button class="btn-icon toggle-btn"
+                    [class.active]="p.activo"
+                    (click)="toggleEstado(p)"
+                    title="Activar/Desactivar paciente">
+                    <svg viewBox="0 0 24 24" width="18" height="18"
+                      stroke="currentColor" stroke-width="2"
+                      fill="none" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="1" y="5" width="22" height="14" rx="7" ry="7"></rect>
+                      <circle cx="8" cy="12" r="3.5"
+                        [attr.fill]="p.activo ? 'currentColor' : 'none'">
+                      </circle>
                     </svg>
                   </button>
                 </div>

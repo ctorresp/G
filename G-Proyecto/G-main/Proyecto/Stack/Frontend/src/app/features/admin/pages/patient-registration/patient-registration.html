@@ -77,8 +77,9 @@
             (input)="buscarMedico()"
             (focus)="buscarMedico()"
             (blur)="cerrarDropdown()"
-            placeholder="Buscar médico por nombre o RUT..."
-            class="autocomplete-input">
+            placeholder="Buscar médico por nombre..."
+            class="autocomplete-input"
+            [class.has-error]="erroresRegistro.idMedico">
           @if (medicoSeleccionado) {
             <button type="button" class="btn-clear" (click)="limpiarMedico()">×</button>
           }
@@ -87,12 +88,15 @@
               @for (m of medicosFiltrados; track m.idUsuario) {
                 <li (mousedown)="seleccionarMedico(m)">
                   <strong>{{ m.nombre }}</strong>
-                  <span class="text-muted">{{ m.rut }}</span>
+                  <span class="text-muted">ID: {{ m.idUsuario }}</span>
                 </li>
               }
             </ul>
           }
         </div>
+        @if (erroresRegistro.idMedico) {
+          <span class="error-text">{{ erroresRegistro.idMedico }}</span>
+        }
       </div>
 
       <div class="form-group">
@@ -150,10 +154,12 @@
         <input type="text" name="contactoEmergenciaNombre"
           [(ngModel)]="nuevoPaciente.contactoEmergenciaNombre"
           placeholder="Ej: María Pérez"
+          pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$"
+          required
           #contactoNombreInput="ngModel"
-          [ngClass]="{'has-error': erroresRegistro.contactoEmergenciaNombre}">
-        @if (erroresRegistro.contactoEmergenciaNombre) {
-          <span class="error-text">{{ erroresRegistro.contactoEmergenciaNombre }}</span>
+          [ngClass]="{'has-error': ((contactoNombreInput.invalid && contactoNombreInput.touched) || erroresRegistro.contactoEmergenciaNombre)}">
+        @if ((contactoNombreInput.invalid && contactoNombreInput.touched) || erroresRegistro.contactoEmergenciaNombre) {
+          <span class="error-text">{{ erroresRegistro.contactoEmergenciaNombre || 'Solo letras (Ej: María Pérez)' }}</span>
         }
       </div>
 
@@ -162,10 +168,12 @@
         <input type="tel" name="contactoEmergenciaTelefono"
           [(ngModel)]="nuevoPaciente.contactoEmergenciaTelefono"
           placeholder="Ej: +569 1234 5678"
+          pattern="^\+?\d{1,4}[\s-]?\d{1,4}[\s-]?\d{4,8}$"
+          required
           #contactoTelefonoInput="ngModel"
-          [ngClass]="{'has-error': erroresRegistro.contactoEmergenciaTelefono}">
-        @if (erroresRegistro.contactoEmergenciaTelefono) {
-          <span class="error-text">{{ erroresRegistro.contactoEmergenciaTelefono }}</span>
+          [ngClass]="{'has-error': ((contactoTelefonoInput.invalid && contactoTelefonoInput.touched) || erroresRegistro.contactoEmergenciaTelefono)}">
+        @if ((contactoTelefonoInput.invalid && contactoTelefonoInput.touched) || erroresRegistro.contactoEmergenciaTelefono) {
+          <span class="error-text">{{ erroresRegistro.contactoEmergenciaTelefono || 'Formato inválido (Ej: +56912345678)' }}</span>
         }
       </div>
 

@@ -11,9 +11,10 @@ export interface Paciente {
   nombre: string;
   email: string;
   prevision: string;
-  estado: boolean;
+  activo: boolean;
   idMedico?: number;
   nombreMedicoAsignado?: string;
+  especialidadNombre?: string;
   contactoEmergenciaNombre?: string;
   contactoEmergenciaTelefono?: string;
   datosClinicosSensibles?: DatosClinicos;

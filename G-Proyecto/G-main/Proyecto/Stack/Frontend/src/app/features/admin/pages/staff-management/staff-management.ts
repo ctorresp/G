@@ -1,7 +1,7 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { AdminService } from '../../../../core/services/admin.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { Usuario } from '../../../../core/interfaces';
@@ -16,8 +16,6 @@ import { StatCardComponent } from '../../../../shared/stat-card/stat-card';
 export class StaffManagementComponent implements OnInit {
   private adminService = inject(AdminService);
   private toastService = inject(ToastService);
-  private router = inject(Router);
-
   usuarios: Usuario[] = [];
   busqueda = '';
   filtroRol = '';
@@ -61,14 +59,6 @@ export class StaffManagementComponent implements OnInit {
       next: () => { this.cargarUsuarios(); this.toastService.mostrar(`Usuario ${accion}do exitosamente`, 'success'); },
       error: () => this.toastService.mostrar('Error al cambiar estado', 'error'),
     });
-  }
-
-  esMedico(usuario: Usuario): boolean {
-    return usuario.rol === 'ROLE_MEDICO';
-  }
-
-  editarMedico(usuario: Usuario) {
-    this.router.navigate(['/admin/medicos', usuario.idUsuario, 'edit']);
   }
 
   rolLabel(rol: string): string {

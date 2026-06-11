@@ -21,4 +21,6 @@ public class PacienteResponseDTO {
     private String contactoEmergenciaTelefono;
     private String observacionMedico;
     private Map<String, Object> datosClinicosSensibles;
+    private Boolean activo;
+    private String especialidadNombre;
 }

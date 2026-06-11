@@ -1,9 +1,8 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
-import { PabellonService } from '../../../../core/services/pabellon.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { Especialidad } from '../../../../core/interfaces';
 
@@ -14,8 +13,9 @@ import { Especialidad } from '../../../../core/interfaces';
   styleUrl: './doctor-registration.scss',
 })
 export class DoctorRegistrationComponent implements OnInit {
+  @ViewChild('medicoForm') medicoForm!: NgForm;
+
   private authService = inject(AuthService);
-  private pabellonService = inject(PabellonService);
   private toastService = inject(ToastService);
   private router = inject(Router);
 
@@ -31,7 +31,7 @@ export class DoctorRegistrationComponent implements OnInit {
   }
 
   cargarEspecialidades() {
-    this.pabellonService.listarEspecialidades().subscribe({
+    this.authService.listarEspecialidades().subscribe({
       next: (data) => { this.especialidades = data; },
       error: () => this.toastService.mostrar('Error al cargar especialidades', 'error'),
     });
@@ -39,13 +39,6 @@ export class DoctorRegistrationComponent implements OnInit {
 
   crearNuevoMedico() {
     return { rut: '', nombre: '', email: '', contrasena: '' };
-  }
-
-  generarPass(): string {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let pass = 'Medico';
-    for (let i = 0; i < 6; i++) pass += chars.charAt(Math.floor(Math.random() * chars.length));
-    return pass + '!';
   }
 
   formatearRutIngresoMedico(valor: string) {
@@ -95,6 +88,8 @@ export class DoctorRegistrationComponent implements OnInit {
       next: () => {
         this.nuevoMedico = this.crearNuevoMedico();
         this.especialidadSeleccionada = null;
+        this.erroresMedico = { rut: '', nombre: '', email: '', especialidad: '', contrasena: '' };
+        setTimeout(() => this.medicoForm?.resetForm(), 0);
         this.toastService.mostrar('Médico registrado exitosamente', 'success');
       },
       error: (err) => {

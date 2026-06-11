@@ -45,6 +45,15 @@ export class PatientListComponent implements OnInit {
     });
   }
 
+  toggleEstado(paciente: Paciente) {
+    const nuevoEstado = !paciente.activo;
+    const accion = nuevoEstado ? 'activar' : 'bloquear';
+    this.pacienteService.cambiarEstado(paciente.rut, nuevoEstado).subscribe({
+      next: () => { this.cargarPacientes(); this.toastService.mostrar(`Paciente ${accion}do exitosamente`, 'success'); },
+      error: () => this.toastService.mostrar('Error al cambiar estado', 'error'),
+    });
+  }
+
   verDetalle(rut: string) {
     this.router.navigate(['/admin/pacientes', rut]);
   }

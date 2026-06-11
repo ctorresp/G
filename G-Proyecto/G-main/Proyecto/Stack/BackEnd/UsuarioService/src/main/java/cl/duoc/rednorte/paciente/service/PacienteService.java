@@ -1,6 +1,7 @@
 package cl.duoc.rednorte.paciente.service;
 
 import cl.duoc.rednorte.usuarios.model.Usuario;
+import cl.duoc.rednorte.usuarios.repository.MedicoRepository;
 import cl.duoc.rednorte.usuarios.repository.UsuarioRepository;
 import cl.duoc.rednorte.paciente.dto.PacienteResponseDTO;
 import cl.duoc.rednorte.paciente.model.Paciente;
@@ -23,6 +24,9 @@ public class PacienteService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @Autowired
+    private MedicoRepository medicoRepository;
+
     public List<PacienteResponseDTO> listarTodos() {
         return pacienteRepository.findAll()
                 .stream()
@@ -33,6 +37,7 @@ public class PacienteService {
     public List<PacienteResponseDTO> listarPorMedico(Long idMedico) {
         return pacienteRepository.findByMedicoAsignado_IdUsuarioOrderByIdPacienteDesc(idMedico)
                 .stream()
+                .filter(p -> p.getActivo() == null || p.getActivo())
                 .map(this::toDTO)
                 .collect(Collectors.toList());
     }
@@ -113,6 +118,14 @@ public class PacienteService {
     }
 
     @Transactional
+    public PacienteResponseDTO cambiarEstado(String rut, Boolean nuevoEstado) {
+        Paciente paciente = pacienteRepository.findByRut(rut)
+                .orElseThrow(() -> new RuntimeException("Paciente no encontrado con RUT: " + rut));
+        paciente.setActivo(nuevoEstado);
+        return toDTO(pacienteRepository.save(paciente));
+    }
+
+    @Transactional
     public String eliminarPaciente(String rut) {
         Paciente paciente = pacienteRepository.findByRut(rut)
                 .orElseThrow(() -> new RuntimeException("Paciente no encontrado con RUT: " + rut));
@@ -135,6 +148,13 @@ public class PacienteService {
         datosClinicos.put("alergias", alergiasList);
         datosClinicos.put("enfermedadesCronicas", enfermedadesList);
 
+        String especialidadNombre = null;
+        if (paciente.getMedicoAsignado() != null) {
+            especialidadNombre = medicoRepository.findByUsuario_IdUsuario(paciente.getMedicoAsignado().getIdUsuario())
+                    .map(m -> m.getEspecialidad().getNombre())
+                    .orElse(null);
+        }
+
         String nombreMedico = paciente.getMedicoAsignado() != null
                 ? paciente.getMedicoAsignado().getNombre()
                 : null;
@@ -150,7 +170,9 @@ public class PacienteService {
                 paciente.getContactoEmergenciaNombre(),
                 paciente.getContactoEmergenciaTelefono(),
                 paciente.getObservacionMedico(),
-                datosClinicos
+                datosClinicos,
+                paciente.getActivo() == null || paciente.getActivo(),
+                especialidadNombre
         );
     }
 }

@@ -178,6 +178,9 @@ public class DataInitializer implements CommandLineRunner {
             return;
         }
 
+        Usuario medicoUsuario = usuarioRepository.findByEmail("medico@rednorte.cl")
+                .orElseThrow(() -> new RuntimeException("Medico usuario no encontrado al crear pacientes"));
+
         Paciente p1 = new Paciente();
         p1.setRut("11111111-1");
         p1.setNombre("María González");
@@ -187,6 +190,7 @@ public class DataInitializer implements CommandLineRunner {
         p1.setPesoKg(BigDecimal.valueOf(65.5));
         p1.setAlturaCm(BigDecimal.valueOf(168.0));
         p1.setAlergias("penicilina");
+        p1.setMedicoAsignado(medicoUsuario);
         pacienteRepository.save(p1);
 
         Paciente p2 = new Paciente();
@@ -198,6 +202,7 @@ public class DataInitializer implements CommandLineRunner {
         p2.setPesoKg(BigDecimal.valueOf(82.0));
         p2.setAlturaCm(BigDecimal.valueOf(175.5));
         p2.setEnfermedadesCronicas("hipertension");
+        p2.setMedicoAsignado(medicoUsuario);
         pacienteRepository.save(p2);
 
         log.info("  [PACIENTES CREADOS]  2 pacientes");

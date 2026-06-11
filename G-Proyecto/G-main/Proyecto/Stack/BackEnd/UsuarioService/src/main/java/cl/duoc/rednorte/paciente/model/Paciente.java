@@ -52,6 +52,9 @@ public class Paciente {
     @Column(name = "observacion_medico", columnDefinition = "TEXT")
     private String observacionMedico;
 
+    @Column(columnDefinition = "boolean default true")
+    private Boolean activo = true;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_medico_asignado")
     private Usuario medicoAsignado;

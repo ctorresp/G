@@ -5,6 +5,8 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { PacienteService } from '../../../../core/services/paciente.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { Paciente, PacienteClinicosPayload } from '../../../../core/interfaces';
+import { storage } from '../../../../core/storage';
+import { STORAGE_KEYS } from '../../../../core/constants';
 
 @Component({
   selector: 'app-patient-detail',
@@ -20,6 +22,7 @@ export class PatientDetailComponent implements OnInit {
   paciente: Paciente | null = null;
   modoEdicion = false;
   loading = signal(false);
+  esAdmin = false;
 
   alergiasEditList: string[] = [];
   enfermedadesEditList: string[] = [];
@@ -29,6 +32,9 @@ export class PatientDetailComponent implements OnInit {
   erroresEdicion = { pesoKg: '', alturaCm: '' };
 
   ngOnInit() {
+    const role = storage.getItem(STORAGE_KEYS.ROLES);
+    this.esAdmin = role === 'ROLE_ADMIN';
+
     const rut = this.route.snapshot.paramMap.get('rut');
     if (rut) {
       this.cargarPaciente(rut);
@@ -44,9 +50,10 @@ export class PatientDetailComponent implements OnInit {
           nombre: data.nombre,
           email: data.email,
           prevision: data.prevision,
-          estado: data.estado,
+          activo: data.activo,
           idMedico: data.idMedicoAsignado,
           nombreMedicoAsignado: data.nombreMedicoAsignado,
+          especialidadNombre: data.especialidadNombre,
           datosClinicosSensibles: data.datosClinicosSensibles || {
             grupoSanguineo: '',
             pesoKg: null,
@@ -96,6 +103,24 @@ export class PatientDetailComponent implements OnInit {
   }
 
   guardarEdicion() {
+    this.modoEdicion = false;
+
+    if (this.esAdmin) {
+      const payload = {
+        prevision: this.paciente!.prevision,
+        email: this.paciente!.email,
+      };
+      this.pacienteService.actualizarDatosClinicos(this.paciente!.rut, payload).subscribe({
+        next: () => {
+          this.toastService.mostrar('Datos actualizados', 'success');
+        },
+        error: () => {
+          this.toastService.mostrar('Error al guardar los cambios.', 'error');
+        },
+      });
+      return;
+    }
+
     this.erroresEdicion = { pesoKg: '', alturaCm: '' };
     let hasError = false;
 
@@ -123,7 +148,6 @@ export class PatientDetailComponent implements OnInit {
 
     if (hasError) return;
 
-    this.modoEdicion = false;
     this.paciente!.datosClinicosSensibles!.alergias = [...this.alergiasEditList];
     this.paciente!.datosClinicosSensibles!.enfermedadesCronicas = [...this.enfermedadesEditList];
 

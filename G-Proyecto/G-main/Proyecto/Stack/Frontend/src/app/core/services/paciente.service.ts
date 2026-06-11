@@ -37,6 +37,10 @@ export class PacienteService {
     return this.http.put(`${this.api}/pacientes/rut/${rut}/observacion`, { observacionMedico: observacion });
   }
 
+  cambiarEstado(rut: string, estado: boolean): Observable<any> {
+    return this.http.put(`${this.api}/pacientes/rut/${rut}/estado`, { activo: estado });
+  }
+
   eliminar(rut: string): Observable<void> {
     return this.http.delete<void>(`${this.api}/pacientes/rut/${rut}`);
   }

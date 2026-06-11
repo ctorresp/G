@@ -36,4 +36,8 @@ export class AuthService {
   obtenerPerfilMedico(): Observable<any> {
     return this.http.get(`${this.api}/auth/usuario/medico/perfil`);
   }
+
+  listarEspecialidades(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.api}/usuarios/especialidades`);
+  }
 }
