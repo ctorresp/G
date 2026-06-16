@@ -67,7 +67,16 @@
                 (change)="programarData.fechaProgramada = cirugiaAProgramar.fechaProgramada">
               <strong>Principal:</strong> {{ cirugiaAProgramar.fechaProgramada || 'Sin fecha' }}
             </label>
-  
+            <label class="radio-card">
+              <input type="radio" name="fechaSel" [value]="'otra'"
+                [(ngModel)]="programarData.fechaSeleccionada"
+                (change)="programarData.fechaProgramada = ''">
+              <strong>Otra fecha:</strong>
+              <input type="date" class="inline-date"
+                [(ngModel)]="programarData.fechaProgramada"
+                (click)="$event.stopPropagation()"
+                (change)="programarData.fechaSeleccionada = 'otra'">
+            </label>
           </div>
         </div>
 
@@ -99,7 +108,7 @@
       <div class="form-actions">
         <button class="btn-cancel" (click)="cancelarProgramar()">Cancelar</button>
         <button class="btn-save" (click)="confirmarProgramar()"
-          [disabled]="!programarData.fechaProgramada">Confirmar Programación</button>
+          [disabled]="!programarData.fechaProgramada || !programarData.horaInicio || !programarData.horaFin || !programarData.pabellonId">Confirmar Programación</button>
       </div>
     </div>
   </div>

@@ -6,10 +6,12 @@ import cl.duoc.rednorte.pabellon.model.EstadoCirugia;
 import cl.duoc.rednorte.pabellon.model.EstadoPabellon;
 import cl.duoc.rednorte.pabellon.model.Pabellon;
 import cl.duoc.rednorte.pabellon.model.Reasignacion;
+import cl.duoc.rednorte.pabellon.model.Triaje;
 import cl.duoc.rednorte.pabellon.repository.CirugiaRepository;
 import cl.duoc.rednorte.pabellon.repository.EspecialidadRepository;
 import cl.duoc.rednorte.pabellon.repository.PabellonRepository;
 import cl.duoc.rednorte.pabellon.repository.ReasignacionRepository;
+import cl.duoc.rednorte.pabellon.repository.TriajeRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -18,7 +20,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -30,15 +35,18 @@ public class CirugiaService {
     private final PabellonRepository pabellonRepository;
     private final ReasignacionRepository reasignacionRepository;
     private final EspecialidadRepository especialidadRepository;
+    private final TriajeRepository triajeRepository;
 
     public CirugiaService(CirugiaRepository cirugiaRepository,
                           PabellonRepository pabellonRepository,
                           ReasignacionRepository reasignacionRepository,
-                          EspecialidadRepository especialidadRepository) {
+                          EspecialidadRepository especialidadRepository,
+                          TriajeRepository triajeRepository) {
         this.cirugiaRepository = cirugiaRepository;
         this.pabellonRepository = pabellonRepository;
         this.reasignacionRepository = reasignacionRepository;
         this.especialidadRepository = especialidadRepository;
+        this.triajeRepository = triajeRepository;
     }
 
     @Transactional(readOnly = true)
@@ -222,6 +230,109 @@ public class CirugiaService {
         c.setHoraFin(horaFin);
         c.setEstado(EstadoCirugia.PROGRAMADA);
         return cirugiaRepository.save(c);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Cirugia> listarListaEspera(Long especialidadId) {
+        List<Cirugia> solicitadas = (especialidadId != null)
+                ? cirugiaRepository.findSolicitadasTriajeCompletasByEspecialidad(especialidadId)
+                : cirugiaRepository.findSolicitadasTriajeCompletas();
+
+        Map<String, Integer> urgenciaMap = solicitadas.stream()
+                .collect(Collectors.toMap(
+                        Cirugia::getPacienteRut,
+                        c -> triajeRepository.findByPacienteRutOrderByFechaTriajeDesc(c.getPacienteRut())
+                                .stream()
+                                .findFirst()
+                                .map(Triaje::getNivelUrgencia)
+                                .orElse(99),
+                        (a, b) -> a
+                ));
+
+        return solicitadas.stream()
+                .sorted(Comparator
+                        .comparingInt((Cirugia c) -> urgenciaMap.getOrDefault(c.getPacienteRut(), 99))
+                        .thenComparing(Cirugia::getFechaSolicitud))
+                .collect(Collectors.toList());
+    }
+
+    public Map<String, Object> marcarNoAptoYReasignar(Long idCirugia) {
+        log.info("No apto + reasignar para cirugía ID: {}", idCirugia);
+        Cirugia original = obtenerPorId(idCirugia);
+        if (!EstadoCirugia.PROGRAMADA.equals(original.getEstado())) {
+            throw new RuntimeException("Solo se puede marcar NO APTO en cirugías PROGRAMADAS");
+        }
+
+        Especialidad especialidad = original.getEspecialidad();
+        Pabellon pabellon = original.getPabellon();
+        LocalDate fechaProgramada = original.getFechaProgramada();
+        LocalTime horaInicio = original.getHoraInicio();
+        LocalTime horaFin = original.getHoraFin();
+
+        original.setEstado(EstadoCirugia.CANCELADA);
+        original.setMotivoCancelacion("PACIENTE_NO_APTO");
+        original.setFechaCancelacion(LocalDateTime.now());
+        if (pabellon != null) {
+            Pabellon p = pabellonRepository.findById(pabellon.getIdPabellon())
+                    .orElseThrow(() -> new RuntimeException("Pabellón no encontrado"));
+            p.setEstado(EstadoPabellon.DISPONIBLE);
+            pabellonRepository.save(p);
+        }
+        original.setPabellon(null);
+        cirugiaRepository.save(original);
+
+        List<Cirugia> listaEspera = listarListaEspera(especialidad.getIdEspecialidad());
+
+        Cirugia reasignada = null;
+        String mensaje = "No hay pacientes en espera para " + especialidad.getNombre();
+
+        if (!listaEspera.isEmpty()) {
+            Cirugia siguiente = listaEspera.get(0);
+
+            Cirugia nueva = new Cirugia();
+            nueva.setPacienteRut(siguiente.getPacienteRut());
+            nueva.setMedicoRut(siguiente.getMedicoRut());
+            nueva.setEspecialidad(especialidad);
+            nueva.setPabellon(pabellon);
+            nueva.setFechaProgramada(fechaProgramada);
+            nueva.setHoraInicio(horaInicio);
+            nueva.setHoraFin(horaFin);
+            nueva.setEstado(EstadoCirugia.PROGRAMADA);
+            nueva.setTriajeCompletado(true);
+            nueva.setFechaSolicitud(LocalDateTime.now());
+
+            if (pabellon != null) {
+                Pabellon p = pabellonRepository.findById(pabellon.getIdPabellon())
+                        .orElseThrow(() -> new RuntimeException("Pabellón no encontrado"));
+                p.setEstado(EstadoPabellon.OCUPADO);
+                pabellonRepository.save(p);
+            }
+
+            reasignada = cirugiaRepository.save(nueva);
+
+            siguiente.setEstado(EstadoCirugia.CANCELADA);
+            siguiente.setMotivoCancelacion("REASIGNADO_A_OTRO_PACIENTE");
+            siguiente.setFechaCancelacion(LocalDateTime.now());
+            cirugiaRepository.save(siguiente);
+
+            Reasignacion reasig = new Reasignacion();
+            reasig.setCirugiaOriginal(original);
+            reasig.setCirugiaReasignada(reasignada);
+            reasig.setMotivo("NO_APTO - Reasignación automática desde paciente " + original.getPacienteRut());
+            reasig.setFechaReasignacion(LocalDateTime.now());
+            reasignacionRepository.save(reasig);
+
+            mensaje = "Slot reasignado a paciente " + siguiente.getPacienteRut();
+        }
+
+        Cirugia finalOriginal = cirugiaRepository.findById(original.getIdCirugia())
+                .orElse(original);
+
+        return Map.of(
+                "cirugiaCancelada", finalOriginal,
+                "cirugiaReasignada", reasignada,
+                "mensaje", mensaje
+        );
     }
 
 }

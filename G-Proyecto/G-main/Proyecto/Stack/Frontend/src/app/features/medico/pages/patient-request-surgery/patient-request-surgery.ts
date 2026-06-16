@@ -75,7 +75,7 @@ export class PatientRequestSurgeryComponent implements AfterViewInit {
         this.router.navigate(['/medico/pacientes', this.pacienteRut]);
       },
       error: (err) => {
-        const mensaje = err.error?.mensaje || 'Error al solicitar cirugía';
+        const mensaje = err.error?.message || err.error?.mensaje || 'Error al solicitar cirugía';
         this.toastService.mostrar(mensaje, 'error');
       },
     });

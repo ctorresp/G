@@ -98,7 +98,7 @@ export class PendingRequestsComponent implements OnInit {
         this.cargarSolicitudesPendientes();
         this.toastService.mostrar('Cirugía programada exitosamente', 'success');
       },
-      error: (err) => this.toastService.mostrar(err.error?.mensaje || 'Error al programar', 'error'),
+      error: (err) => this.toastService.mostrar(err.error?.message || err.error?.mensaje || 'Error al programar', 'error'),
     });
   }
 

@@ -18,9 +18,10 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Map<String, String>> manejarRuntime(RuntimeException ex) {
-        log.warn("Error de negocio: {}", ex.getMessage());
+        String msg = ex.getMessage() != null ? ex.getMessage() : "Error de negocio";
+        log.warn("Error de negocio: {}", msg);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(Map.of("mensaje", ex.getMessage()));
+                .body(Map.of("mensaje", msg));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

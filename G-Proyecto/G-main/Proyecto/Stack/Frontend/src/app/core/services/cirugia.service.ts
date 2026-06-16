@@ -52,4 +52,13 @@ export class CirugiaService {
   completar(id: number): Observable<void> {
     return this.http.put<void>(`${this.api}/pabellon/cirugias/${id}/completar`, {});
   }
+
+  listarListaEspera(especialidadId?: number): Observable<any[]> {
+    const params = especialidadId ? `?especialidadId=${especialidadId}` : '';
+    return this.http.get<any[]>(`${this.api}/pabellon/cirugias/lista-espera${params}`);
+  }
+
+  noAptoYReasignar(id: number): Observable<any> {
+    return this.http.put(`${this.api}/pabellon/cirugias/${id}/no-apto`, {});
+  }
 }

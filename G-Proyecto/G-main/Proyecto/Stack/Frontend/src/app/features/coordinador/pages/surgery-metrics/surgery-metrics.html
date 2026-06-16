@@ -76,6 +76,7 @@
                 @if (c.estado === 'PROGRAMADA') {
                   <div class="acciones-cirugia">
                     <button class="btn-success" (click)="completarCirugia(c)">Completar</button>
+                    <button class="btn-no-apto" (click)="abrirModalNoApto(c)">No Apto</button>
                     <button class="btn-warning" (click)="marcarNoShow(c)">No Show</button>
                     <button class="btn-danger" (click)="cancelarCirugia(c)">Cancelar</button>
                   </div>
@@ -132,6 +133,102 @@
         <button class="btn-save" (click)="guardarEdicionPabellon()"
           [disabled]="!pabellonEditando.numero">Guardar Cambios</button>
       </div>
+    </div>
+  </div>
+}
+
+<!-- Modal No Apto + Reasignación -->
+@if (mostrarModalNoApto && cirugiaNoApto) {
+  <div class="modal-overlay" (click)="cerrarModalNoApto()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+
+      @if (resultadoNoApto) {
+        <!-- === ESTADO: Resultado exitoso === -->
+        <div class="resultado-exitoso">
+          <div class="resultado-icono">✓</div>
+          <h3>Reasignación Completada</h3>
+          <p class="resultado-mensaje">{{ resultadoNoApto.mensaje }}</p>
+
+          <hr>
+
+          <div class="no-apto-info">
+            <div class="info-block">
+              <strong>Paciente cancelado:</strong>
+              <span>{{ getNombrePaciente(cirugiaNoApto.pacienteRut) }}</span>
+            </div>
+            @if (resultadoNoApto.cirugiaReasignada) {
+              <div class="info-block">
+                <strong>Nuevo paciente asignado:</strong>
+                <span>{{ getNombrePaciente(resultadoNoApto.cirugiaReasignada.pacienteRut) }}</span>
+              </div>
+            }
+            @if (resultadoNoApto.cirugiaReasignada?.pabellonNumero) {
+              <div class="info-block">
+                <strong>Pabellón:</strong>
+                <span>{{ resultadoNoApto.cirugiaReasignada.pabellonNumero }}</span>
+              </div>
+            }
+          </div>
+
+          <div class="form-actions">
+            <button class="btn-save" (click)="cerrarModalNoApto()">Cerrar</button>
+          </div>
+        </div>
+      } @else {
+        <!-- === ESTADO: Confirmación === -->
+        <h3>Paciente No Apto — Reasignar Slot</h3>
+
+        <div class="no-apto-info">
+          <div class="info-block">
+            <strong>Paciente actual:</strong>
+            <span>{{ getNombrePaciente(cirugiaNoApto.pacienteRut) }} ({{ cirugiaNoApto.pacienteRut }})</span>
+          </div>
+          <div class="info-block">
+            <strong>Especialidad:</strong>
+            <span>{{ cirugiaNoApto.especialidadNombre }}</span>
+          </div>
+          <div class="info-block" *ngIf="cirugiaNoApto.fechaProgramada">
+            <strong>Slot actual:</strong>
+            <span>{{ cirugiaNoApto.fechaProgramada }} {{ cirugiaNoApto.horaInicio }} — {{ cirugiaNoApto.horaFin }}</span>
+          </div>
+          <div class="info-block" *ngIf="cirugiaNoApto.pabellonNumero">
+            <strong>Pabellón:</strong>
+            <span>{{ cirugiaNoApto.pabellonNumero }}</span>
+          </div>
+        </div>
+
+        <hr>
+
+        @if (cargandoSiguiente) {
+          <p class="loading-text">Buscando siguiente paciente en lista de espera...</p>
+        } @else if (siguienteListaEspera) {
+          <div class="no-apto-info">
+            <h4>Paciente que recibirá el slot:</h4>
+            <div class="info-block">
+              <strong>Paciente:</strong>
+              <span>{{ getNombrePaciente(siguienteListaEspera.pacienteRut) }} ({{ siguienteListaEspera.pacienteRut }})</span>
+            </div>
+            <div class="info-block">
+              <strong>Urgencia Triaje:</strong>
+              <span class="urgencia-badge">Nivel {{ siguienteListaEspera.nivelUrgencia || '—' }}</span>
+            </div>
+            <div class="info-block">
+              <strong>Solicitado el:</strong>
+              <span>{{ siguienteListaEspera.fechaSolicitud | date:'dd/MM/yyyy HH:mm' }}</span>
+            </div>
+          </div>
+        } @else {
+          <p class="text-muted">No hay pacientes en espera para esta especialidad. El slot quedará liberado.</p>
+        }
+
+        <div class="form-actions">
+          <button class="btn-cancel" (click)="cerrarModalNoApto()">Cancelar</button>
+        <button class="btn-danger" (click)="confirmarNoApto()"
+          [disabled]="cargandoSiguiente || confirmandoNoApto">
+          @if (confirmandoNoApto) { Procesando... } @else { Confirmar No Apto y Reasignar }
+        </button>
+        </div>
+      }
     </div>
   </div>
 }

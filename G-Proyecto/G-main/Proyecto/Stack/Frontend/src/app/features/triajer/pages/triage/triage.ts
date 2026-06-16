@@ -82,7 +82,7 @@ export class TriageComponent implements OnInit {
         this.router.navigate(['/triajer/solicitudes']);
       },
       error: (err) => {
-        const mensaje = err.error?.mensaje || 'Error al guardar triaje';
+        const mensaje = err.error?.message || err.error?.mensaje || 'Error al guardar triaje';
         this.toastService.mostrar(mensaje, 'error');
       },
     });

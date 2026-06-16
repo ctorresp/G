@@ -23,6 +23,16 @@
   background: white;
 }
 
+.inline-date {
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  &:focus { outline: 1px solid #2563eb; }
+}
+
 .text-warning {
   font-size: 12px;
   color: #dc2626;

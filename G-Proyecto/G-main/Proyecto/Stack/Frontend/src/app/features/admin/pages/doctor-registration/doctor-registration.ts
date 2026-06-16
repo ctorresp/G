@@ -93,7 +93,7 @@ export class DoctorRegistrationComponent implements OnInit {
         this.toastService.mostrar('Médico registrado exitosamente', 'success');
       },
       error: (err) => {
-        const mensaje = err.error?.mensaje || 'Error al registrar médico';
+        const mensaje = err.error?.message || err.error?.mensaje || 'Error al registrar médico';
         this.toastService.mostrar(mensaje, 'error');
       },
     });

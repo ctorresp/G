@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CirugiaService } from '../../../../core/services/cirugia.service';
@@ -18,6 +18,7 @@ export class SurgeryMetricsComponent implements OnInit {
   private pabellonService = inject(PabellonService);
   private pacienteService = inject(PacienteService);
   private toastService = inject(ToastService);
+  private cdr = inject(ChangeDetectorRef);
 
   cirugias: any[] = [];
   pabellones: any[] = [];
@@ -89,7 +90,7 @@ export class SurgeryMetricsComponent implements OnInit {
   cambiarEstadoPabellon(pabellon: any, estado: string) {
     this.pabellonService.cambiarEstado(pabellon.idPabellon, estado).subscribe({
       next: () => { this.cargarPabellones(); this.toastService.mostrar('Estado actualizado', 'success'); },
-      error: (err) => this.toastService.mostrar(err.error?.mensaje || 'Error al cambiar estado', 'error'),
+      error: (err) => this.toastService.mostrar(err.error?.message || err.error?.mensaje || 'Error al cambiar estado', 'error'),
     });
   }
 
@@ -107,14 +108,14 @@ export class SurgeryMetricsComponent implements OnInit {
         this.cargarPabellones();
         this.toastService.mostrar('Pabellón actualizado', 'success');
       },
-      error: (err) => this.toastService.mostrar(err.error?.mensaje || 'Error al actualizar pabellón', 'error'),
+      error: (err) => this.toastService.mostrar(err.error?.message || err.error?.mensaje || 'Error al actualizar pabellón', 'error'),
     });
   }
 
   eliminarPabellon(pabellon: any) {
     this.pabellonService.eliminar(pabellon.idPabellon).subscribe({
       next: () => { this.cargarPabellones(); this.toastService.mostrar('Pabellón eliminado', 'success'); },
-      error: (err) => this.toastService.mostrar(err.error?.mensaje || 'Error al eliminar pabellón', 'error'),
+      error: (err) => this.toastService.mostrar(err.error?.message || err.error?.mensaje || 'Error al eliminar pabellón', 'error'),
     });
   }
 
@@ -127,21 +128,21 @@ export class SurgeryMetricsComponent implements OnInit {
         this.cargarPabellones();
         this.toastService.mostrar('Pabellón creado', 'success');
       },
-      error: (err) => this.toastService.mostrar(err.error?.mensaje || 'Error al crear pabellón', 'error'),
+      error: (err) => this.toastService.mostrar(err.error?.message || err.error?.mensaje || 'Error al crear pabellón', 'error'),
     });
   }
 
   completarCirugia(cirugia: any) {
     this.cirugiaService.completar(cirugia.idCirugia).subscribe({
       next: () => { this.cargarCirugias(); this.toastService.mostrar('Cirugía completada', 'success'); },
-      error: (err) => this.toastService.mostrar(err.error?.mensaje || 'Error al completar cirugía', 'error'),
+      error: (err) => this.toastService.mostrar(err.error?.message || err.error?.mensaje || 'Error al completar cirugía', 'error'),
     });
   }
 
   marcarNoShow(cirugia: any) {
     this.cirugiaService.marcarNoShow(cirugia.idCirugia).subscribe({
       next: () => { this.cargarCirugias(); this.toastService.mostrar('Cirugía marcada como NO SHOW', 'success'); },
-      error: (err) => this.toastService.mostrar(err.error?.mensaje || 'Error al marcar NO SHOW', 'error'),
+      error: (err) => this.toastService.mostrar(err.error?.message || err.error?.mensaje || 'Error al marcar NO SHOW', 'error'),
     });
   }
 
@@ -150,7 +151,64 @@ export class SurgeryMetricsComponent implements OnInit {
     if (!motivo) return;
     this.cirugiaService.cancelar(cirugia.idCirugia, motivo).subscribe({
       next: () => { this.cargarCirugias(); this.toastService.mostrar('Cirugía cancelada', 'success'); },
-      error: (err) => this.toastService.mostrar(err.error?.mensaje || 'Error al cancelar cirugía', 'error'),
+      error: (err) => this.toastService.mostrar(err.error?.message || err.error?.mensaje || 'Error al cancelar cirugía', 'error'),
     });
+  }
+
+  // --- No apto + reasignación ---
+
+  mostrarModalNoApto = false;
+  cirugiaNoApto: any = null;
+  siguienteListaEspera: any = null;
+  cargandoSiguiente = false;
+  confirmandoNoApto = false;
+  resultadoNoApto: any = null;
+
+  abrirModalNoApto(cirugia: any) {
+    this.cirugiaNoApto = cirugia;
+    this.siguienteListaEspera = null;
+    this.resultadoNoApto = null;
+    this.mostrarModalNoApto = true;
+    this.cargandoSiguiente = true;
+
+    this.cirugiaService.listarListaEspera(cirugia.especialidadId).subscribe({
+      next: (data) => {
+        this.siguienteListaEspera = data.length > 0 ? data[0] : null;
+        this.cargandoSiguiente = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.siguienteListaEspera = null;
+        this.cargandoSiguiente = false;
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  confirmarNoApto() {
+    if (!this.cirugiaNoApto || this.confirmandoNoApto) return;
+    this.confirmandoNoApto = true;
+    this.cirugiaService.noAptoYReasignar(this.cirugiaNoApto.idCirugia).subscribe({
+      next: (res) => {
+        this.resultadoNoApto = res;
+        this.cargarCirugias();
+        this.toastService.mostrar(res.mensaje || 'Reasignación completada', 'success');
+        this.confirmandoNoApto = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.confirmandoNoApto = false;
+        this.toastService.mostrar(err.error?.message || err.error?.mensaje || 'Error al marcar No Apto', 'error');
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  cerrarModalNoApto() {
+    this.mostrarModalNoApto = false;
+    this.cirugiaNoApto = null;
+    this.siguienteListaEspera = null;
+    this.resultadoNoApto = null;
+    this.confirmandoNoApto = false;
   }
 }
