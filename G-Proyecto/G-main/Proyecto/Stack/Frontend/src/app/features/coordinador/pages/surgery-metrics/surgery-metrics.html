@@ -42,7 +42,12 @@
 
   <div class="card">
     <div class="table-header">
-      <h2>Cirugías Recientes</h2>
+      <h2>Cirugías</h2>
+      <button class="btn-filtro-canceladas" (click)="mostrarCanceladas = !mostrarCanceladas"
+        [class.active]="mostrarCanceladas">
+        <span class="btn-icono">{{ mostrarCanceladas ? '✓' : '✕' }}</span>
+        Mostrar canceladas
+      </button>
     </div>
     <div class="table-responsive">
       <table class="modern-table">
@@ -58,7 +63,7 @@
           </tr>
         </thead>
         <tbody>
-          @for (c of cirugias.slice(0, 10); track c.idCirugia) {
+          @for (c of cirugiasFiltradas; track c.idCirugia) {
             <tr>
               <td>{{ getNombrePaciente(c.pacienteRut) }}</td>
               <td>{{ getNombreMedico(c.medicoRut) }}</td>
@@ -75,16 +80,24 @@
               <td>
                 @if (c.estado === 'PROGRAMADA') {
                   <div class="acciones-cirugia">
-                    <button class="btn-success" (click)="completarCirugia(c)">Completar</button>
-                    <button class="btn-no-apto" (click)="abrirModalNoApto(c)">No Apto</button>
-                    <button class="btn-warning" (click)="marcarNoShow(c)">No Show</button>
-                    <button class="btn-danger" (click)="cancelarCirugia(c)">Cancelar</button>
+                    <button class="btn-completar" (click)="completarCirugia(c)">
+                      <span class="btn-icono">✓</span> Completar
+                    </button>
+                    <button class="btn-no-apto" (click)="abrirModalNoApto(c)">
+                      <span class="btn-icono">⤻</span> No Apto
+                    </button>
+                    <button class="btn-no-show" (click)="marcarNoShow(c)">
+                      <span class="btn-icono">◌</span> No Show
+                    </button>
+                    <button class="btn-cancelar" (click)="cancelarCirugia(c)">
+                      <span class="btn-icono">✕</span> Cancelar
+                    </button>
                   </div>
                 }
               </td>
             </tr>
           }
-          @if (cirugias.length === 0) {
+          @if (cirugiasFiltradas.length === 0) {
             <tr>
               <td colspan="7" class="empty-table">
                 No hay cirugías registradas

@@ -140,23 +140,4 @@ public class CirugiaController {
         return ResponseEntity.ok(CirugiaDTO.fromEntity(resultado));
     }
 
-    @GetMapping("/lista-espera")
-    @PreAuthorize("hasAnyAuthority('ROLE_COORDINADOR', 'ROLE_ADMIN')")
-    public ResponseEntity<List<CirugiaDTO>> listarListaEspera(
-            @RequestParam(required = false) Long especialidadId) {
-        List<CirugiaDTO> dtos = service.listarListaEspera(especialidadId).stream()
-                .map(CirugiaDTO::fromEntity).collect(Collectors.toList());
-        return ResponseEntity.ok(dtos);
-    }
-
-    @PutMapping("/{id}/no-apto")
-    @PreAuthorize("hasAnyAuthority('ROLE_COORDINADOR', 'ROLE_ADMIN')")
-    public ResponseEntity<Map<String, Object>> marcarNoApto(@PathVariable Long id) {
-        Map<String, Object> inmutable = service.marcarNoAptoYReasignar(id);
-        Map<String, Object> resultado = new java.util.HashMap<>(inmutable);
-        resultado.computeIfPresent("cirugiaCancelada", (k, v) -> CirugiaDTO.fromEntity((Cirugia) v));
-        resultado.computeIfPresent("cirugiaReasignada", (k, v) -> v != null ? CirugiaDTO.fromEntity((Cirugia) v) : null);
-        return ResponseEntity.ok(resultado);
-    }
-
 }

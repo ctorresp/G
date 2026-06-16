@@ -4,12 +4,13 @@ import cl.duoc.rednorte.auth_service.dto.LoginRequestDTO;
 import cl.duoc.rednorte.auth_service.dto.LoginResponseDTO;
 import cl.duoc.rednorte.auth_service.dto.RegistroRequestDTO;
 import cl.duoc.rednorte.auth_service.model.Rol;
-import cl.duoc.rednorte.auth_service.repository.RolRepository;
 import cl.duoc.rednorte.usuarios.model.Usuario;
-import cl.duoc.rednorte.usuarios.repository.UsuarioRepository;
+import cl.duoc.rednorte.usuarios.service.UsuarioService;
+import cl.duoc.rednorte.usuarios.service.MedicoService;
 import cl.duoc.rednorte.auth_service.security.JwtTokenProvider;
 import cl.duoc.rednorte.paciente.model.Paciente;
 import cl.duoc.rednorte.paciente.repository.PacienteRepository;
+import cl.duoc.rednorte.usuarios.dto.UsuarioRequestDTO;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,10 +20,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -32,10 +31,9 @@ import static org.mockito.Mockito.*;
 class AuthServiceTest {
 
     @Mock private AuthenticationManager authenticationManager;
-    @Mock private UsuarioRepository usuarioRepository;
-    @Mock private RolRepository rolRepository;
+    @Mock private UsuarioService usuarioService;
+    @Mock private MedicoService medicoService;
     @Mock private PacienteRepository pacienteRepository;
-    @Mock private PasswordEncoder passwordEncoder;
     @Mock private JwtTokenProvider jwtTokenProvider;
     @Mock private Authentication authentication;
 
@@ -69,10 +67,9 @@ class AuthServiceTest {
 
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenReturn(authentication);
-        when(authentication.getAuthorities()).thenReturn(java.util.List.of());
         when(jwtTokenProvider.generarToken(authentication)).thenReturn("token123");
         when(jwtTokenProvider.getExpiracionMs()).thenReturn(86400000L);
-        when(usuarioRepository.findByEmailAndEstadoTrue("admin@test.cl"))
+        when(usuarioService.buscarPorEmailActivo("admin@test.cl"))
                 .thenReturn(Optional.of(usuario));
 
         LoginResponseDTO response = authService.login(request);
@@ -89,13 +86,12 @@ class AuthServiceTest {
         request.setRut("11111111-1");
         request.setContrasena("pass");
 
-        when(usuarioRepository.findByRut("11111111-1")).thenReturn(Optional.of(usuario));
+        when(usuarioService.buscarPorRut("11111111-1")).thenReturn(Optional.of(usuario));
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenReturn(authentication);
-        when(authentication.getAuthorities()).thenReturn(java.util.List.of());
         when(jwtTokenProvider.generarToken(authentication)).thenReturn("token456");
         when(jwtTokenProvider.getExpiracionMs()).thenReturn(86400000L);
-        when(usuarioRepository.findByEmailAndEstadoTrue("admin@test.cl"))
+        when(usuarioService.buscarPorEmailActivo("admin@test.cl"))
                 .thenReturn(Optional.of(usuario));
 
         LoginResponseDTO response = authService.login(request);
@@ -144,6 +140,24 @@ class AuthServiceTest {
     }
 
     @Test
+    void registrarPaciente_conMedicoAsignado_deberiaAsignarMedico() {
+        RegistroRequestDTO request = new RegistroRequestDTO();
+        request.setRut("55555555-5");
+        request.setNombre("Paciente con Medico");
+        request.setEmail("pm@test.cl");
+        request.setIdMedico(1L);
+
+        when(pacienteRepository.findByRut("55555555-5")).thenReturn(Optional.empty());
+        when(usuarioService.buscarPorId(1L)).thenReturn(Optional.of(usuario));
+        when(pacienteRepository.save(any(Paciente.class))).thenAnswer(i -> i.getArgument(0));
+
+        String resultado = authService.registrarPaciente(request);
+
+        assertTrue(resultado.contains("Paciente registrado exitosamente"));
+        verify(pacienteRepository, times(1)).save(any(Paciente.class));
+    }
+
+    @Test
     void registrarUsuarioAdmin_deberiaCrearUsuarioConRol() {
         RegistroRequestDTO request = new RegistroRequestDTO();
         request.setRut("44444444-4");
@@ -151,16 +165,34 @@ class AuthServiceTest {
         request.setEmail("medico@test.cl");
         request.setContrasena("pass");
 
-        when(usuarioRepository.existsByEmail("medico@test.cl")).thenReturn(false);
-        when(usuarioRepository.existsByRut("44444444-4")).thenReturn(false);
-        when(passwordEncoder.encode("pass")).thenReturn("encoded");
-        when(rolRepository.findByNombreRol("ROLE_MEDICO")).thenReturn(Optional.of(rol));
-        when(usuarioRepository.save(any(Usuario.class))).thenAnswer(i -> i.getArgument(0));
+        Usuario usuarioCreado = new Usuario();
+        usuarioCreado.setIdUsuario(99L);
+        when(usuarioService.crear(any(UsuarioRequestDTO.class), eq("ROLE_MEDICO")))
+                .thenReturn(usuarioCreado);
 
         String resultado = authService.registrarUsuarioAdmin(request, "ROLE_MEDICO");
 
         assertTrue(resultado.contains("ROLE_MEDICO"));
-        verify(usuarioRepository, times(1)).save(any(Usuario.class));
+        verify(usuarioService, times(1)).crear(any(UsuarioRequestDTO.class), eq("ROLE_MEDICO"));
+    }
+
+    @Test
+    void registrarMedicoCompleto_deberiaCrearUsuarioYMedico() {
+        RegistroRequestDTO request = new RegistroRequestDTO();
+        request.setRut("66666666-6");
+        request.setNombre("Dr. Completo");
+        request.setEmail("completo@test.cl");
+        request.setContrasena("pass");
+
+        Usuario usuarioCreado = new Usuario();
+        usuarioCreado.setIdUsuario(100L);
+        when(usuarioService.crear(any(UsuarioRequestDTO.class), eq("ROLE_MEDICO")))
+                .thenReturn(usuarioCreado);
+
+        String resultado = authService.registrarMedicoCompleto(request, 1L);
+
+        assertTrue(resultado.contains("Médico registrado exitosamente"));
+        verify(medicoService, times(1)).crearConUsuario(usuarioCreado, 1L);
     }
 
     @Test
@@ -168,7 +200,7 @@ class AuthServiceTest {
         String token = "token-valido";
         when(jwtTokenProvider.validarToken(token)).thenReturn(true);
         when(jwtTokenProvider.getEmailDesdeToken(token)).thenReturn("admin@test.cl");
-        when(usuarioRepository.findByEmailAndEstadoTrue("admin@test.cl"))
+        when(usuarioService.buscarPorEmailActivo("admin@test.cl"))
                 .thenReturn(Optional.of(usuario));
 
         LoginResponseDTO response = authService.validarToken(token);
@@ -183,5 +215,16 @@ class AuthServiceTest {
 
         Exception ex = assertThrows(RuntimeException.class, () -> authService.validarToken("token-malo"));
         assertTrue(ex.getMessage().contains("Token JWT inválido"));
+    }
+
+    @Test
+    void validarToken_conUsuarioInactivo_deberiaLanzarExcepcion() {
+        String token = "token-valido";
+        when(jwtTokenProvider.validarToken(token)).thenReturn(true);
+        when(jwtTokenProvider.getEmailDesdeToken(token)).thenReturn("inactivo@test.cl");
+        when(usuarioService.buscarPorEmailActivo("inactivo@test.cl")).thenReturn(Optional.empty());
+
+        Exception ex = assertThrows(RuntimeException.class, () -> authService.validarToken(token));
+        assertTrue(ex.getMessage().contains("Usuario no encontrado"));
     }
 }

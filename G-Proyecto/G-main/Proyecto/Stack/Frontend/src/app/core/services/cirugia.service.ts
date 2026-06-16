@@ -55,10 +55,10 @@ export class CirugiaService {
 
   listarListaEspera(especialidadId?: number): Observable<any[]> {
     const params = especialidadId ? `?especialidadId=${especialidadId}` : '';
-    return this.http.get<any[]>(`${this.api}/pabellon/cirugias/lista-espera${params}`);
+    return this.http.get<any[]>(`${this.api}/reasignaciones/lista-espera${params}`);
   }
 
   noAptoYReasignar(id: number): Observable<any> {
-    return this.http.put(`${this.api}/pabellon/cirugias/${id}/no-apto`, {});
+    return this.http.put(`${this.api}/reasignaciones/no-apto/${id}`, {});
   }
 }

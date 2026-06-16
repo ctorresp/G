@@ -4,12 +4,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -22,18 +20,6 @@ public class GlobalExceptionHandler {
         log.warn("Error de negocio: {}", msg);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(Map.of("mensaje", msg));
-    }
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, Object>> manejarValidacion(MethodArgumentNotValidException ex) {
-        Map<String, String> errores = ex.getBindingResult().getFieldErrors().stream()
-                .collect(Collectors.toMap(
-                        e -> e.getField(),
-                        e -> e.getDefaultMessage() != null ? e.getDefaultMessage() : "Valor inválido",
-                        (a, b) -> b
-                ));
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(Map.of("mensaje", "Error de validación", "detalles", errores));
     }
 
     @ExceptionHandler(Exception.class)

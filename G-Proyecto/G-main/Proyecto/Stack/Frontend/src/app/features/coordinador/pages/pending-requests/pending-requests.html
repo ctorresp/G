@@ -32,8 +32,10 @@
               <td>{{ c.especialidadNombre }}</td>
               <td>{{ c.fechaProgramada || '—' }}</td>
               <td>
-                <button class="btn-save btn-md"
-                  (click)="abrirProgramar(c)">Programar</button>
+                <button class="btn-programar"
+                  (click)="abrirProgramar(c)">
+                  <span class="btn-icono">▶</span> Programar
+                </button>
               </td>
             </tr>
           }

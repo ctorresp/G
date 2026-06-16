@@ -32,6 +32,12 @@ export class SurgeryMetricsComponent implements OnInit {
   mostrarFormEditarPabellon = false;
   nuevoPabellon = { numero: '', estado: 'DISPONIBLE' };
   pabellonEditando: any = null;
+  mostrarCanceladas = false;
+
+  get cirugiasFiltradas() {
+    if (this.mostrarCanceladas) return this.cirugias;
+    return this.cirugias.filter(c => c.estado !== 'CANCELADA' && c.estado !== 'NO_SHOW');
+  }
 
   get cirugiasProgramadas() { return this.cirugias.filter(c => c.estado === 'PROGRAMADA').length; }
   get cirugiasCanceladas() { return this.cirugias.filter(c => c.estado === 'CANCELADA' || c.estado === 'NO_SHOW').length; }

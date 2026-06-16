@@ -83,6 +83,49 @@ services:
     networks:
       - rednorte-network
 
+  db-reasignacion:
+    image: postgres:15-alpine
+    container_name: rednorte-db-reasignacion
+    restart: unless-stopped
+    ports:
+      - "5435:5432"
+    environment:
+      POSTGRES_DB: db_reasignacion
+      POSTGRES_USER: rednorte
+      POSTGRES_PASSWORD: rednorte123
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rednorte -d db_reasignacion"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - reasignacion-pgdata:/var/lib/postgresql/data
+    networks:
+      - rednorte-network
+
+  reasignacion-service:
+    build:
+      context: ./BackEnd/ReasignacionService
+      dockerfile: Dockerfile
+    container_name: rednorte-reasignacion
+    restart: unless-stopped
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_PROFILES_ACTIVE: test
+      DB_HOST: db-reasignacion
+      DB_PORT: 5432
+      DB_NAME: db_reasignacion
+      DB_USER: rednorte
+      DB_PASSWORD: rednorte123
+      JWT_SECRET: ${JWT_SECRET:-RedNorte2024SecretKeyMuySeguraDe256BitsParaJWT}
+      PABELLON_SERVICE_URL: http://pabellon-service:8082
+    depends_on:
+      db-reasignacion:
+        condition: service_healthy
+    networks:
+      - rednorte-network
+
   frontend:
     build:
       context: ./Frontend
@@ -94,6 +137,7 @@ services:
     depends_on:
       - backend
       - pabellon-service
+      - reasignacion-service
     networks:
       - rednorte-network
 
@@ -104,3 +148,4 @@ networks:
 volumes:
   pgdata:
   pabellon-pgdata:
+  reasignacion-pgdata:

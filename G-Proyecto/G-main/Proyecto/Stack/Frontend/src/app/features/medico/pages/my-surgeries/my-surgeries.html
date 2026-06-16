@@ -58,9 +58,15 @@
             <td>
               <div class="acciones-cirugia">
                 @if (c.estado === 'PROGRAMADA' || c.estado === 'REASIGNADA') {
-                  <button class="btn-success" (click)="completarCirugia(c)">Completar</button>
-                  <button class="btn-warning" (click)="cancelarCirugia(c)">Cancelar</button>
-                  <button class="btn-danger" (click)="marcarNoShow(c)">No Show</button>
+                  <button class="btn-completar" (click)="completarCirugia(c)">
+                    <span class="btn-icono">✓</span> Completar
+                  </button>
+                  <button class="btn-cancelar" (click)="cancelarCirugia(c)">
+                    <span class="btn-icono">✕</span> Cancelar
+                  </button>
+                  <button class="btn-no-show" (click)="marcarNoShow(c)">
+                    <span class="btn-icono">◌</span> No Show
+                  </button>
                 }
               </div>
             </td>

@@ -1,6 +1,6 @@
-package cl.duoc.rednorte.pabellon.repository;
+package cl.duoc.rednorte.reasignacion.repository;
 
-import cl.duoc.rednorte.pabellon.model.Reasignacion;
+import cl.duoc.rednorte.reasignacion.model.Reasignacion;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ReasignacionRepository extends JpaRepository<Reasignacion, Long> {

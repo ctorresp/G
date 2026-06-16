@@ -1,26 +1,28 @@
-package cl.duoc.rednorte.pabellon.dto;
+package cl.duoc.rednorte.reasignacion.model;
 
-import cl.duoc.rednorte.pabellon.model.Reasignacion;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
-public class ReasignacionDTO {
-    private Long idReasignacion;
-    private Long cirugiaOriginalId;
-    private Long cirugiaReasignadaId;
-    private String motivo;
-    private LocalDateTime fechaReasignacion;
+@Entity
+@Table(name = "reasignaciones")
+public class Reasignacion {
 
-    public static ReasignacionDTO fromEntity(Reasignacion r) {
-        ReasignacionDTO dto = new ReasignacionDTO();
-        dto.setIdReasignacion(r.getIdReasignacion());
-        dto.setCirugiaOriginalId(r.getCirugiaOriginal().getIdCirugia());
-        if (r.getCirugiaReasignada() != null) {
-            dto.setCirugiaReasignadaId(r.getCirugiaReasignada().getIdCirugia());
-        }
-        dto.setMotivo(r.getMotivo());
-        dto.setFechaReasignacion(r.getFechaReasignacion());
-        return dto;
-    }
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_reasignacion")
+    private Long idReasignacion;
+
+    @Column(name = "cirugia_original_id", nullable = false)
+    private Long cirugiaOriginalId;
+
+    @Column(name = "cirugia_reasignada_id")
+    private Long cirugiaReasignadaId;
+
+    @Column(columnDefinition = "TEXT")
+    private String motivo;
+
+    @Column(name = "fecha_reasignacion", nullable = false)
+    private LocalDateTime fechaReasignacion;
 
     public Long getIdReasignacion() { return idReasignacion; }
     public void setIdReasignacion(Long id) { this.idReasignacion = id; }

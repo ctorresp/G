@@ -3,7 +3,7 @@ package cl.duoc.rednorte.auth_service.service;
 import cl.duoc.rednorte.auth_service.dto.MedicoUpdateRequestDTO;
 import cl.duoc.rednorte.auth_service.model.Rol;
 import cl.duoc.rednorte.usuarios.model.Usuario;
-import cl.duoc.rednorte.usuarios.repository.UsuarioRepository;
+import cl.duoc.rednorte.usuarios.service.UsuarioService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,7 +13,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -21,7 +20,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class AdminMedicoServiceTest {
 
-    @Mock private UsuarioRepository usuarioRepository;
+    @Mock private UsuarioService usuarioService;
     @InjectMocks private AdminMedicoService adminMedicoService;
 
     private Usuario medico;
@@ -43,7 +42,7 @@ class AdminMedicoServiceTest {
 
     @Test
     void listarMedicos_deberiaRetornarLista() {
-        when(usuarioRepository.findByRol_NombreRol("ROLE_MEDICO"))
+        when(usuarioService.listarPorRol("ROLE_MEDICO"))
                 .thenReturn(List.of(medico));
 
         List<Usuario> resultado = adminMedicoService.listarMedicos();
@@ -59,9 +58,8 @@ class AdminMedicoServiceTest {
         dto.setNombre("Dr. Actualizado");
         dto.setEmail("nuevo@clinica.cl");
 
-        when(usuarioRepository.findById(2L)).thenReturn(Optional.of(medico));
-        when(usuarioRepository.existsByEmail("nuevo@clinica.cl")).thenReturn(false);
-        when(usuarioRepository.save(any(Usuario.class))).thenAnswer(i -> i.getArgument(0));
+        when(usuarioService.buscarPorId(2L)).thenReturn(Optional.of(medico));
+        when(usuarioService.existePorEmail("nuevo@clinica.cl")).thenReturn(false);
 
         Usuario resultado = adminMedicoService.actualizarMedico(2L, dto);
 
@@ -71,7 +69,7 @@ class AdminMedicoServiceTest {
 
     @Test
     void actualizarMedico_conIdInvalido_deberiaLanzarExcepcion() {
-        when(usuarioRepository.findById(999L)).thenReturn(Optional.empty());
+        when(usuarioService.buscarPorId(999L)).thenReturn(Optional.empty());
 
         MedicoUpdateRequestDTO dto = new MedicoUpdateRequestDTO();
         dto.setNombre("Test");
@@ -86,11 +84,30 @@ class AdminMedicoServiceTest {
         MedicoUpdateRequestDTO dto = new MedicoUpdateRequestDTO();
         dto.setRut("99999999-9");
 
-        when(usuarioRepository.findById(2L)).thenReturn(Optional.of(medico));
-        when(usuarioRepository.existsByRut("99999999-9")).thenReturn(true);
+        when(usuarioService.buscarPorId(2L)).thenReturn(Optional.of(medico));
+        when(usuarioService.existePorRut("99999999-9")).thenReturn(true);
 
         Exception ex = assertThrows(RuntimeException.class,
                 () -> adminMedicoService.actualizarMedico(2L, dto));
         assertTrue(ex.getMessage().contains("RUT ya está registrado"));
+    }
+
+    @Test
+    void eliminarMedico_conRutValido_deberiaEliminar() {
+        when(usuarioService.buscarPorRut("87654321-0")).thenReturn(Optional.of(medico));
+
+        String resultado = adminMedicoService.eliminarMedico("87654321-0");
+
+        assertTrue(resultado.contains("eliminado exitosamente"));
+        verify(usuarioService, times(1)).eliminar(medico);
+    }
+
+    @Test
+    void eliminarMedico_conRutInvalido_deberiaLanzarExcepcion() {
+        when(usuarioService.buscarPorRut("00000000-0")).thenReturn(Optional.empty());
+
+        Exception ex = assertThrows(RuntimeException.class,
+                () -> adminMedicoService.eliminarMedico("00000000-0"));
+        assertTrue(ex.getMessage().contains("no encontrado"));
     }
 }
