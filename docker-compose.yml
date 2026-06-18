@@ -41,7 +41,7 @@ services:
 
   backend:
     build:
-      context: ./BackEnd/UsuarioService
+      context: ./backend/usuario-service
       dockerfile: Dockerfile
     container_name: rednorte-backend
     restart: unless-stopped
@@ -63,7 +63,7 @@ services:
 
   pabellon-service:
     build:
-      context: ./BackEnd/PabellonService
+      context: ./backend/pabellon-service
       dockerfile: Dockerfile
     container_name: rednorte-pabellon
     restart: unless-stopped
@@ -105,7 +105,7 @@ services:
 
   reasignacion-service:
     build:
-      context: ./BackEnd/ReasignacionService
+      context: ./backend/reasignacion-service
       dockerfile: Dockerfile
     container_name: rednorte-reasignacion
     restart: unless-stopped
@@ -128,7 +128,7 @@ services:
 
   frontend:
     build:
-      context: ./Frontend
+      context: ./frontend
       dockerfile: Dockerfile
     container_name: rednorte-frontend
     restart: unless-stopped

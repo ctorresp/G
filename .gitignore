@@ -1,12 +1,11 @@
 # --- Maven ---
-BackEnd/target/
-PabellonService/target/
+backend/*/target/
 
 # --- Angular ---
-Frontend/dist/
-Frontend/.angular/cache/
-Frontend/node_modules/
-Frontend/coverage/
+frontend/dist/
+frontend/.angular/cache/
+frontend/node_modules/
+frontend/coverage/
 
 # --- IDE ---
 .idea/
@@ -21,7 +20,7 @@ Thumbs.db
 
 # --- Environment ---
 .env
-BackEnd/.env
+backend/.env
 
 # --- Logs ---
 *.log

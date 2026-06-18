@@ -25,7 +25,6 @@ import { PatientRequestSurgeryComponent } from './features/medico/pages/patient-
 import { RequestSurgeryComponent } from './features/medico/pages/request-surgery/request-surgery';
 import { PendingRequestsComponent } from './features/coordinador/pages/pending-requests/pending-requests';
 import { SurgeryMetricsComponent } from './features/coordinador/pages/surgery-metrics/surgery-metrics';
-import { ReportsComponent } from './features/coordinador/pages/reports/reports';
 
 export const routes: Routes = [
   { path: '', component: Home, pathMatch: 'full' },
@@ -66,7 +65,6 @@ export const routes: Routes = [
       { path: '', redirectTo: 'pendientes', pathMatch: 'full' },
       { path: 'pendientes', component: PendingRequestsComponent },
       { path: 'metricas', component: SurgeryMetricsComponent },
-      { path: 'reportes', component: ReportsComponent },
     ],
   },
   {
