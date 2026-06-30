@@ -29,6 +29,14 @@ export class CirugiaService {
     return this.http.put<void>(`${this.api}/pabellon/cirugias/${id}/triaje-completado`, {});
   }
 
+  listarPacientesConCirugiaActiva(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.api}/pabellon/cirugias/pacientes-con-cirugia`);
+  }
+
+  listarPorPaciente(rut: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.api}/pabellon/cirugias/paciente/${rut}`);
+  }
+
   obtenerPorId(id: number): Observable<any> {
     return this.http.get<any>(`${this.api}/pabellon/cirugias/${id}`);
   }

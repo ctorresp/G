@@ -40,4 +40,12 @@ export class AuthService {
   listarEspecialidades(): Observable<any[]> {
     return this.http.get<any[]>(`${this.api}/usuarios/especialidades`);
   }
+
+  forgotPassword(email: string): Observable<any> {
+    return this.http.post(`${this.api}/auth/forgot-password`, { email });
+  }
+
+  resetPassword(token: string, newPassword: string): Observable<any> {
+    return this.http.post(`${this.api}/auth/reset-password`, { token, newPassword });
+  }
 }

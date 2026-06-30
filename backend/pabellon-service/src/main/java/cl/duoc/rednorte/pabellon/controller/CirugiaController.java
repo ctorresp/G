@@ -95,6 +95,11 @@ public class CirugiaController {
         return ResponseEntity.ok(dtos);
     }
 
+    @GetMapping("/pacientes-con-cirugia")
+    public ResponseEntity<List<String>> listarPacientesConCirugiaActiva() {
+        return ResponseEntity.ok(service.listarPacientesConCirugiaActiva());
+    }
+
     @PostMapping
     @PreAuthorize("hasAnyAuthority('ROLE_COORDINADOR', 'ROLE_ADMIN')")
     public ResponseEntity<CirugiaDTO> crear(@RequestBody Cirugia cirugia) {

@@ -175,6 +175,11 @@ public class CirugiaService {
         return cirugiaRepository.findByEstadoAndTriajeCompletado(EstadoCirugia.SOLICITADA, true);
     }
 
+    @Transactional(readOnly = true)
+    public List<String> listarPacientesConCirugiaActiva() {
+        return cirugiaRepository.findPacientesConCirugiaActiva();
+    }
+
     public List<Cirugia> listarPendientesTriaje() {
         return cirugiaRepository.findByEstadoAndTriajeCompletado(EstadoCirugia.SOLICITADA, false);
     }

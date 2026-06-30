@@ -1,8 +1,9 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PacienteService } from '../../../../core/services/paciente.service';
+import { CirugiaService } from '../../../../core/services/cirugia.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { Paciente, PacienteClinicosPayload } from '../../../../core/interfaces';
 
@@ -12,14 +13,16 @@ import { Paciente, PacienteClinicosPayload } from '../../../../core/interfaces';
   templateUrl: './patient-detail.html',
   styleUrl: './patient-detail.scss',
 })
-export class PatientDetailComponent {
+export class PatientDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private pacienteService = inject(PacienteService);
+  private cirugiaService = inject(CirugiaService);
   private toastService = inject(ToastService);
 
   paciente: Paciente | null = null;
   loading = signal(true);
+  tieneCirugiaPendiente = signal(false);
   observacion = '';
   guardando = false;
 
@@ -32,7 +35,11 @@ export class PatientDetailComponent {
 
   erroresEdicion = { pesoKg: '', alturaCm: '' };
 
-  constructor() {
+  ngOnInit() {
+    const navigation = this.router.getCurrentNavigation();
+    if (navigation?.extras?.state?.['cirugiaSolicitada'] || navigation?.extras?.state?.['tieneCirugia']) {
+      this.tieneCirugiaPendiente.set(true);
+    }
     const rut = this.route.snapshot.paramMap.get('rut');
     if (rut) {
       this.cargarPaciente(rut);
@@ -63,6 +70,9 @@ export class PatientDetailComponent {
           },
         };
         this.observacion = data.observacionMedico || '';
+        if (!this.tieneCirugiaPendiente()) {
+          this.verificarCirugiaPendiente(rut);
+        }
         this.loading.set(false);
       },
       error: () => {
@@ -184,6 +194,21 @@ export class PatientDetailComponent {
       error: () => {
         this.toastService.mostrar('Error al guardar observación', 'error');
         this.guardando = false;
+      },
+    });
+  }
+
+  verificarCirugiaPendiente(rut: string) {
+    this.tieneCirugiaPendiente.set(false);
+    this.cirugiaService.listarPorPaciente(rut).subscribe({
+      next: (cirugias) => {
+        const tiene = Array.isArray(cirugias) && cirugias.length > 0;
+        this.toastService.mostrar(`Cirugías ${rut}: ${cirugias?.length ?? 0} encontradas`, tiene ? 'success' : 'error');
+        this.tieneCirugiaPendiente.set(tiene);
+      },
+      error: (err) => {
+        this.toastService.mostrar('Error al verificar cirugías: ' + (err.message || 'desconocido'), 'error');
+        this.tieneCirugiaPendiente.set(false);
       },
     });
   }

@@ -83,6 +83,48 @@
   }
 }
 
+@media (max-width: 680px) {
+  .brand-header {
+    margin-bottom: 40px;
+
+    h1 {
+      font-size: 32px;
+      letter-spacing: -1px;
+    }
+
+    .subtitle {
+      font-size: 15px;
+      margin-bottom: 20px;
+    }
+
+    .instruction {
+      font-size: 13px;
+    }
+
+    .logo-icon {
+      width: 44px;
+      height: 44px;
+      margin-bottom: 18px;
+    }
+  }
+
+  .split-cards {
+    gap: 16px;
+  }
+}
+
+@media (max-width: 400px) {
+  .brand-header {
+    h1 {
+      font-size: 26px;
+    }
+
+    .subtitle {
+      font-size: 13px;
+    }
+  }
+}
+
 .role-card {
   flex: 1;
   background: #1e293b;
@@ -107,6 +149,27 @@
   .card-content {
     padding: 40px 36px;
     text-align: left;
+  }
+
+  @media (max-width: 680px) {
+    .card-content {
+      padding: 28px 24px;
+    }
+
+    h2 {
+      font-size: 18px;
+    }
+
+    p {
+      font-size: 13px;
+      margin-bottom: 20px;
+    }
+  }
+
+  @media (max-width: 400px) {
+    .card-content {
+      padding: 22px 18px;
+    }
   }
 
   .icon-wrapper {

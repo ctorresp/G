@@ -1,5 +1,34 @@
 {
     "java.compile.nullAnalysis.mode": "automatic",
     "maven.view": "hierarchical",
-    "postman.settings.dotenv-detection-notification-visibility": false
+    "postman.settings.dotenv-detection-notification-visibility": false,
+    "sqltools.connections": [
+        {
+            "name": "RedNorte - Pacientes",
+            "driver": "PostgreSQL",
+            "server": "localhost",
+            "port": 5433,
+            "database": "db_pacientes",
+            "username": "rednorte",
+            "password": "rednorte123"
+        },
+        {
+            "name": "RedNorte - Pabellón",
+            "driver": "PostgreSQL",
+            "server": "localhost",
+            "port": 5434,
+            "database": "db_pabellon",
+            "username": "rednorte",
+            "password": "rednorte123"
+        },
+        {
+            "name": "RedNorte - Reasignación",
+            "driver": "PostgreSQL",
+            "server": "localhost",
+            "port": 5435,
+            "database": "db_reasignacion",
+            "username": "rednorte",
+            "password": "rednorte123"
+        }
+    ]
 }

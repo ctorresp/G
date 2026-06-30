@@ -56,9 +56,11 @@
                   </svg>
                   Ver Detalle
                 </button>
-                <button class="btn-primary-sm" (click)="solicitarCirugia(p.rut)">
-                  Solicitar Cirugía
-                </button>
+                @if (!pacientesConCirugia().has(p.rut)) {
+                  <button class="btn-primary-sm" (click)="solicitarCirugia(p.rut)">
+                    Solicitar Cirugía
+                  </button>
+                }
               </div>
             </td>
           </tr>

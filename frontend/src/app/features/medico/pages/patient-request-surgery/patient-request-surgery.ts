@@ -72,7 +72,9 @@ export class PatientRequestSurgeryComponent implements AfterViewInit {
     this.cirugiaService.solicitar(payload).subscribe({
       next: () => {
         this.toastService.mostrar('Solicitud de cirugía enviada correctamente', 'success');
-        this.router.navigate(['/medico/pacientes', this.pacienteRut]);
+        this.router.navigate(['/medico/pacientes', this.pacienteRut], {
+          state: { cirugiaSolicitada: true }
+        });
       },
       error: (err) => {
         const mensaje = err.error?.message || err.error?.mensaje || 'Error al solicitar cirugía';

@@ -2,6 +2,7 @@ import { Component, signal, inject, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { PacienteService } from '../../../../core/services/paciente.service';
+import { CirugiaService } from '../../../../core/services/cirugia.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { STORAGE_KEYS } from '../../../../core/constants';
 import { storage } from '../../../../core/storage';
@@ -14,10 +15,12 @@ import { storage } from '../../../../core/storage';
 })
 export class PatientsComponent implements AfterViewInit {
   private pacienteService = inject(PacienteService);
+  private cirugiaService = inject(CirugiaService);
   private toastService = inject(ToastService);
   private router = inject(Router);
 
   pacientes = signal<any[]>([]);
+  pacientesConCirugia = signal<Set<string>>(new Set());
   loading = signal(false);
 
   ngAfterViewInit() {
@@ -31,6 +34,7 @@ export class PatientsComponent implements AfterViewInit {
       this.pacienteService.listarPorMedicoRut(rutMedico).subscribe({
         next: (data) => {
           this.pacientes.set(data);
+          this.verificarCirugias();
           this.loading.set(false);
         },
         error: () => {
@@ -48,6 +52,7 @@ export class PatientsComponent implements AfterViewInit {
       this.pacienteService.listarPorMedico(idMedico).subscribe({
         next: (data) => {
           this.pacientes.set(data);
+          this.verificarCirugias();
           this.loading.set(false);
         },
         error: () => {
@@ -58,8 +63,22 @@ export class PatientsComponent implements AfterViewInit {
     }
   }
 
+  private verificarCirugias() {
+    this.cirugiaService.listarPacientesConCirugiaActiva().subscribe({
+      next: (ruts) => {
+        this.pacientesConCirugia.set(new Set(ruts));
+      },
+      error: () => {
+        this.pacientesConCirugia.set(new Set());
+      },
+    });
+  }
+
   verDetalle(rut: string) {
-    this.router.navigate(['/medico/pacientes', rut]);
+    const tieneCirugia = this.pacientesConCirugia().has(rut);
+    this.router.navigate(['/medico/pacientes', rut], {
+      state: { tieneCirugia },
+    });
   }
 
   solicitarCirugia(rut: string) {

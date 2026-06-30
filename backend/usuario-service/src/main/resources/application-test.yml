@@ -28,3 +28,5 @@ app:
   jwt:
     secret: ${JWT_SECRET:RedNorte2024SecretKeyMuySeguraDe256BitsParaJWT}
     expiration-ms: ${JWT_EXPIRATION_MS:86400000}
+  reset-password:
+    base-url: ${RESET_PASSWORD_BASE_URL:http://localhost:4200}

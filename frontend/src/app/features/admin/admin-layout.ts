@@ -14,6 +14,11 @@ export class AdminLayout implements OnInit {
   private router = inject(Router);
   usuarioRut: string = '';
   usuarioNombre: string = '';
+  sidebarAbierta = false;
+
+  toggleSidebar() {
+    this.sidebarAbierta = !this.sidebarAbierta;
+  }
 
   ngOnInit() {
     const token = storage.getItem(STORAGE_KEYS.TOKEN);

@@ -1,6 +1,8 @@
 import { Routes } from '@angular/router';
 import { Login } from './features/login/login';
 import { Home } from './features/home/home';
+import { ForgotPasswordComponent } from './features/forgot-password/forgot-password';
+import { ResetPasswordComponent } from './features/reset-password/reset-password';
 import { authGuard } from './core/guards/auth.guard';
 import { adminGuard, medicoGuard, coordinadorGuard, triajerGuard } from './core/guards/role.guard';
 
@@ -29,6 +31,8 @@ import { SurgeryMetricsComponent } from './features/coordinador/pages/surgery-me
 export const routes: Routes = [
   { path: '', component: Home, pathMatch: 'full' },
   { path: 'login', component: Login },
+  { path: 'forgot-password', component: ForgotPasswordComponent },
+  { path: 'reset-password/:token', component: ResetPasswordComponent },
   {
     path: 'admin',
     component: AdminLayout,

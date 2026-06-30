@@ -13,6 +13,11 @@ import { storage } from '../../core/storage';
 export class TriajerLayout implements OnInit {
   private router = inject(Router);
   usuarioRut: string = '';
+  sidebarAbierta = false;
+
+  toggleSidebar() {
+    this.sidebarAbierta = !this.sidebarAbierta;
+  }
 
   ngOnInit() {
     const token = storage.getItem(STORAGE_KEYS.TOKEN);

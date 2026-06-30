@@ -1,4 +1,4 @@
-<div class="layout">
+<div class="layout" [class.sidebar-open]="sidebarAbierta">
   <aside class="sidebar">
     <div class="sidebar-header">
       <div class="logo-icon">
@@ -44,9 +44,18 @@
     </div>
   </aside>
 
+  <div class="sidebar-overlay" (click)="sidebarAbierta = false"></div>
+
   <main class="main-content">
     <header class="topbar">
       <div class="topbar-left">
+        <button class="hamburger" (click)="toggleSidebar()" aria-label="Menú">
+          <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
         <span class="current-view">Administrador</span>
       </div>
       <div class="user-profile">

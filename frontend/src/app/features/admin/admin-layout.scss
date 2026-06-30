@@ -1,3 +1,5 @@
+@use 'styles/responsive' as *;
+
 .layout {
   display: flex;
   height: 100vh;
@@ -12,6 +14,7 @@
   flex-direction: column;
   border-right: 1px solid rgba(255, 255, 255, 0.04);
   z-index: 20;
+  flex-shrink: 0;
 
   &-header {
     padding: 32px 24px;
@@ -135,6 +138,10 @@
   z-index: 10;
 
   .topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
     .current-view {
       font-size: 16px;
       font-weight: 700;
@@ -142,6 +149,33 @@
       letter-spacing: -0.3px;
     }
   }
+}
+
+.hamburger {
+  display: none;
+  background: none;
+  border: none;
+  color: #0f172a;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 8px;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #f1f5f9;
+  }
+
+  svg {
+    display: block;
+  }
+}
+
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 15;
 }
 
 .user-profile {
@@ -180,4 +214,64 @@
   flex: 1;
   overflow-y: auto;
   padding: 32px 40px;
+}
+
+@include tablet {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+
+  .sidebar-open .sidebar {
+    transform: translateX(0);
+  }
+
+  .sidebar-open .sidebar-overlay {
+    display: block;
+  }
+
+  .hamburger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .topbar {
+    padding: 16px 20px;
+  }
+
+  .content-area {
+    padding: 20px;
+  }
+
+  .user-profile .user-details {
+    display: none;
+  }
+
+  .sidebar-header {
+    padding: 24px 20px;
+  }
+}
+
+@include mobile {
+  .topbar {
+    padding: 12px 16px;
+  }
+
+  .content-area {
+    padding: 16px;
+  }
+
+  .sidebar {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .sidebar-header {
+    padding: 20px 16px;
+  }
 }

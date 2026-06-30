@@ -40,9 +40,11 @@
               Cancelar
             </button>
           }
-          <button class="btn-surgery" (click)="solicitarCirugia()">
-            Solicitar Cirugía
-          </button>
+          @if (!tieneCirugiaPendiente()) {
+            <button class="btn-surgery" (click)="solicitarCirugia()">
+              Solicitar Cirugía
+            </button>
+          }
         </div>
       </div>
 

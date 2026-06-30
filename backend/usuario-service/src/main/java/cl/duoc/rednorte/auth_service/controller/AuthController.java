@@ -1,8 +1,10 @@
 package cl.duoc.rednorte.auth_service.controller;
 
+import cl.duoc.rednorte.auth_service.dto.ForgotPasswordRequestDTO;
 import cl.duoc.rednorte.auth_service.dto.LoginRequestDTO;
 import cl.duoc.rednorte.auth_service.dto.LoginResponseDTO;
 import cl.duoc.rednorte.auth_service.dto.RegistroRequestDTO;
+import cl.duoc.rednorte.auth_service.dto.ResetPasswordRequestDTO;
 import cl.duoc.rednorte.auth_service.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -98,6 +100,36 @@ public class AuthController {
     }
 
     // Valida tokens externamente (uso interno para microservicios)
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequestDTO request) {
+        try {
+            var response = authService.forgotPassword(request);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(Map.of(
+                            "error", "Error al procesar la solicitud",
+                            "mensaje", e.getMessage()
+                    ));
+        }
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequestDTO request) {
+        try {
+            var response = authService.resetPassword(request);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(Map.of(
+                            "error", "Error al restablecer la contraseña",
+                            "mensaje", e.getMessage()
+                    ));
+        }
+    }
+
     @PostMapping("/validar")
     public ResponseEntity<?> validarToken(
             @RequestHeader(value = "Authorization", required = false) String authHeader) {
