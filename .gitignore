@@ -24,3 +24,5 @@ backend/.env
 
 # --- Logs ---
 *.log
+
+/generated/prisma

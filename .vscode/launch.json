@@ -5,7 +5,8 @@
             "name": "RedNorteApplication",
             "request": "launch",
             "mainClass": "cl.duoc.rednorte.RedNorteApplication",
-            "projectName": "auth-service"
+            "projectName": "auth-service",
+            "vmArgs": " -Dcom.sun.management.jmxremote"
         },
         {
             "type": "java",
@@ -14,6 +15,26 @@
             "cwd": "${workspaceFolder}",
             "mainClass": "cl.duoc.rednorte.auth_service.AuthServiceApplication",
             "projectName": "auth-service",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-PabellonApplication<pabellon-service>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "cl.duoc.rednorte.pabellon.PabellonApplication",
+            "projectName": "pabellon-service",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-ReasignacionApplication<reasignacion-service>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "cl.duoc.rednorte.reasignacion.ReasignacionApplication",
+            "projectName": "reasignacion-service",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
         }
